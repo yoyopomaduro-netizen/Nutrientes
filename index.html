@@ -225,14 +225,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
         <div class="goal-card" id="g-health" onclick="selectGoal('health')"><div class="g-icon">🥗</div><div class="g-title">Comer mejor</div><div class="g-sub">Nutrición general</div></div>
       </div>
     </div>
-    <div class="goals-section">
-      <div class="section-title">API Key de Anthropic</div>
-      <div class="form-group">
-        <label class="form-label">Tu clave de console.anthropic.com</label>
-        <input class="form-input" id="g-apikey" type="password" placeholder="sk-ant-api03-..."/>
-      </div>
-      <p style="font-size:11px;color:var(--hint);margin-bottom:12px;line-height:1.5;">Se guarda solo en tu dispositivo. Nunca se sube a ningún servidor.</p>
-    </div>
 
     <div class="goals-section">
       <div class="section-title">Datos personales</div>
@@ -260,7 +252,9 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 <div class="toast" id="toast"></div>
 
 <script>
-let API_KEY=localStorage.getItem('nl_apikey')||'';
+// ✅ Ya no se necesita API key del usuario — está en el servidor
+const WORKER_URL = 'https://nutrientes.yoyopomaduro.workers.dev/api/chat';
+
 let capturedImage=null,stream=null,facingMode='environment',loadTimer=null,currentResult=null;
 let corrections=JSON.parse(localStorage.getItem('nl_corrections')||'[]');
 let history=JSON.parse(localStorage.getItem('nl_history')||'[]');
@@ -270,7 +264,6 @@ let selectedGoal=goals.goal||null;
 const loadSteps=[['Analizando imagen...','Procesando foto con IA'],['Identificando plato...','Reconociendo ingredientes'],['Calculando macros...','Estimando proteínas, carbos y grasas'],['Personalizando consejo...','Adaptando a tus metas']];
 
 function init(){
-  if(API_KEY)document.getElementById('g-apikey').value='••••••••••••••••';
   if(goals.goal)selectGoal(goals.goal,false);
   if(goals.name)document.getElementById('g-name').value=goals.name;
   if(goals.weight)document.getElementById('g-weight').value=goals.weight;
@@ -297,8 +290,6 @@ function selectGoal(g,save=true){
   });
 }
 function saveGoals(){
-  const keyInput=document.getElementById('g-apikey').value.trim();
-  if(keyInput){API_KEY=keyInput;localStorage.setItem('nl_apikey',keyInput);}
   goals={goal:selectedGoal,name:document.getElementById('g-name').value.trim(),weight:document.getElementById('g-weight').value,restrictions:document.getElementById('g-restrictions').value.trim()};
   localStorage.setItem('nl_goals',JSON.stringify(goals));
   document.getElementById('goal-saved-badge').classList.add('on');
@@ -375,7 +366,6 @@ function loadFile(e){
 }
 async function analyze(correctionName=null){
   if(!capturedImage)return;
-  if(!API_KEY){toast('Ve a "Mis metas" e ingresa tu API Key primero',true);return;}
   document.getElementById('btn-analyze').classList.remove('on');
   document.getElementById('results').classList.remove('on');
   document.getElementById('results').style.display='none';
@@ -390,10 +380,20 @@ async function analyze(correctionName=null){
   try{
     const base64=capturedImage.split(',')[1];
     const mediaType=capturedImage.split(';')[0].split(':')[1];
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+
+    // ✅ Fetch al Worker (sin CORS, sin exponer API key)
+    const res=await fetch(WORKER_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sysPrompt,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:base64}},{type:'text',text:`Analiza esta imagen de comida. Responde ÚNICAMENTE con JSON sin backticks. Formato exacto: {"plato":"nombre en español","proteinas":entero,"carbos":entero,"grasas":entero,"consejo":"consejo de 2 oraciones personalizado para el objetivo del usuario (${goalLabel()})"}${corrHint}`}]}]})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:sysPrompt,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
+          {type:'text',text:`Analiza esta imagen de comida. Responde ÚNICAMENTE con JSON sin backticks. Formato exacto: {"plato":"nombre en español","proteinas":entero,"carbos":entero,"grasas":entero,"consejo":"consejo de 2 oraciones personalizado para el objetivo del usuario (${goalLabel()})"}${corrHint}`}
+        ]}]
+      })
     });
     clearInterval(loadTimer);
     const data=await res.json();
