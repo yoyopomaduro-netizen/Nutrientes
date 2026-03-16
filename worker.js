@@ -1,24 +1,40 @@
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
 
-    if (request.method !== "POST") {
-      return new Response("Method not allowed", { status: 405 });
+    // Proxy para Anthropic
+    if (url.pathname === '/api/chat') {
+      const body = await request.json();
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.ANTHROPIC_API_KEY,  // variable de entorno en el Worker
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      return new Response(JSON.stringify(data), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',  // CORS abierto
+        },
+      });
     }
 
-    const { image } = await request.json();
-
-    return new Response(JSON.stringify({
-      plato: "Prueba",
-      proteinas: 10,
-      carbos: 20,
-      grasas: 5,
-      consejo: "Esto es solo una prueba"
-    }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    });
-
+    // Manejo de preflight OPTIONS
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
   }
-}
+};
