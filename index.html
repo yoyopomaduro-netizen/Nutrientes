@@ -7,13 +7,17 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>NutriLent</title>
 <meta name="application-name" content="NutriLent"/>
 <meta name="apple-mobile-web-app-title" content="NutriLent"/>
+<title>NutriLent</title>
 <link rel="manifest" href="/manifest.json"/>
-<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="shortcut icon" href="/favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js');});}</script>
+<style>
 :root{
   --bg:#080808;--surface:#111111;--surface2:#191919;--surface3:#222222;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--border3:rgba(255,255,255,0.22);
@@ -97,7 +101,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 .correction-input:focus{border-color:var(--border3);}
 .btn-correct{padding:8px 14px;border-radius:var(--radius-xs);background:var(--surface3);border:1px solid var(--border2);color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .btn-correct:hover{background:var(--accent-dim);}
-/* CALORIES */
 .calories-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;animation:fadeUp .4s .05s ease both;}
 .cal-left .lbl{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent3);font-weight:500;margin-bottom:4px;}
 .cal-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--accent3);line-height:1;}
@@ -107,7 +110,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 .cal-daily span{color:var(--text);font-weight:500;}
 .cal-bar-wrap{width:100px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden;margin-top:6px;margin-left:auto;}
 .cal-bar{height:100%;background:var(--accent3);border-radius:99px;transition:width 1s cubic-bezier(.34,1.56,.64,1);}
-/* MACROS */
 .macros-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
 .macro-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:15px 10px;text-align:center;}
 .macro-card:nth-child(1){animation:fadeUp .4s .1s ease both;}
@@ -125,7 +127,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 .prot .bar-fill{background:#1D9E75;}
 .carb .bar-fill{background:#378ADD;}
 .fat .bar-fill{background:#EF9F27;}
-/* DONUT */
 .donut-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:8px;display:flex;align-items:center;gap:20px;animation:fadeUp .4s .25s ease both;}
 .donut-wrap{position:relative;flex-shrink:0;width:80px;height:80px;}
 .donut-wrap svg{transform:rotate(-90deg);}
@@ -142,7 +143,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 .advice-card p{font-size:13px;color:var(--text);line-height:1.7;font-weight:300;}
 .btn-reset{width:100%;padding:14px;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;margin-bottom:10px;transition:color .15s,border-color .15s;}
 .btn-reset:hover{color:var(--text);border-color:var(--border3);}
-/* GOALS */
 .goals-section{padding:0 14px;margin-bottom:20px;}
 .section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding:0 2px;}
 .goal-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
@@ -162,7 +162,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 .goal-saved-badge{display:none;align-items:center;gap:6px;font-size:12px;color:var(--accent);padding:10px 0;}
 .goal-saved-badge.on{display:flex;}
 .goal-saved-badge::before{content:'✓';font-weight:700;}
-/* HISTORY */
 .history-empty{padding:60px 24px;text-align:center;}
 .history-empty p{color:var(--muted);font-size:14px;line-height:1.6;}
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px;margin-bottom:14px;}
@@ -200,7 +199,7 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
 <body>
 <div id="app">
   <div class="header">
-    <div class="header-eyebrow">NutriLens AI</div>
+    <div class="header-eyebrow">NutriLent AI</div>
     <h1>Come<br/>inteligente <em>.</em></h1>
     <p>Fotografía tu plato — la IA detecta<br/>los macros adaptados a tus metas.</p>
   </div>
@@ -209,8 +208,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
     <div class="tab" onclick="switchTab('goals')">Mis metas</div>
     <div class="tab" onclick="switchTab('history')">Historial</div>
   </div>
-
-  <!-- SCAN -->
   <div class="screen active" id="screen-scan">
     <div class="scan-zone" id="scan-zone">
       <video id="video-el" autoplay playsinline></video>
@@ -295,8 +292,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
       <button class="btn-reset" onclick="reset()">← Escanear otro plato</button>
     </div>
   </div>
-
-  <!-- GOALS -->
   <div class="screen" id="screen-goals">
     <div class="header" style="padding-top:24px;">
       <div class="header-eyebrow">Perfil</div>
@@ -324,8 +319,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
       <div class="goal-saved-badge" id="goal-saved-badge">Metas guardadas correctamente</div>
     </div>
   </div>
-
-  <!-- HISTORY -->
   <div class="screen" id="screen-history">
     <div class="header" style="padding-top:24px;">
       <div class="header-eyebrow">Registro</div>
@@ -345,7 +338,6 @@ body{background-image:radial-gradient(ellipse 100% 40% at 50% 0%,rgba(184,240,80
   </div>
 </div>
 <div class="toast" id="toast"></div>
-
 <script>
 const WORKER_URL='https://nutrientes.yoyopomaduro.workers.dev/api/chat';
 let capturedImage=null,stream=null,facingMode='environment',loadTimer=null,currentResult=null;
@@ -354,12 +346,10 @@ let history=JSON.parse(localStorage.getItem('nl_history')||'[]');
 let goals=JSON.parse(localStorage.getItem('nl_goals')||'{}');
 let selectedGoal=goals.goal||null;
 const loadSteps=[['Analizando imagen...','Procesando foto con IA'],['Identificando plato...','Reconociendo ingredientes'],['Calculando macros...','Estimando proteínas, carbos y grasas'],['Personalizando consejo...','Adaptando a tus metas']];
-
 function todayKey(){return new Date().toISOString().slice(0,10);}
 function getCalGoal(){return parseInt(goals.calgoal)||2000;}
 function getTodayTotal(){const t=todayKey();return history.filter(h=>h.isoDate&&h.isoDate.startsWith(t)).reduce((s,h)=>s+(h.calorias||0),0);}
 function getWeekTotal(){const now=new Date();return history.filter(h=>{if(!h.isoDate)return false;return(now-new Date(h.isoDate))/(864e5)<=7;}).reduce((s,h)=>s+(h.calorias||0),0);}
-
 function init(){
   if(goals.goal)selectGoal(goals.goal,false);
   if(goals.name)document.getElementById('g-name').value=goals.name;
@@ -393,7 +383,6 @@ function saveGoals(){
 }
 function goalLabel(){const map={lose:'bajar de peso',muscle:'ganar músculo',maintain:'mantenerte en tu peso',health:'comer más saludable'};return map[goals.goal]||'mantener una alimentación balanceada';}
 function correctionsCtx(){if(!corrections.length)return'';return'\n\nCORRECCIONES PREVIAS:\n'+corrections.slice(-6).map(c=>`- Detectaste "${c.wrong}", correcto: "${c.right}"`).join('\n');}
-
 async function openCamera(){
   try{
     if(stream)stopStream();
@@ -448,7 +437,6 @@ function loadFile(e){
     toast('Imagen cargada ✓');
   };reader.readAsDataURL(file);
 }
-
 async function analyze(correctionName=null){
   if(!capturedImage)return;
   document.getElementById('btn-analyze').classList.remove('on');
@@ -507,7 +495,6 @@ async function analyze(correctionName=null){
     toast('Error: '+(err.message||'Intenta de nuevo'),true);
   }
 }
-
 function animateDonut(prot,carb,fat){
   const C=188.5;
   const total=(prot*4+carb*4+fat*9)||1;
@@ -520,7 +507,6 @@ function animateDonut(prot,carb,fat){
   dc.setAttribute('stroke-dasharray',`${cA} ${C-cA}`);dc.setAttribute('stroke-dashoffset',`${-pA}`);
   df.setAttribute('stroke-dasharray',`${fA} ${C-fA}`);df.setAttribute('stroke-dashoffset',`${-(pA+cA)}`);
 }
-
 function applyCorrection(){
   const input=document.getElementById('correction-input');const name=input.value.trim();
   if(!name){toast('Escribe el nombre correcto del plato',true);return;}
@@ -530,7 +516,6 @@ function applyCorrection(){
   ['bar-p','bar-c','bar-f'].forEach(id=>document.getElementById(id).style.width='0%');
   analyze(name);
 }
-
 function renderHistory(){
   document.getElementById('stat-today').textContent=getTodayTotal();
   document.getElementById('stat-week').textContent=getWeekTotal();
@@ -539,7 +524,6 @@ function renderHistory(){
   if(!history.length){c.innerHTML='<div class="history-empty"><p>Aún no has escaneado<br/>ningún plato.</p></div>';return;}
   c.innerHTML='<div class="history-list">'+history.map(h=>`<div class="history-item"><img class="h-thumb" src="${h.thumb}"/><div class="h-info"><div class="h-name">${h.plato}</div><div class="h-macros">P ${h.proteinas}g · C ${h.carbos}g · G ${h.grasas}g</div><div class="h-date">${h.date}</div></div><div class="h-cal">${h.calorias||'—'}</div></div>`).join('')+'</div><button class="btn-clear-history" onclick="clearHistory()">Borrar historial</button>';
 }
-
 function renderChart(){
   const bars=document.getElementById('chart-bars');
   const days=[];
@@ -560,9 +544,7 @@ function renderChart(){
     return `<div class="chart-bar-wrap"><div class="chart-bar ${cls}" style="height:${h}px" title="${d.total} kcal"></div><div class="chart-label">${d.label}</div></div>`;
   }).join('');
 }
-
 function clearHistory(){if(!confirm('¿Borrar todo el historial?'))return;history=[];localStorage.setItem('nl_history','[]');renderHistory();toast('Historial borrado');}
-
 function reset(){
   capturedImage=null;currentResult=null;stopStream();clearInterval(loadTimer);
   document.getElementById('preview-img').style.display='none';document.getElementById('video-el').style.display='none';
