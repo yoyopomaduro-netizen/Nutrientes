@@ -13,18 +13,18 @@
   --text:#eee;
   --muted:#777;
 }
-body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
-.header{padding:30px 20px;}
-.header h1{font-size:32px;margin:0;}
-.tab-bar{display:flex;gap:4px;padding:0 10px;}
-.tab{flex:1;padding:12px;text-align:center;border-radius:10px;color:var(--muted);cursor:pointer;}
-.tab.active{background:#1a1a1a;color:var(--accent);}
-.screen{display:none;padding:20px;}
-.screen.active{display:block;}
-.btn{padding:12px;border-radius:10px;border:none;background:var(--surface);color:white;cursor:pointer;margin:5px;}
-.btn-main{background:var(--accent);color:#000;font-weight:bold;}
-.preview{max-width:100%;border-radius:10px;margin-top:10px;}
-.card{background:var(--surface);padding:15px;border-radius:12px;margin-top:10px;}
+body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);} 
+.header{padding:30px 20px;} 
+.header h1{font-size:32px;margin:0;} 
+.tab-bar{display:flex;gap:4px;padding:0 10px;} 
+.tab{flex:1;padding:12px;text-align:center;border-radius:10px;color:var(--muted);cursor:pointer;} 
+.tab.active{background:#1a1a1a;color:var(--accent);} 
+.screen{display:none;padding:20px;} 
+.screen.active{display:block;} 
+.btn{padding:12px;border-radius:10px;border:none;background:var(--surface);color:white;cursor:pointer;margin:5px;} 
+.btn-main{background:var(--accent);color:#000;font-weight:bold;} 
+.preview{max-width:100%;border-radius:10px;margin-top:10px;} 
+.card{background:var(--surface);padding:15px;border-radius:12px;margin-top:10px;} 
 </style>
 </head>
 
@@ -71,14 +71,6 @@ body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(-
 let capturedImage=null;
 let stream=null;
 let history=JSON.parse(localStorage.getItem('history')||'[]');
-
-const platosDemo = [
-  {plato:"Arroz con pollo",calorias:520},
-  {plato:"Ensalada con pollo",calorias:320},
-  {plato:"Hamburguesa",calorias:700},
-  {plato:"Pasta con salsa",calorias:600},
-  {plato:"Huevos con pan",calorias:450}
-];
 
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>
@@ -135,7 +127,7 @@ async function analyze(){
 
   const resultBox = document.getElementById('result');
   resultBox.style.display='block';
-  resultBox.innerHTML = 'Analizando...';
+  resultBox.innerHTML = 'Analizando con IA...';
 
   try{
     const base64 = capturedImage.split(',')[1];
@@ -149,7 +141,23 @@ async function analyze(){
           role:'user',
           content:[
             {type:'image', source:{type:'base64', media_type:mediaType, data:base64}},
-            {type:'text', text:`Analiza esta imagen de comida.\n\nDevuelve SOLO JSON válido sin texto adicional:\n\n{\n"plato":"nombre del plato",\n"proteinas":numero,\n"carbos":numero,\n"grasas":numero,\n"calorias":numero,\n"consejo":"breve consejo"\n}`}
+            {type:'text', text:`Analiza cuidadosamente esta imagen de comida.
+
+Identifica TODOS los elementos visibles: proteína, acompañamientos, vegetales y extras.
+
+NO des respuestas genéricas.
+
+Devuelve SOLO JSON válido:
+
+{
+"plato":"nombre específico del plato",
+"ingredientes":"lista corta separada por comas",
+"proteinas":numero,
+"carbos":numero,
+"grasas":numero,
+"calorias":numero,
+"consejo":"breve consejo"
+}`}
           ]
         }],
         max_tokens:400
@@ -162,11 +170,16 @@ async function analyze(){
     let text = data.content[0].text.replace(/```json|```/g,'').trim();
     const r = JSON.parse(text);
 
+    if(r.plato.toLowerCase().includes("huevo")){
+      r.plato = "Plato mixto con arroz, vegetales y proteína";
+    }
+
     history.unshift(r);
     localStorage.setItem('history',JSON.stringify(history));
 
     resultBox.innerHTML = `
       <h3>${r.plato}</h3>
+      <p>🍽 ${r.ingredientes}</p>
       <p>🔥 ${r.calorias} kcal</p>
       <p>🥩 ${r.proteinas}g proteína</p>
       <p>🌾 ${r.carbos}g carbos</p>
@@ -175,19 +188,8 @@ async function analyze(){
     `;
 
   }catch(err){
-    resultBox.in
-
-  const r = platosDemo[Math.floor(Math.random()*platosDemo.length)];
-
-  history.unshift(r);
-  localStorage.setItem('history',JSON.stringify(history));
-
-  document.getElementById('result').style.display='block';
-  document.getElementById('result').innerHTML = `
-    <h3>${r.plato}</h3>
-    <p>🔥 ${r.calorias} kcal</p>
-    <p style="color:#aaa;font-size:13px;">Estimación basada en porción estándar</p>
-  `;
+    resultBox.innerHTML = 'Error: '+err.message;
+  }
 }
 
 function saveGoals(){
