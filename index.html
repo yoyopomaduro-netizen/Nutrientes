@@ -4,325 +4,569 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NutriLent AI</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-
-:root{
-  --bg:#050505;
-  --card:#0f0f0f;
-  --accent:#b8f050;
-  --text:#f2f2f2;
-  --muted:#9aa0a6;
-  --border:#1c1c1c;
+:root {
+  --bg: #080808;
+  --surface: #111;
+  --surface2: #171717;
+  --surface3: #1e1e1e;
+  --accent: #b8f050;
+  --accent-dim: rgba(184,240,80,0.1);
+  --accent2: #50f0b8;
+  --text: #f2f2f2;
+  --muted: #555;
+  --muted2: #888;
+  --error: #ff5f5f;
+  --border: rgba(255,255,255,0.07);
+  --radius: 16px;
 }
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-
-body{
-  font-family:'DM Sans',sans-serif;
-  background:radial-gradient(circle at top,#111 0%,#050505 60%);
-  color:var(--text);
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(184,240,80,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
-
-/* HEADER */
-.header{
-  padding:50px 20px 20px;
-  text-align:center;
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 36px 20px 80px;
 }
-
-.header h1{
-  font-family:'Syne',sans-serif;
-  font-size:40px;
-  letter-spacing:-1px;
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeUp 0.5s ease both;
 }
-
-.header span{
-  color:var(--accent);
+.header .eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.65;
 }
-
-.sub{
-  margin-top:10px;
-  color:var(--muted);
-  font-size:14px;
+.header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -2.5px;
+  line-height: 1;
 }
-
-/* CONTAINER */
-.container{
-  max-width:900px;
-  margin:0 auto;
-  padding:20px;
+.header h1 .green { color: var(--accent); }
+.header .sub {
+  color: var(--muted2);
+  font-size: 11px;
+  margin-top: 10px;
+  letter-spacing: 1.5px;
 }
-
-/* UPLOAD BOX */
-.upload-box{
-  background:linear-gradient(145deg,#0f0f0f,#0a0a0a);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:20px;
-  text-align:center;
-  transition:0.3s;
+/* UPLOAD */
+.upload-zone {
+  border: 1.5px dashed rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  animation: fadeUp 0.5s 0.08s ease both;
 }
-
-.upload-box:hover{
-  border-color:var(--accent);
+.upload-zone:hover { border-color: var(--accent); background: var(--surface2); }
+.upload-zone.has-image { padding: 0; border-color: rgba(184,240,80,0.3); }
+.upload-zone input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
 }
-
-input[type="file"]{
-  margin-top:10px;
-  color:var(--muted);
+.upload-icon { font-size: 36px; margin-bottom: 10px; display: block; }
+.upload-label { font-size: 12px; color: var(--muted2); letter-spacing: 0.5px; }
+.upload-label strong { color: var(--accent); }
+#preview {
+  width: 100%;
+  border-radius: var(--radius);
+  display: none;
+  max-height: 280px;
+  object-fit: cover;
 }
-
-.preview{
-  width:100%;
-  max-height:300px;
-  object-fit:cover;
-  border-radius:12px;
-  margin-top:15px;
-  display:none;
-}
-
 /* BUTTON */
-button{
-  margin-top:15px;
-  padding:14px;
-  width:100%;
-  border:none;
-  border-radius:12px;
-  background:var(--accent);
-  color:#000;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.25s;
-  font-size:15px;
+.btn-analyze {
+  width: 100%;
+  margin-top: 12px;
+  padding: 17px;
+  background: var(--accent);
+  color: #000;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  animation: fadeUp 0.5s 0.15s ease both;
 }
-
-button:hover{
-  transform:scale(1.02);
-  box-shadow:0 0 20px rgba(184,240,80,0.3);
+.btn-analyze:hover { opacity: 0.85; }
+.btn-analyze:active { transform: scale(0.98); }
+.btn-analyze:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-analyze.loading {
+  background: linear-gradient(90deg, #7aaa22 0%, #b8f050 50%, #7aaa22 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  pointer-events: none;
 }
-
-/* RESULT GRID */
-.result{
-  margin-top:30px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:15px;
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
 }
-
-/* CARDS */
-.card{
-  background:linear-gradient(145deg,#0f0f0f,#0a0a0a);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
-  transition:0.3s;
-}
-
-.card:hover{
-  border-color:var(--accent);
-  transform:translateY(-3px);
-}
-
-.label{
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:6px;
-}
-
-.value{
-  font-size:20px;
-  font-weight:600;
-}
-
-/* LARGE CARD */
-.big{
-  font-size:28px;
-  font-weight:700;
-}
-
 /* ERROR */
-.error{
-  color:#ff6b6b;
-  margin-top:10px;
-  font-size:14px;
+.error-box {
+  background: rgba(255,95,95,0.07);
+  border: 1px solid rgba(255,95,95,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--error);
+  font-size: 11px;
+  margin-top: 12px;
+  display: none;
+  letter-spacing: 0.3px;
 }
-
-/* LOADING */
-.loading{
-  margin-top:15px;
-  color:var(--muted);
-  font-size:14px;
+/* RESULT CARD */
+.result-card {
+  margin-top: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: none;
+  animation: fadeUp 0.35s ease both;
 }
-
+.result-header {
+  padding: 20px 22px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+.result-dish {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.result-cal {
+  background: var(--accent-dim);
+  border: 1px solid rgba(184,240,80,0.18);
+  border-radius: 10px;
+  padding: 8px 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.cal-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  display: block;
+  line-height: 1;
+}
+.cal-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted2);
+  text-transform: uppercase;
+}
+.macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+}
+.macro-item {
+  padding: 16px 12px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+.macro-item:last-child { border-right: none; }
+.macro-icon { font-size: 15px; margin-bottom: 5px; }
+.macro-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  display: block;
+}
+.macro-val em {
+  font-size: 11px;
+  font-style: normal;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted2);
+  font-weight: 400;
+}
+.macro-name {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.ingredients {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.ing-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.ing-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--muted2);
+}
+.consejo {
+  margin: 14px 22px 18px;
+  padding: 12px 14px;
+  font-size: 11px;
+  color: var(--muted2);
+  line-height: 1.8;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-dim);
+  border-radius: 0 8px 8px 0;
+}
+/* HISTORIAL */
+.history-section {
+  margin-top: 40px;
+  animation: fadeUp 0.5s 0.25s ease both;
+}
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.history-title {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.btn-clear {
+  font-size: 10px;
+  color: var(--error);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+  background: none;
+  border: none;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 2px;
+}
+.btn-clear:hover { opacity: 1; }
+.history-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 28px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  letter-spacing: 1px;
+}
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+.history-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.history-item:hover {
+  border-color: rgba(184,240,80,0.3);
+  background: var(--surface2);
+}
+.history-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--surface3);
+}
+.history-dish {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-meta { font-size: 10px; color: var(--muted2); letter-spacing: 0.3px; }
+.history-kcal {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: right;
+}
+.history-kcal span {
+  display: block;
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
-
 <body>
+<div class="app">
 
-<div class="header">
-  <h1>NutriLent <span>AI</span></h1>
-  <div class="sub">Analiza tu comida con inteligencia artificial</div>
-</div>
+  <div class="header">
+    <div class="eyebrow">AI vision · análisis nutricional</div>
+    <h1>Nutri<span class="green">Lent</span></h1>
+    <div class="sub">Fotografía · Analiza · Aprende</div>
+  </div>
 
-<div class="container">
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="file" accept="image/*">
+    <span class="upload-icon" id="uploadIcon">🥗</span>
+    <img id="preview"/>
+    <div class="upload-label" id="uploadLabel">
+      <strong>Toca para subir</strong> una foto de tu comida
+    </div>
+  </div>
 
-<div class="upload-box">
+  <button class="btn-analyze" id="btnAnalyze" onclick="analyze()">Analizar comida</button>
 
-<input type="file" id="file" accept="image/*">
+  <div class="error-box" id="errorBox"></div>
 
-<img id="preview" class="preview"/>
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="result-dish" id="dishName">—</div>
+      <div class="result-cal">
+        <span class="cal-num" id="calNum">0</span>
+        <span class="cal-label">kcal</span>
+      </div>
+    </div>
+    <div class="macros">
+      <div class="macro-item">
+        <div class="macro-icon">🥩</div>
+        <span class="macro-val"><span id="protVal">0</span><em>g</em></span>
+        <div class="macro-name">Proteína</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-icon">🌾</div>
+        <span class="macro-val"><span id="carbVal">0</span><em>g</em></span>
+        <div class="macro-name">Carbos</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-icon">🫒</div>
+        <span class="macro-val"><span id="fatVal">0</span><em>g</em></span>
+        <div class="macro-name">Grasas</div>
+      </div>
+    </div>
+    <div class="ingredients">
+      <div class="ing-label">Ingredientes detectados</div>
+      <div class="ing-tags" id="ingTags"></div>
+    </div>
+    <div class="consejo" id="consejo"></div>
+  </div>
 
-<button onclick="analyze()">Analizar plato</button>
-
-<div id="loading" class="loading"></div>
-<div id="error" class="error"></div>
-
-</div>
-
-<div id="result" class="result" style="display:none">
-
-<div class="card">
-  <div class="label">Plato</div>
-  <div class="big" id="dish"></div>
-</div>
-
-<div class="card">
-  <div class="label">Ingredientes</div>
-  <div id="ing"></div>
-</div>
-
-<div class="card">
-  <div class="label">Calorías</div>
-  <div class="big" id="cal"></div>
-</div>
-
-<div class="card">
-  <div class="label">Macronutrientes</div>
-  <div>🥩 Proteínas: <span id="prot"></span> g</div>
-  <div>🌾 Carbos: <span id="carb"></span> g</div>
-  <div>🫒 Grasas: <span id="fat"></span> g</div>
-</div>
-
-<div class="card">
-  <div class="label">Consejo</div>
-  <div id="adv"></div>
-</div>
-
-</div>
+  <div class="history-section">
+    <div class="history-header">
+      <div class="history-title">Historial</div>
+      <button class="btn-clear" onclick="clearHistory()">Limpiar todo</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
 
 </div>
 
 <script>
+const WORKER_URL = "https://nutrientes.yoyopomaduro.workers.dev/api/chat";
+let imageBase64 = null;
+let history = [];
+try { history = JSON.parse(localStorage.getItem('nutrilent_history') || '[]'); } catch(e){}
 
-const WORKER_URL="https://nutrientes.yoyopomaduro.workers.dev";
-
-let imageBase64=null;
-
-/* preview */
-document.getElementById("file").addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(!file)return;
-
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    imageBase64=ev.target.result;
-    const img=document.getElementById("preview");
-    img.src=imageBase64;
-    img.style.display="block";
+document.getElementById("file").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    imageBase64 = ev.target.result;
+    const img = document.getElementById("preview");
+    img.src = imageBase64;
+    img.style.display = "block";
+    document.getElementById("uploadIcon").style.display = "none";
+    document.getElementById("uploadLabel").style.display = "none";
+    document.getElementById("uploadZone").classList.add("has-image");
   };
   reader.readAsDataURL(file);
 });
 
-/* analyze */
-async function analyze(){
+async function analyze() {
+  const errorBox = document.getElementById("errorBox");
+  const btn = document.getElementById("btnAnalyze");
+  errorBox.style.display = "none";
+  document.getElementById("resultCard").style.display = "none";
 
-  const errorBox=document.getElementById("error");
-  const loading=document.getElementById("loading");
+  if (!imageBase64) { showError("Sube una imagen primero 👆"); return; }
 
-  errorBox.textContent="";
-  loading.textContent="Procesando imagen...";
+  btn.textContent = "Analizando...";
+  btn.classList.add("loading");
+  btn.disabled = true;
 
-  if(!imageBase64){
-    errorBox.textContent="Sube una imagen primero";
-    loading.textContent="";
-    return;
-  }
+  try {
+    const base64 = imageBase64.split(',')[1];
 
-  try{
-
-    const base64=imageBase64.split(',')[1];
-
-    const res=await fetch(WORKER_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        messages:[{
-          role:"user",
-          content:[
-            {
-              type:"image",
-              source:{
-                type:"base64",
-                data:base64
-              }
-            },
-            {
-              type:"text",
-              text:`Analiza esta comida y responde SOLO en JSON:
-{
-"plato":"",
-"ingredientes":[],
-"proteinas":0,
-"carbos":0,
-"grasas":0,
-"calorias":0,
-"consejo":""
-}`
-            }
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", data: base64 } },
+            { type: "text", text: `Analiza esta imagen de comida.\n\nIMPORTANTE:\n- Identifica el plato correctamente\n- Lista ingredientes visibles\n- Estima porción realista\n- NO adivines cosas que no se ven\n\nResponde SOLO en JSON sin bloques de código:\n\n{"plato":"nombre específico","ingredientes":["ing1","ing2"],"proteinas":numero,"carbos":numero,"grasas":numero,"calorias":numero,"consejo":"2 oraciones"}` }
           ]
         }]
       })
     });
 
-    const data=await res.json();
+    const data = await res.json();
+    if (!data) throw new Error("Sin respuesta del servidor");
+    if (data.error) throw new Error(data.error);
+    if (!data.text) throw new Error("Respuesta vacía del servidor");
 
-    if(data.error){
-      throw new Error(data.error);
-    }
+    let text = data.text.replace(/```json|```/g, '').trim();
+    let r;
+    try { r = JSON.parse(text); }
+    catch(e) { console.error(text); throw new Error("JSON inválido en la respuesta"); }
 
-    if(!data.text){
-      throw new Error("Sin respuesta");
-    }
+    showResult(r);
+    saveToHistory(r, imageBase64);
 
-    let clean = data.text.replace(/```json|```/g,'').trim();
-    let r = JSON.parse(clean);
-
-    document.getElementById("result").style.display="grid";
-
-    document.getElementById("dish").textContent=r.plato||"";
-    document.getElementById("ing").textContent=(r.ingredientes||[]).join(", ");
-    document.getElementById("cal").textContent=r.calorias||0;
-    document.getElementById("prot").textContent=r.proteinas||0;
-    document.getElementById("carb").textContent=r.carbos||0;
-    document.getElementById("fat").textContent=r.grasas||0;
-    document.getElementById("adv").textContent=r.consejo||"";
-
-  }catch(err){
-    errorBox.textContent="Error: "+err.message;
-    console.error(err);
-  }finally{
-    loading.textContent="";
+  } catch(err) {
+    showError("Error: " + err.message);
+  } finally {
+    btn.textContent = "Analizar comida";
+    btn.classList.remove("loading");
+    btn.disabled = false;
   }
-
 }
 
-</script>
+function showResult(r) {
+  document.getElementById("dishName").textContent = r.plato || "Desconocido";
+  document.getElementById("calNum").textContent   = r.calorias || 0;
+  document.getElementById("protVal").textContent  = r.proteinas || 0;
+  document.getElementById("carbVal").textContent  = r.carbos || 0;
+  document.getElementById("fatVal").textContent   = r.grasas || 0;
+  document.getElementById("consejo").textContent  = r.consejo || "";
 
+  const tags = document.getElementById("ingTags");
+  tags.innerHTML = "";
+  (r.ingredientes || []).forEach(ing => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = ing;
+    tags.appendChild(t);
+  });
+
+  const card = document.getElementById("resultCard");
+  card.style.display = "block";
+  setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
+}
+
+function showError(msg) {
+  const box = document.getElementById("errorBox");
+  box.textContent = msg;
+  box.style.display = "block";
+}
+
+function saveToHistory(r, img) {
+  const entry = {
+    id: Date.now(),
+    date: new Date().toLocaleString('es-CO', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }),
+    plato: r.plato, calorias: r.calorias,
+    proteinas: r.proteinas, carbos: r.carbos, grasas: r.grasas,
+    ingredientes: r.ingredientes, consejo: r.consejo, img
+  };
+  history.unshift(entry);
+  if (history.length > 20) history = history.slice(0, 20);
+  try { localStorage.setItem('nutrilent_history', JSON.stringify(history)); } catch(e){}
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  if (!history.length) {
+    list.innerHTML = '<div class="history-empty">Sin análisis aún — ¡sube tu primera comida!</div>';
+    return;
+  }
+  list.innerHTML = "";
+  const ul = document.createElement("div");
+  ul.className = "history-list";
+  history.forEach(entry => {
+    const item = document.createElement("div");
+    item.className = "history-item";
+    item.innerHTML = `
+      <img class="history-thumb" src="${entry.img}" alt="${entry.plato}">
+      <div>
+        <div class="history-dish">${entry.plato}</div>
+        <div class="history-meta">${entry.date} &nbsp;·&nbsp; 🥩${entry.proteinas}g &nbsp;🌾${entry.carbos}g &nbsp;🫒${entry.grasas}g</div>
+      </div>
+      <div class="history-kcal">${entry.calorias}<span>kcal</span></div>
+    `;
+    item.onclick = () => showResult(entry);
+    ul.appendChild(item);
+  });
+  list.appendChild(ul);
+}
+
+function clearHistory() {
+  if (!confirm("¿Borrar todo el historial?")) return;
+  history = [];
+  try { localStorage.removeItem('nutrilent_history'); } catch(e){}
+  renderHistory();
+}
+
+renderHistory();
+</script>
 </body>
 </html>
