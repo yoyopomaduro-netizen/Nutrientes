@@ -5,116 +5,161 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NutriLent AI</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
 <style>
 body{
   margin:0;
-  background:#0b0b0b;
-  color:white;
-  font-family:Arial;
+  background:#080808;
+  color:#eee;
+  font-family:'DM Sans',sans-serif;
+}
+
+.header{
+  padding:40px 20px;
+}
+.header h1{
+  font-family:'Syne',sans-serif;
+  font-size:34px;
+}
+.header em{color:#b8f050;}
+
+.container{padding:15px;}
+
+.scan-box{
+  background:#111;
+  border-radius:20px;
+  padding:15px;
   text-align:center;
 }
-.container{
-  max-width:420px;
-  margin:auto;
-  padding:20px;
-}
+
 img{
   width:100%;
   border-radius:12px;
-}
-button{
-  margin:10px;
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
-.primary{background:#b8f050;color:#000;}
-.card{
-  background:#141414;
-  padding:20px;
-  border-radius:12px;
-  margin-top:15px;
-  text-align:left;
-}
-.error{
-  color:#ff6b6b;
   margin-top:10px;
 }
+
+button{
+  margin-top:10px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:12px;
+  background:#b8f050;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.card{
+  background:#111;
+  border-radius:16px;
+  padding:15px;
+  margin-top:12px;
+}
+
+.label{color:#888;font-size:12px;}
+.big{font-size:26px;font-weight:bold;}
+
+.error{color:#ff6b6b;margin-top:10px;}
 </style>
 </head>
 
 <body>
 
+<div class="header">
+  <h1>Come inteligente <em>.</em></h1>
+</div>
+
 <div class="container">
 
-<h2>NutriLent AI</h2>
+<div class="scan-box">
 
 <input type="file" id="file" accept="image/*">
 
 <img id="preview" style="display:none"/>
 
-<br>
-
-<button class="primary" onclick="analyze()">Analizar</button>
+<button onclick="analyze()">Analizar plato</button>
 
 <div id="error" class="error"></div>
 
-<div id="result" class="card" style="display:none">
-  <h3 id="dish"></h3>
-  <p><b>Ingredientes:</b> <span id="ing"></span></p>
-  <p>🔥 <span id="cal"></span> kcal</p>
-  <p>🥩 Proteínas: <span id="prot"></span> g</p>
-  <p>🌾 Carbos: <span id="carb"></span> g</p>
-  <p>🫒 Grasas: <span id="fat"></span> g</p>
-  <p id="adv"></p>
+</div>
+
+<div id="result" style="display:none">
+
+<div class="card">
+  <div class="label">Plato</div>
+  <div class="big" id="dish"></div>
+</div>
+
+<div class="card">
+  <div class="label">Ingredientes</div>
+  <div id="ing"></div>
+</div>
+
+<div class="card">
+  <div class="label">Calorías</div>
+  <div class="big" id="cal"></div>
+</div>
+
+<div class="card">
+  <div>🥩 Proteínas: <span id="prot"></span> g</div>
+  <div>🌾 Carbos: <span id="carb"></span> g</div>
+  <div>🫒 Grasas: <span id="fat"></span> g</div>
+</div>
+
+<div class="card">
+  <div class="label">Consejo</div>
+  <div id="adv"></div>
+</div>
+
 </div>
 
 </div>
 
 <script>
 
-const WORKER_URL = "https://nutrientes.yoyopomaduro.workers.dev/api/chat";
+const WORKER_URL="https://nutrientes.yoyopomaduro.workers.dev/api/chat";
 
-let imageBase64 = null;
+let imageBase64=null;
 
-// PREVIEW
-document.getElementById("file").addEventListener("change", e=>{
-  const file = e.target.files[0];
-  if(!file) return;
+// preview
+document.getElementById("file").addEventListener("change",e=>{
+  const file=e.target.files[0];
+  if(!file)return;
 
-  const reader = new FileReader();
-  reader.onload = ev=>{
-    imageBase64 = ev.target.result;
-    const img = document.getElementById("preview");
-    img.src = imageBase64;
-    img.style.display = "block";
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    imageBase64=ev.target.result;
+    const img=document.getElementById("preview");
+    img.src=imageBase64;
+    img.style.display="block";
   };
   reader.readAsDataURL(file);
 });
 
 
-// ANALYZE
+// analyze PRO
 async function analyze(){
 
-  const errorBox = document.getElementById("error");
-  errorBox.textContent = "";
+  const errorBox=document.getElementById("error");
+  errorBox.textContent="";
 
   if(!imageBase64){
-    errorBox.textContent = "Sube una imagen primero";
+    errorBox.textContent="Sube una imagen primero";
     return;
   }
 
   try{
 
-    const base64 = imageBase64.split(',')[1];
+    const base64=imageBase64.split(',')[1];
 
-    const res = await fetch(WORKER_URL,{
+    const res=await fetch(WORKER_URL,{
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
         model:"claude-sonnet-4-20250514",
-        max_tokens:600,
+        max_tokens:700,
         messages:[{
           role:"user",
           content:[
@@ -134,18 +179,18 @@ IMPORTANTE:
 - Identifica el plato correctamente (no genérico)
 - Lista ingredientes visibles
 - Estima porción realista
-- NO adivines cosas que no se ven
+- No inventes alimentos
 
 Responde SOLO en JSON:
 
 {
-  "plato": "nombre específico",
-  "ingredientes": ["ingrediente1","ingrediente2"],
-  "proteinas": numero,
-  "carbos": numero,
-  "grasas": numero,
-  "calorias": numero,
-  "consejo": "2 oraciones"
+  "plato":"nombre específico",
+  "ingredientes":["ingrediente1","ingrediente2"],
+  "proteinas":numero,
+  "carbos":numero,
+  "grasas":numero,
+  "calorias":numero,
+  "consejo":"2 oraciones"
 }`
             }
           ]
@@ -153,45 +198,46 @@ Responde SOLO en JSON:
       })
     });
 
-    const data = await res.json();
+    const data=await res.json();
 
     // VALIDACIÓN PRO
-    if (!data) throw new Error("Sin respuesta");
-    if (data.error) throw new Error(data.error.message);
-    if (!data.content || !Array.isArray(data.content)) {
+    if(!data) throw new Error("Sin respuesta del servidor");
+    if(data.error) throw new Error(data.error.message);
+
+    if(!data.content || !Array.isArray(data.content)){
       console.error(data);
       throw new Error("Respuesta inválida de IA");
     }
 
-    let text = data.content
-      .map(i => i?.text || '')
+    let text=data.content
+      .map(i=>i?.text||'')
       .join('')
-      .replace(/```json|```/g, '')
+      .replace(/```json|```/g,'')
       .trim();
 
-    if (!text) throw new Error("IA vacía");
+    if(!text) throw new Error("IA vacía");
 
     let r;
-    try {
-      r = JSON.parse(text);
-    } catch(e){
+    try{
+      r=JSON.parse(text);
+    }catch(e){
       console.error(text);
       throw new Error("JSON inválido");
     }
 
-    // MOSTRAR RESULTADO
-    document.getElementById("result").style.display = "block";
+    // render
+    document.getElementById("result").style.display="block";
 
-    document.getElementById("dish").textContent = r.plato || "Desconocido";
-    document.getElementById("ing").textContent = (r.ingredientes || []).join(", ");
-    document.getElementById("cal").textContent = r.calorias || 0;
-    document.getElementById("prot").textContent = r.proteinas || 0;
-    document.getElementById("carb").textContent = r.carbos || 0;
-    document.getElementById("fat").textContent = r.grasas || 0;
-    document.getElementById("adv").textContent = r.consejo || "";
+    document.getElementById("dish").textContent=r.plato||"Desconocido";
+    document.getElementById("ing").textContent=(r.ingredientes||[]).join(", ");
+    document.getElementById("cal").textContent=r.calorias||0;
+    document.getElementById("prot").textContent=r.proteinas||0;
+    document.getElementById("carb").textContent=r.carbos||0;
+    document.getElementById("fat").textContent=r.grasas||0;
+    document.getElementById("adv").textContent=r.consejo||"";
 
   }catch(err){
-    errorBox.textContent = "Error: " + err.message;
+    errorBox.textContent="Error: "+err.message;
   }
 
 }
