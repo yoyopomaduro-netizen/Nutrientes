@@ -1,40 +1,152 @@
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NutriLent PRO</title>
 
-    // Proxy para Anthropic
-    if (url.pathname === '/api/chat') {
-      const body = await request.json();
+<style>
+:root{
+  --bg:#080808;
+  --surface:#111;
+  --accent:#b8f050;
+  --text:#eee;
+  --muted:#777;
+}
+body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+.header{padding:30px 20px;}
+.header h1{font-size:32px;margin:0;}
+.tab-bar{display:flex;gap:4px;padding:0 10px;}
+.tab{flex:1;padding:12px;text-align:center;border-radius:10px;color:var(--muted);cursor:pointer;}
+.tab.active{background:#1a1a1a;color:var(--accent);}
+.screen{display:none;padding:20px;}
+.screen.active{display:block;}
+.btn{padding:12px;border-radius:10px;border:none;background:var(--surface);color:white;cursor:pointer;margin:5px;}
+.btn-main{background:var(--accent);color:#000;font-weight:bold;}
+.preview{max-width:100%;border-radius:10px;margin-top:10px;}
+.card{background:var(--surface);padding:15px;border-radius:12px;margin-top:10px;}
+</style>
+</head>
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': env.ANTHROPIC_API_KEY,  // variable de entorno en el Worker
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify(body),
-      });
+<body>
 
-      const data = await response.json();
+<div class="header">
+  <h1>NutriLent <span style="color:var(--accent)">PRO</span></h1>
+</div>
 
-      return new Response(JSON.stringify(data), {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',  // CORS abierto
-        },
-      });
-    }
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('scan')">Escanear</div>
+  <div class="tab" onclick="switchTab('goals')">Metas</div>
+  <div class="tab" onclick="switchTab('history')">Historial</div>
+</div>
 
-    // Manejo de preflight OPTIONS
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      });
-    }
-  }
-};
+<div id="screen-scan" class="screen active">
+  <button class="btn" onclick="openCamera()">📷 Cámara</button>
+  <button class="btn" onclick="fileInput.click()">🖼 Galería</button>
+  <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="loadFile(event)">
+
+  <video id="video" autoplay style="display:none;width:100%;border-radius:10px"></video>
+  <canvas id="canvas" style="display:none"></canvas>
+  <img id="preview" class="preview" style="display:none"/>
+
+  <br>
+  <button class="btn" onclick="capturePhoto()">Capturar</button>
+  <button class="btn btn-main" onclick="analyze()">Analizar</button>
+
+  <div id="result" class="card" style="display:none"></div>
+</div>
+
+<div id="screen-goals" class="screen">
+  <input id="g-name" class="btn" placeholder="Nombre"><br>
+  <input id="g-weight" class="btn" placeholder="Peso"><br>
+  <input id="g-cal" class="btn" placeholder="Calorías"><br>
+  <button class="btn-main btn" onclick="saveGoals()">Guardar</button>
+</div>
+
+<div id="screen-history" class="screen">
+  <div id="history"></div>
+</div>
+
+<script>
+let capturedImage=null;
+let stream=null;
+let history=JSON.parse(localStorage.getItem('history')||'[]');
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>
+    t.classList.toggle('active',['scan','goals','history'][i]===tab)
+  );
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
+  if(tab==='history') renderHistory();
+}
+
+async function openCamera(){
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:true});
+    const v=document.getElementById('video');
+    v.srcObject=stream;
+    v.style.display='block';
+  }catch(e){alert('Error cámara');}
+}
+
+function capturePhoto(){
+  const v=document.getElementById('video');
+  if(!v.srcObject) return;
+  const c=document.getElementById('canvas');
+  c.width=v.videoWidth;
+  c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  capturedImage=c.toDataURL('image/jpeg');
+  const img=document.getElementById('preview');
+  img.src=capturedImage;
+  img.style.display='block';
+  stopCamera();
+}
+
+function stopCamera(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  document.getElementById('video').style.display='none';
+}
+
+function loadFile(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    capturedImage=ev.target.result;
+    const img=document.getElementById('preview');
+    img.src=capturedImage;
+    img.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function analyze(){
+  if(!capturedImage){alert('Sube imagen');return;}
+  const r={plato:'Comida detectada',calorias:Math.floor(Math.random()*600+300)};
+  history.unshift(r);
+  localStorage.setItem('history',JSON.stringify(history));
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').innerHTML=`<b>${r.plato}</b><br>${r.calorias} kcal`;
+}
+
+function saveGoals(){
+  const data={
+    name:document.getElementById('g-name').value,
+    weight:document.getElementById('g-weight').value,
+    cal:document.getElementById('g-cal').value
+  };
+  localStorage.setItem('goals',JSON.stringify(data));
+  alert('Guardado');
+}
+
+function renderHistory(){
+  const c=document.getElementById('history');
+  if(!history.length){c.innerHTML='Sin datos';return;}
+  c.innerHTML=history.map(h=>`<div class='card'>${h.plato}<br>${h.calorias} kcal</div>`).join('');
+}
+</script>
+
+</body>
+</html>
