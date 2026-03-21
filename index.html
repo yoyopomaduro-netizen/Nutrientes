@@ -6,18 +6,33 @@
 <title>NutriLent PRO</title>
 
 <style>
-body{margin:0;font-family:sans-serif;background:#0b0b0b;color:white;}
-.tab-bar{display:flex;background:#111;}
-.tab{flex:1;padding:12px;text-align:center;cursor:pointer;color:#aaa;}
-.tab.active{color:#b8f050;background:#1a1a1a;}
+:root{
+  --bg:#080808;
+  --surface:#111;
+  --accent:#b8f050;
+  --text:#eee;
+  --muted:#777;
+}
+body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+.header{padding:30px 20px;}
+.header h1{font-size:32px;margin:0;}
+.tab-bar{display:flex;gap:4px;padding:0 10px;}
+.tab{flex:1;padding:12px;text-align:center;border-radius:10px;color:var(--muted);cursor:pointer;}
+.tab.active{background:#1a1a1a;color:var(--accent);}
 .screen{display:none;padding:20px;}
 .screen.active{display:block;}
-button{padding:10px;margin:5px;cursor:pointer;}
-img{max-width:100%;}
+.btn{padding:12px;border-radius:10px;border:none;background:var(--surface);color:white;cursor:pointer;margin:5px;}
+.btn-main{background:var(--accent);color:#000;font-weight:bold;}
+.preview{max-width:100%;border-radius:10px;margin-top:10px;}
+.card{background:var(--surface);padding:15px;border-radius:12px;margin-top:10px;}
 </style>
 </head>
 
 <body>
+
+<div class="header">
+  <h1>NutriLent <span style="color:var(--accent)">PRO</span></h1>
+</div>
 
 <div class="tab-bar">
   <div class="tab active" onclick="switchTab('scan')">Escanear</div>
@@ -26,29 +41,29 @@ img{max-width:100%;}
 </div>
 
 <div id="screen-scan" class="screen active">
-  <h2>Escanear</h2>
-  <button onclick="openCamera()">Cámara</button>
-  <button onclick="fileInput.click()">Galería</button>
+  <button class="btn" onclick="openCamera()">📷 Cámara</button>
+  <button class="btn" onclick="fileInput.click()">🖼 Galería</button>
   <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="loadFile(event)">
-  <br><br>
-  <video id="video" autoplay style="display:none"></video>
+
+  <video id="video" autoplay style="display:none;width:100%;border-radius:10px"></video>
   <canvas id="canvas" style="display:none"></canvas>
-  <img id="preview" style="display:none"/>
+  <img id="preview" class="preview" style="display:none"/>
+
   <br>
-  <button onclick="capturePhoto()">Capturar</button>
-  <button onclick="analyze()">Analizar</button>
+  <button class="btn" onclick="capturePhoto()">Capturar</button>
+  <button class="btn btn-main" onclick="analyze()">Analizar</button>
+
+  <div id="result" class="card" style="display:none"></div>
 </div>
 
 <div id="screen-goals" class="screen">
-  <h2>Metas</h2>
-  <input id="g-name" placeholder="Nombre"><br>
-  <input id="g-weight" placeholder="Peso"><br>
-  <input id="g-cal" placeholder="Calorías"><br>
-  <button onclick="saveGoals()">Guardar</button>
+  <input id="g-name" class="btn" placeholder="Nombre"><br>
+  <input id="g-weight" class="btn" placeholder="Peso"><br>
+  <input id="g-cal" class="btn" placeholder="Calorías"><br>
+  <button class="btn-main btn" onclick="saveGoals()">Guardar</button>
 </div>
 
 <div id="screen-history" class="screen">
-  <h2>Historial</h2>
   <div id="history"></div>
 </div>
 
@@ -57,89 +72,65 @@ let capturedImage=null;
 let stream=null;
 let history=JSON.parse(localStorage.getItem('history')||'[]');
 
-/* ---------- TABS ---------- */
 function switchTab(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('active',['scan','goals','history'][i]===tab);
-  });
+  document.querySelectorAll('.tab').forEach((t,i)=>
+    t.classList.toggle('active',['scan','goals','history'][i]===tab)
+  );
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+tab).classList.add('active');
   if(tab==='history') renderHistory();
 }
 
-/* ---------- CÁMARA ---------- */
 async function openCamera(){
   try{
     stream=await navigator.mediaDevices.getUserMedia({video:true});
     const v=document.getElementById('video');
     v.srcObject=stream;
     v.style.display='block';
-  }catch(e){
-    alert("No se pudo abrir cámara");
-  }
+  }catch(e){alert('Error cámara');}
 }
 
 function capturePhoto(){
   const v=document.getElementById('video');
   if(!v.srcObject) return;
-
   const c=document.getElementById('canvas');
   c.width=v.videoWidth;
   c.height=v.videoHeight;
   c.getContext('2d').drawImage(v,0,0);
-
-  capturedImage=c.toDataURL("image/jpeg");
-  document.getElementById('preview').src=capturedImage;
-  document.getElementById('preview').style.display='block';
-
+  capturedImage=c.toDataURL('image/jpeg');
+  const img=document.getElementById('preview');
+  img.src=capturedImage;
+  img.style.display='block';
   stopCamera();
 }
 
 function stopCamera(){
-  if(stream){
-    stream.getTracks().forEach(t=>t.stop());
-    stream=null;
-  }
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
   document.getElementById('video').style.display='none';
 }
 
-/* ---------- CARGAR IMAGEN (ARREGLADO) ---------- */
 function loadFile(e){
   const file=e.target.files[0];
   if(!file) return;
-
   const reader=new FileReader();
-
   reader.onload=function(ev){
     capturedImage=ev.target.result;
-
     const img=document.getElementById('preview');
     img.src=capturedImage;
     img.style.display='block';
   };
-
   reader.readAsDataURL(file);
 }
 
-/* ---------- ANALIZAR (SIMULADO) ---------- */
 function analyze(){
-  if(!capturedImage){
-    alert("Carga una imagen primero");
-    return;
-  }
-
-  const result={
-    plato:"Plato detectado",
-    calorias:Math.floor(Math.random()*700+300)
-  };
-
-  history.unshift(result);
+  if(!capturedImage){alert('Sube imagen');return;}
+  const r={plato:'Comida detectada',calorias:Math.floor(Math.random()*600+300)};
+  history.unshift(r);
   localStorage.setItem('history',JSON.stringify(history));
-
-  alert("Análisis completado");
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').innerHTML=`<b>${r.plato}</b><br>${r.calorias} kcal`;
 }
 
-/* ---------- METAS ---------- */
 function saveGoals(){
   const data={
     name:document.getElementById('g-name').value,
@@ -147,23 +138,13 @@ function saveGoals(){
     cal:document.getElementById('g-cal').value
   };
   localStorage.setItem('goals',JSON.stringify(data));
-  alert("Guardado");
+  alert('Guardado');
 }
 
-/* ---------- HISTORIAL ---------- */
 function renderHistory(){
-  const container=document.getElementById('history');
-
-  if(history.length===0){
-    container.innerHTML="Sin datos";
-    return;
-  }
-
-  container.innerHTML=history.map(h=>`
-    <div style="background:#111;margin:10px;padding:10px">
-      ${h.plato} - ${h.calorias} kcal
-    </div>
-  `).join('');
+  const c=document.getElementById('history');
+  if(!history.length){c.innerHTML='Sin datos';return;}
+  c.innerHTML=history.map(h=>`<div class='card'>${h.plato}<br>${h.calorias} kcal</div>`).join('');
 }
 </script>
 
