@@ -1,45 +1,34 @@
 export default {
-  async fetch(request, env) {
-    if (request.method !== "POST") {
-      return new Response("Método no permitido", { status: 405 });
-    }
-
+  async fetch(req) {
     try {
-      const body = await request.json();
+      if (req.method !== "POST") {
+        return new Response("Método no permitido", { status: 405 });
+      }
+
+      const body = await req.json();
 
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
+          "Authorization": `Bearer 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`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: "Eres un nutricionista experto. Responde SOLO en JSON válido."
-            },
-            {
-              role: "user",
-              content: body.messages[0].content
-            }
-          ],
-          max_tokens: 500
+          messages: body.messages,
+          max_tokens: 400
         })
       });
 
       const data = await response.json();
 
-      return new Response(JSON.stringify({
-        content: [{ text: data.choices[0].message.content }]
-      }), {
+      return new Response(JSON.stringify(data), {
         headers: { "Content-Type": "application/json" }
       });
 
     } catch (err) {
       return new Response(JSON.stringify({
-        error: { message: err.message }
+        error: err.message
       }), { status: 500 });
     }
   }
