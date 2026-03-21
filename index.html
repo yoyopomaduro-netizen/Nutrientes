@@ -130,8 +130,52 @@ function loadFile(e){
   reader.readAsDataURL(file);
 }
 
-function analyze(){
+async function analyze(){
   if(!capturedImage){alert('Sube imagen');return;}
+
+  const resultBox = document.getElementById('result');
+  resultBox.style.display='block';
+  resultBox.innerHTML = 'Analizando...';
+
+  try{
+    const base64 = capturedImage.split(',')[1];
+    const mediaType = capturedImage.split(';')[0].split(':')[1];
+
+    const res = await fetch('https://nutrientes.yoyopomaduro.workers.dev/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        messages:[{
+          role:'user',
+          content:[
+            {type:'image', source:{type:'base64', media_type:mediaType, data:base64}},
+            {type:'text', text:`Analiza esta imagen de comida.\n\nDevuelve SOLO JSON válido sin texto adicional:\n\n{\n"plato":"nombre del plato",\n"proteinas":numero,\n"carbos":numero,\n"grasas":numero,\n"calorias":numero,\n"consejo":"breve consejo"\n}`}
+          ]
+        }],
+        max_tokens:400
+      })
+    });
+
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+
+    let text = data.content[0].text.replace(/```json|```/g,'').trim();
+    const r = JSON.parse(text);
+
+    history.unshift(r);
+    localStorage.setItem('history',JSON.stringify(history));
+
+    resultBox.innerHTML = `
+      <h3>${r.plato}</h3>
+      <p>🔥 ${r.calorias} kcal</p>
+      <p>🥩 ${r.proteinas}g proteína</p>
+      <p>🌾 ${r.carbos}g carbos</p>
+      <p>🫒 ${r.grasas}g grasas</p>
+      <p style="color:#aaa;font-size:13px;">${r.consejo}</p>
+    `;
+
+  }catch(err){
+    resultBox.in
 
   const r = platosDemo[Math.floor(Math.random()*platosDemo.length)];
 
