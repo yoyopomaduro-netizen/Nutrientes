@@ -3,17 +3,17 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": "Content-Type, x-api-key",
     };
 
-    // Preflight CORS
+    // 1. Manejo de Preflight CORS
     if (req.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    // Health check
+    // 2. Health check rápido
     if (req.method === "GET") {
-      return new Response("NutriLent API funcionando 🚀", { headers: corsHeaders });
+      return new Response("NutriLent API funcionando 🚀", { status: 200, headers: corsHeaders });
     }
 
     if (req.method !== "POST") {
@@ -23,8 +23,9 @@ export default {
     try {
       const body = await req.json();
 
-      if (!body.messages || !Array.isArray(body.messages)) {
-        return new Response(JSON.stringify({ error: "messages requerido" }), {
+      // Validación de mensajes
+      if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
+        return new Response(JSON.stringify({ error: "Formato de mensajes inválido" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
@@ -34,23 +35,29 @@ export default {
       let mediaType = "image/jpeg";
       let promptText = "";
 
-      for (const part of userMessage.content) {
-        if (part.type === "image") {
-          base64Image = part.source.data;
-          mediaType = part.source.media_type || "image/jpeg";
+      // Extraer texto e imagen del contenido
+      if (Array.isArray(userMessage.content)) {
+        for (const part of userMessage.content) {
+          if (part.type === "image") {
+            base64Image = part.source.data;
+            mediaType = part.source.media_type || "image/jpeg";
+          }
+          if (part.type === "text") {
+            promptText = part.text;
+          }
         }
-        if (part.type === "text") {
-          promptText = part.text;
-        }
+      } else {
+        // Soporte básico por si envían solo texto
+        promptText = userMessage.content;
       }
 
       if (!base64Image) {
-        return new Response(JSON.stringify({ error: "Imagen no enviada" }), {
+        return new Response(JSON.stringify({ error: "No se encontró la imagen en la solicitud" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
-      // Llamada a Anthropic
+      // 3. Llamada a Anthropic (Modelo corregido y optimizado)
       const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -59,7 +66,7 @@ export default {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
+          model: "claude-3-haiku-20240307", // <--- MODELO CORRECTO PARA TUS $5
           max_tokens: 700,
           messages: [{
             role: "user",
@@ -70,7 +77,7 @@ export default {
               },
               {
                 type: "text",
-                text: promptText
+                text: promptText || "Analiza nutricionalmente esta imagen." 
               }
             ]
           }]
@@ -79,26 +86,31 @@ export default {
 
       const data = await anthropicRes.json();
 
+      // 4. Manejo de errores detallado de la API de Anthropic
       if (!anthropicRes.ok) {
-        return new Response(JSON.stringify({ error: data.error?.message || "Error de Anthropic" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
+        let errorMessage = data.error?.message || "Error desconocido en Anthropic";
+        
+        // Si el error es por falta de créditos, lo notificamos claro
+        if (anthropicRes.status === 400 && errorMessage.includes("credit balance")) {
+          errorMessage = "Saldo insuficiente en Anthropic. Por favor, recarga tu cuenta.";
+        }
+
+        return new Response(JSON.stringify({ error: errorMessage }), {
+          status: anthropicRes.status, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
+      // 5. Respuesta exitosa
       const text = data.content?.[0]?.text || "";
 
-      if (!text) {
-        return new Response(JSON.stringify({ error: "Respuesta vacía de la IA" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      }
-
       return new Response(JSON.stringify({ text }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
 
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), {
+      return new Response(JSON.stringify({ error: "Error interno del Worker: " + err.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
