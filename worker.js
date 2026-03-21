@@ -1,27 +1,46 @@
 export default {
   async fetch(req, env) {
+
+    // 🌐 Headers CORS
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    };
+
+    // ✅ Manejo preflight (CLAVE)
+    if (req.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders
+      });
+    }
+
     try {
       const url = new URL(req.url);
 
-      // ✅ HEALTH CHECK (evita errores en navegador)
+      // ✅ GET (health check)
       if (req.method === "GET") {
         return new Response("NutriLent API funcionando 🚀", {
-          headers: { "Content-Type": "text/plain" }
+          headers: corsHeaders
         });
       }
 
-      // ❌ Solo POST permitido para análisis
+      // ❌ Solo POST
       if (req.method !== "POST") {
-        return new Response("Método no permitido", { status: 405 });
+        return new Response("Método no permitido", {
+          status: 405,
+          headers: corsHeaders
+        });
       }
 
       const body = await req.json();
 
-      if (!body.messages || !Array.isArray(body.messages)) {
-        return new Response(
-          JSON.stringify({ error: "messages requerido" }),
-          { status: 400 }
-        );
+      if (!body.messages) {
+        return new Response(JSON.stringify({ error: "messages requerido" }), {
+          status: 400,
+          headers: corsHeaders
+        });
       }
 
       const userMessage = body.messages[0];
@@ -30,7 +49,7 @@ export default {
       let promptText = "";
 
       for (const part of userMessage.content) {
-        if (part.type === "image" && part.source?.data) {
+        if (part.type === "image") {
           base64Image = part.source.data;
         }
         if (part.type === "text") {
@@ -39,13 +58,12 @@ export default {
       }
 
       if (!base64Image) {
-        return new Response(
-          JSON.stringify({ error: "Imagen no enviada" }),
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ error: "Imagen no enviada" }), {
+          status: 400,
+          headers: corsHeaders
+        });
       }
 
-      // ✅ Llamada a OpenAI con visión
       const openaiResponse = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
@@ -75,42 +93,31 @@ export default {
 
       const data = await openaiResponse.json();
 
-      if (!openaiResponse.ok) {
-        return new Response(JSON.stringify(data), {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      // ✅ Extraer texto limpio de la respuesta
       let text = "";
 
       if (data.output) {
         text = data.output
           .map(o =>
-            o.content
-              ?.map(c => c.text || "")
-              .join("")
+            o.content?.map(c => c.text || "").join("")
           )
           .join("");
       }
 
-      // Responder al frontend
-      return new Response(
-        JSON.stringify({ text }),
-        {
-          headers: { "Content-Type": "application/json" }
+      return new Response(JSON.stringify({ text }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
         }
-      );
+      });
 
     } catch (err) {
-      return new Response(
-        JSON.stringify({ error: err.message }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
         }
-      );
+      });
     }
   }
 };
