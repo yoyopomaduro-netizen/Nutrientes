@@ -4,89 +4,147 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NutriLent</title>
+
+<style>
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#0b0b0b;
+  color:white;
+}
+.tab-bar{
+  display:flex;
+  background:#111;
+}
+.tab{
+  flex:1;
+  padding:12px;
+  text-align:center;
+  cursor:pointer;
+  color:#aaa;
+}
+.tab.active{
+  color:#b8f050;
+  background:#1a1a1a;
+}
+.screen{display:none;padding:20px;}
+.screen.active{display:block;}
+button{padding:10px;margin:5px;}
+</style>
+
 </head>
 <body>
 
-<div id="toast" class="toast"></div>
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('scan')">Escanear</div>
+  <div class="tab" onclick="switchTab('goals')">Metas</div>
+  <div class="tab" onclick="switchTab('history')">Historial</div>
+</div>
+
+<div id="screen-scan" class="screen active">
+  <h2>Escanear</h2>
+  <button onclick="openCamera()">Abrir cámara</button>
+  <button onclick="document.getElementById('file').click()">Subir imagen</button>
+  <input type="file" id="file" accept="image/*" style="display:none" onchange="loadFile(event)">
+  <br><br>
+  <img id="preview" style="max-width:100%;display:none"/>
+  <br>
+  <button onclick="analyze()">Analizar</button>
+</div>
+
+<div id="screen-goals" class="screen">
+  <h2>Metas</h2>
+  <input id="name" placeholder="Nombre"><br>
+  <input id="weight" placeholder="Peso"><br>
+  <button onclick="saveGoals()">Guardar</button>
+</div>
+
+<div id="screen-history" class="screen">
+  <h2>Historial</h2>
+  <div id="history"></div>
+</div>
 
 <script>
-// ===== VARIABLES =====
-let capturedImage = null;
-let stream = null;
-let facingMode = 'environment';
+let capturedImage=null;
+let history=[];
 
-// ===== FUNCIONES BASE =====
-function toast(msg, isErr=false){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (isErr ? ' err' : '');
-  setTimeout(()=>t.classList.add('on'),10);
-  setTimeout(()=>t.classList.remove('on'),3000);
-}
-
+/* ---------- TABS ---------- */
 function switchTab(tab){
-  console.log('Cambio de tab:', tab);
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',['scan','goals','history'][i]===tab);
+  });
+
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
 }
 
-// ===== CÁMARA =====
-async function openCamera(){
-  try{
-    if(stream) stopStream();
-    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode}});
-    const v = document.getElementById('video-el');
-    if(v){
-      v.srcObject = stream;
-      v.style.display = 'block';
-    }
-  }catch(e){
-    toast('Error cámara', true);
-  }
+/* ---------- CÁMARA (simple) ---------- */
+function openCamera(){
+  alert("Cámara no implementada en esta versión básica");
 }
 
-function stopStream(){
-  if(stream){
-    stream.getTracks().forEach(t=>t.stop());
-    stream = null;
-  }
-}
-
-// ===== ARCHIVO =====
+/* ---------- CARGAR IMAGEN ---------- */
 function loadFile(e){
-  const file = e.target.files[0];
+  const file=e.target.files[0];
   if(!file) return;
 
-  const reader = new FileReader();
+  const reader=new FileReader();
 
-  reader.onload = (ev) => {
-    capturedImage = ev.target.result;
-    stopStream();
+  reader.onload=function(ev){
+    capturedImage=ev.target.result;
 
-    const img = document.getElementById('preview-img');
-    if(img){
-      img.src = capturedImage;
-      img.style.display = 'block';
-    }
-
-    toast('Imagen cargada ✓');
+    const img=document.getElementById('preview');
+    img.src=capturedImage;
+    img.style.display='block';
   };
 
   reader.readAsDataURL(file);
 }
 
-// ===== ANALYSIS MOCK =====
-async function analyze(){
+/* ---------- ANALIZAR (mock) ---------- */
+function analyze(){
   if(!capturedImage){
-    toast('No hay imagen', true);
+    alert("Carga una imagen primero");
     return;
   }
 
-  toast('Analizando...');
+  const result={
+    plato:"Plato detectado",
+    calorias:500
+  };
 
-  setTimeout(()=>{
-    toast('Análisis completado ✓');
-  },1500);
+  history.unshift(result);
+  renderHistory();
+
+  alert("Análisis listo (demo)");
 }
 
+/* ---------- GUARDAR METAS ---------- */
+function saveGoals(){
+  const data={
+    name:document.getElementById('name').value,
+    weight:document.getElementById('weight').value
+  };
+
+  localStorage.setItem('goals',JSON.stringify(data));
+  alert("Guardado");
+}
+
+/* ---------- HISTORIAL ---------- */
+function renderHistory(){
+  const container=document.getElementById('history');
+
+  if(history.length===0){
+    container.innerHTML="Sin datos";
+    return;
+  }
+
+  container.innerHTML=history.map(h=>`
+    <div style="margin:10px 0;padding:10px;background:#111">
+      ${h.plato} - ${h.calorias} kcal
+    </div>
+  `).join('');
+}
 </script>
 
 </body>
