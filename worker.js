@@ -7,15 +7,10 @@ export default {
 
       const body = await req.json();
 
-      // Validación básica
       if (!body.messages || !Array.isArray(body.messages)) {
-        return new Response(
-          JSON.stringify({ error: "messages es requerido" }),
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ error: "messages requerido" }), { status: 400 });
       }
 
-      // Extraer imagen + texto del frontend
       const userMessage = body.messages[0];
 
       let base64Image = null;
@@ -31,14 +26,10 @@ export default {
       }
 
       if (!base64Image) {
-        return new Response(
-          JSON.stringify({ error: "No se recibió imagen" }),
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ error: "Imagen no enviada" }), { status: 400 });
       }
 
-      // Llamada a OpenAI (VISION)
-      const response = await fetch("https://api.openai.com/v1/responses", {
+      const openaiResponse = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
@@ -65,25 +56,33 @@ export default {
         })
       });
 
-      const data = await response.json();
+      const data = await openaiResponse.json();
 
-      // Manejo de errores de OpenAI
-      if (!response.ok) {
-        return new Response(JSON.stringify(data), {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        });
+      if (!openaiResponse.ok) {
+        return new Response(JSON.stringify(data), { status: 500 });
       }
 
-      return new Response(JSON.stringify(data), {
+      // Extraer texto plano
+      let text = "";
+
+      if (data.output) {
+        text = data.output
+          .map(o =>
+            o.content
+              ?.map(c => c.text || "")
+              .join("")
+          )
+          .join("");
+      }
+
+      return new Response(JSON.stringify({ text }), {
         headers: { "Content-Type": "application/json" }
       });
 
     } catch (err) {
-      return new Response(
-        JSON.stringify({ error: err.message }),
-        { status: 500 }
-      );
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500
+      });
     }
   }
 };
