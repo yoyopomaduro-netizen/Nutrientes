@@ -119,7 +119,7 @@ button{
 
 <script>
 
-const WORKER_URL="https://nutrientes.yoyopomaduro.workers.dev/api/chat";
+const WORKER_URL="https://nutrientes.yoyopomaduro.workers.dev";
 
 let imageBase64=null;
 
@@ -158,7 +158,7 @@ async function analyze(){
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
+        
         max_tokens:700,
         messages:[{
           role:"user",
