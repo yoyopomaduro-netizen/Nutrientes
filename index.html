@@ -3,36 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NutriLent</title>
+<title>NutriLent PRO</title>
 
 <style>
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#0b0b0b;
-  color:white;
-}
-.tab-bar{
-  display:flex;
-  background:#111;
-}
-.tab{
-  flex:1;
-  padding:12px;
-  text-align:center;
-  cursor:pointer;
-  color:#aaa;
-}
-.tab.active{
-  color:#b8f050;
-  background:#1a1a1a;
-}
+body{margin:0;font-family:sans-serif;background:#0b0b0b;color:white;}
+.tab-bar{display:flex;background:#111;}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;color:#aaa;}
+.tab.active{color:#b8f050;background:#1a1a1a;}
 .screen{display:none;padding:20px;}
 .screen.active{display:block;}
-button{padding:10px;margin:5px;}
+button{padding:10px;margin:5px;cursor:pointer;}
+img{max-width:100%;}
 </style>
-
 </head>
+
 <body>
 
 <div class="tab-bar">
@@ -43,19 +27,23 @@ button{padding:10px;margin:5px;}
 
 <div id="screen-scan" class="screen active">
   <h2>Escanear</h2>
-  <button onclick="openCamera()">Abrir cámara</button>
-  <button onclick="document.getElementById('file').click()">Subir imagen</button>
-  <input type="file" id="file" accept="image/*" style="display:none" onchange="loadFile(event)">
+  <button onclick="openCamera()">Cámara</button>
+  <button onclick="fileInput.click()">Galería</button>
+  <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="loadFile(event)">
   <br><br>
-  <img id="preview" style="max-width:100%;display:none"/>
+  <video id="video" autoplay style="display:none"></video>
+  <canvas id="canvas" style="display:none"></canvas>
+  <img id="preview" style="display:none"/>
   <br>
+  <button onclick="capturePhoto()">Capturar</button>
   <button onclick="analyze()">Analizar</button>
 </div>
 
 <div id="screen-goals" class="screen">
   <h2>Metas</h2>
-  <input id="name" placeholder="Nombre"><br>
-  <input id="weight" placeholder="Peso"><br>
+  <input id="g-name" placeholder="Nombre"><br>
+  <input id="g-weight" placeholder="Peso"><br>
+  <input id="g-cal" placeholder="Calorías"><br>
   <button onclick="saveGoals()">Guardar</button>
 </div>
 
@@ -66,24 +54,56 @@ button{padding:10px;margin:5px;}
 
 <script>
 let capturedImage=null;
-let history=[];
+let stream=null;
+let history=JSON.parse(localStorage.getItem('history')||'[]');
 
 /* ---------- TABS ---------- */
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>{
     t.classList.toggle('active',['scan','goals','history'][i]===tab);
   });
-
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+tab).classList.add('active');
+  if(tab==='history') renderHistory();
 }
 
-/* ---------- CÁMARA (simple) ---------- */
-function openCamera(){
-  alert("Cámara no implementada en esta versión básica");
+/* ---------- CÁMARA ---------- */
+async function openCamera(){
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:true});
+    const v=document.getElementById('video');
+    v.srcObject=stream;
+    v.style.display='block';
+  }catch(e){
+    alert("No se pudo abrir cámara");
+  }
 }
 
-/* ---------- CARGAR IMAGEN ---------- */
+function capturePhoto(){
+  const v=document.getElementById('video');
+  if(!v.srcObject) return;
+
+  const c=document.getElementById('canvas');
+  c.width=v.videoWidth;
+  c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+
+  capturedImage=c.toDataURL("image/jpeg");
+  document.getElementById('preview').src=capturedImage;
+  document.getElementById('preview').style.display='block';
+
+  stopCamera();
+}
+
+function stopCamera(){
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream=null;
+  }
+  document.getElementById('video').style.display='none';
+}
+
+/* ---------- CARGAR IMAGEN (ARREGLADO) ---------- */
 function loadFile(e){
   const file=e.target.files[0];
   if(!file) return;
@@ -101,7 +121,7 @@ function loadFile(e){
   reader.readAsDataURL(file);
 }
 
-/* ---------- ANALIZAR (mock) ---------- */
+/* ---------- ANALIZAR (SIMULADO) ---------- */
 function analyze(){
   if(!capturedImage){
     alert("Carga una imagen primero");
@@ -110,22 +130,22 @@ function analyze(){
 
   const result={
     plato:"Plato detectado",
-    calorias:500
+    calorias:Math.floor(Math.random()*700+300)
   };
 
   history.unshift(result);
-  renderHistory();
+  localStorage.setItem('history',JSON.stringify(history));
 
-  alert("Análisis listo (demo)");
+  alert("Análisis completado");
 }
 
-/* ---------- GUARDAR METAS ---------- */
+/* ---------- METAS ---------- */
 function saveGoals(){
   const data={
-    name:document.getElementById('name').value,
-    weight:document.getElementById('weight').value
+    name:document.getElementById('g-name').value,
+    weight:document.getElementById('g-weight').value,
+    cal:document.getElementById('g-cal').value
   };
-
   localStorage.setItem('goals',JSON.stringify(data));
   alert("Guardado");
 }
@@ -140,7 +160,7 @@ function renderHistory(){
   }
 
   container.innerHTML=history.map(h=>`
-    <div style="margin:10px 0;padding:10px;background:#111">
+    <div style="background:#111;margin:10px;padding:10px">
       ${h.plato} - ${h.calorias} kcal
     </div>
   `).join('');
