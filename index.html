@@ -436,6 +436,7 @@ function loadFile(e){
     document.getElementById('scan-zone').classList.remove('active');
     toast('Imagen cargada ✓');
   };reader.readAsDataURL(file);
+  }
 async function analyze(correctionName=null){
   if(!capturedImage)return;
   document.getElementById('btn-analyze').classList.remove('on');
