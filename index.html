@@ -72,6 +72,14 @@ let capturedImage=null;
 let stream=null;
 let history=JSON.parse(localStorage.getItem('history')||'[]');
 
+const platosDemo = [
+  {plato:"Arroz con pollo",calorias:520},
+  {plato:"Ensalada con pollo",calorias:320},
+  {plato:"Hamburguesa",calorias:700},
+  {plato:"Pasta con salsa",calorias:600},
+  {plato:"Huevos con pan",calorias:450}
+];
+
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>
     t.classList.toggle('active',['scan','goals','history'][i]===tab)
@@ -124,11 +132,18 @@ function loadFile(e){
 
 function analyze(){
   if(!capturedImage){alert('Sube imagen');return;}
-  const r={plato:'Comida detectada',calorias:Math.floor(Math.random()*600+300)};
+
+  const r = platosDemo[Math.floor(Math.random()*platosDemo.length)];
+
   history.unshift(r);
   localStorage.setItem('history',JSON.stringify(history));
+
   document.getElementById('result').style.display='block';
-  document.getElementById('result').innerHTML=`<b>${r.plato}</b><br>${r.calorias} kcal`;
+  document.getElementById('result').innerHTML = `
+    <h3>${r.plato}</h3>
+    <p>🔥 ${r.calorias} kcal</p>
+    <p style="color:#aaa;font-size:13px;">Estimación basada en porción estándar</p>
+  `;
 }
 
 function saveGoals(){
