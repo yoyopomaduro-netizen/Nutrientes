@@ -57,7 +57,7 @@ export default {
         });
       }
 
-      // 3. Llamada a Anthropic (Modelo corregido y optimizado)
+      console.log("Llave detectada:", env.ANTHROPIC_API_KEY ? "SÍ (empieza por " + env.ANTHROPIC_API_KEY.substring(0,6) + ")" : "NO");
       const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
