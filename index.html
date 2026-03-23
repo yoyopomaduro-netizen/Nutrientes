@@ -75,50 +75,52 @@ body {
 .header h1 .green { color: var(--accent); }
 .header .sub { color: var(--muted2); font-size: 10px; margin-top: 8px; letter-spacing: 2px; }
 
-/* ── AUTH BANNER ── */
-.auth-banner {
-  margin-bottom: 20px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+/* ── AUTH INTEGRADO EN HEADER ── */
+.auth-row {
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 14px; gap: 10px;
 }
+
+/* Estado: no logueado */
 .btn-login {
-  width: 100%; padding: 14px 20px;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px;
   background: var(--surface);
-  border: 1px solid rgba(184,240,80,0.2);
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(184,240,80,0.25);
+  border-radius: 40px;
   color: var(--text);
   font-family: 'DM Mono', monospace;
-  font-size: 11px; letter-spacing: 2px;
+  font-size: 10px; letter-spacing: 1.5px;
   text-transform: uppercase;
-  cursor: pointer; display: flex;
-  align-items: center; justify-content: center; gap: 10px;
+  cursor: pointer;
   transition: all 0.2s;
 }
-.btn-login:hover { border-color: rgba(184,240,80,0.5); background: var(--surface2); }
-.btn-login .g-icon { font-size: 16px; }
+.btn-login:hover { border-color: rgba(184,240,80,0.6); background: var(--surface2); color: var(--accent); }
+.btn-login .g-icon { font-size: 14px; }
 
+/* Estado: logueado */
 .user-pill {
-  display: none; align-items: center; gap: 10px;
+  display: none; align-items: center; gap: 8px;
   background: var(--surface);
   border: 1px solid rgba(184,240,80,0.15);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  border-radius: 40px;
+  padding: 6px 14px 6px 6px;
+  cursor: default;
 }
-.user-pill.show { display: flex; }
+.user-pill.show { display: inline-flex; }
 .user-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  object-fit: cover; border: 1px solid rgba(184,240,80,0.3);
+  width: 26px; height: 26px; border-radius: 50%;
+  object-fit: cover; border: 1.5px solid rgba(184,240,80,0.4);
+  flex-shrink: 0;
 }
-.user-info { flex: 1; }
-.user-name { font-size: 11px; font-weight: 600; }
-.user-email { font-size: 9px; color: var(--muted2); }
+.user-name { font-size: 10px; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .btn-logout {
-  font-size: 9px; color: var(--error); background: none;
+  font-size: 9px; color: var(--muted2); background: none;
   border: none; cursor: pointer; letter-spacing: 1px;
-  font-family: 'DM Mono', monospace; opacity: 0.5;
-  transition: opacity 0.2s;
+  font-family: 'DM Mono', monospace;
+  transition: color 0.2s; padding: 0; margin-left: 2px;
 }
-.btn-logout:hover { opacity: 1; }
+.btn-logout:hover { color: var(--error); }
 
 /* ── SYNC INDICATOR ── */
 .sync-bar {
@@ -488,23 +490,18 @@ body {
     <div class="eyebrow">AI vision · análisis nutricional</div>
     <h1>Nutri<span class="green">Lent</span></h1>
     <div class="sub" id="greetUser">Fotografía · Analiza · Aprende</div>
-  </div>
 
-  <!-- AUTH BANNER -->
-  <div class="auth-banner">
-    <!-- Botón login (visible cuando no hay sesión) -->
-    <button class="btn-login" id="btnLogin">
-      <span class="g-icon">🔐</span>
-      Iniciar sesión con Google
-    </button>
-    <!-- Pill usuario (visible cuando hay sesión) -->
-    <div class="user-pill" id="userPill">
-      <img class="user-avatar" id="userAvatar" src="" alt="">
-      <div class="user-info">
-        <div class="user-name" id="userDisplayName">—</div>
-        <div class="user-email" id="userEmail">—</div>
+    <!-- AUTH — integrado en el header -->
+    <div class="auth-row">
+      <button class="btn-login" id="btnLogin">
+        <span class="g-icon">🔐</span>
+        Iniciar sesión con Google
+      </button>
+      <div class="user-pill" id="userPill">
+        <img class="user-avatar" id="userAvatar" src="" alt="">
+        <span class="user-name" id="userDisplayName">—</span>
+        <button class="btn-logout" id="btnLogout">· salir</button>
       </div>
-      <button class="btn-logout" id="btnLogout">Salir</button>
     </div>
   </div>
 
@@ -713,6 +710,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -774,11 +773,32 @@ loadProfileUI();
 // ══════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════
+
+// Verificar resultado de redirect al cargar la página
+getRedirectResult(auth).then(result => {
+  if (result?.user) {
+    console.log('Login por redirect exitoso:', result.user.displayName);
+  }
+}).catch(e => {
+  if (e.code !== 'auth/no-auth-event') {
+    console.warn('Redirect result error:', e.message);
+  }
+});
+
 document.getElementById('btnLogin').addEventListener('click', async () => {
   try {
+    // Intentar popup primero; si falla (bloqueado, móvil, etc.) usar redirect
     await signInWithPopup(auth, provider);
   } catch(e) {
-    alert('Error al iniciar sesión: ' + e.message);
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+      try {
+        await signInWithRedirect(auth, provider);
+      } catch(e2) {
+        alert('Error al iniciar sesión: ' + e2.message);
+      }
+    } else {
+      alert('Error: ' + e.message + '\n\nAsegúrate de que este dominio esté autorizado en Firebase Console → Authentication → Authorized domains.');
+    }
   }
 });
 
@@ -794,8 +814,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('btnLogin').style.display  = 'none';
     document.getElementById('userPill').classList.add('show');
     document.getElementById('userAvatar').src          = user.photoURL || '';
-    document.getElementById('userDisplayName').textContent = user.displayName || 'Usuario';
-    document.getElementById('userEmail').textContent   = user.email || '';
+    document.getElementById('userDisplayName').textContent = user.displayName?.split(' ')[0] || 'Usuario';
     document.getElementById('greetUser').textContent   = '¡Hola, ' + (user.displayName?.split(' ')[0] || 'tú') + '! 👋';
     document.getElementById('cloudBadge').style.display = 'inline-flex';
 
