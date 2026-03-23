@@ -75,6 +75,63 @@ body {
 .header h1 .green { color: var(--accent); }
 .header .sub { color: var(--muted2); font-size: 10px; margin-top: 8px; letter-spacing: 2px; }
 
+/* ── AUTH BANNER ── */
+.auth-banner {
+  margin-bottom: 20px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.btn-login {
+  width: 100%; padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid rgba(184,240,80,0.2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.2s;
+}
+.btn-login:hover { border-color: rgba(184,240,80,0.5); background: var(--surface2); }
+.btn-login .g-icon { font-size: 16px; }
+
+.user-pill {
+  display: none; align-items: center; gap: 10px;
+  background: var(--surface);
+  border: 1px solid rgba(184,240,80,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.user-pill.show { display: flex; }
+.user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  object-fit: cover; border: 1px solid rgba(184,240,80,0.3);
+}
+.user-info { flex: 1; }
+.user-name { font-size: 11px; font-weight: 600; }
+.user-email { font-size: 9px; color: var(--muted2); }
+.btn-logout {
+  font-size: 9px; color: var(--error); background: none;
+  border: none; cursor: pointer; letter-spacing: 1px;
+  font-family: 'DM Mono', monospace; opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.btn-logout:hover { opacity: 1; }
+
+/* ── SYNC INDICATOR ── */
+.sync-bar {
+  display: none; align-items: center; gap: 8px;
+  font-size: 9px; color: var(--accent2); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 12px;
+  padding: 8px 12px; background: var(--accent2-dim);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(80,240,184,0.12);
+}
+.sync-bar.show { display: flex; }
+.sync-dot { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%; animation: pulse 1.5s infinite; }
+
 /* ── SECTION LABEL ── */
 .section-label {
   font-size: 9px; letter-spacing: 4px;
@@ -173,7 +230,7 @@ body {
 .btn-analyze:active { transform: scale(0.98); }
 .btn-analyze:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* ── ANIMACIÓN ANÁLISIS ── */
+/* ── SCAN OVERLAY ── */
 .scan-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(8,8,8,0.96); z-index: 200;
@@ -276,7 +333,7 @@ body {
 .tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 10px; color: var(--muted2); }
 .consejo { margin: 12px 20px 18px; padding: 12px 14px; font-size: 11px; color: var(--muted2); line-height: 1.9; border-left: 2px solid var(--accent); background: var(--accent-dim); border-radius: 0 8px 8px 0; }
 
-/* ── RESUMEN IA ── */
+/* ── AI SUMMARY ── */
 .ai-summary-btn {
   width: 100%; margin-top: 12px; padding: 15px;
   background: none; color: var(--accent2);
@@ -309,7 +366,7 @@ body {
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-/* ── HISTORIAL PAGE ── */
+/* ── HISTORIAL ── */
 .chart-wrap {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 18px 18px 14px;
@@ -341,17 +398,15 @@ body {
 .btn-clear { font-size: 9px; color: var(--error); cursor: pointer; opacity: 0.45; transition: opacity 0.2s; background: none; border: none; font-family: 'DM Mono', monospace; letter-spacing: 2px; }
 .btn-clear:hover { opacity: 1; }
 
-/* ── PERFIL PAGE ── */
+/* ── PERFIL ── */
 .profile-avatar {
   width: 72px; height: 72px; border-radius: 50%;
   background: var(--accent-dim); border: 2px solid rgba(184,240,80,0.2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px; margin: 0 auto 20px;
+  font-size: 28px; margin: 0 auto 20px; overflow: hidden;
 }
-.profile-name {
-  font-family: 'Syne', sans-serif; font-size: 22px;
-  font-weight: 700; text-align: center; margin-bottom: 4px;
-}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 4px; }
 .profile-goal { font-size: 10px; color: var(--accent); letter-spacing: 2px; text-align: center; text-transform: uppercase; margin-bottom: 28px; }
 .profile-form { display: flex; flex-direction: column; gap: 14px; }
 .field-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted2); margin-bottom: 6px; display: block; }
@@ -368,8 +423,7 @@ body {
   border: 1px solid var(--border2); border-radius: var(--radius-sm);
   padding: 13px 14px; color: var(--text);
   font-family: 'DM Mono', monospace; font-size: 13px;
-  outline: none; cursor: pointer;
-  appearance: none;
+  outline: none; cursor: pointer; appearance: none;
 }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btn-save-profile {
@@ -390,11 +444,15 @@ body {
 .metas-calc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 11px; color: var(--muted2); }
 .metas-calc-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--accent); }
 
-/* ── MODAL ── */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 26px 22px; width: 100%; max-width: 400px; animation: fadeUp 0.25s ease both; }
-.modal h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 18px; }
+/* ── CLOUD BADGE ── */
+.cloud-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent2); padding: 4px 10px;
+  background: var(--accent2-dim);
+  border: 1px solid rgba(80,240,184,0.15);
+  border-radius: 20px; margin-top: 10px;
+}
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -422,23 +480,38 @@ body {
   </div>
 </div>
 
-<!-- PAGE: ANALIZAR -->
-<div class="page active" id="page-scan">
-  <div class="header">
-    <div class="eyebrow">AI vision · análisis nutricional</div>
-    <h1>Nutri<span class="green">Lent</span></h1>
-   <!-- PAGE: ANALIZAR -->
+<!-- ══════════════════════════════════════
+     PAGE: ANALIZAR
+══════════════════════════════════════ -->
 <div class="page active" id="page-scan">
   <div class="header">
     <div class="eyebrow">AI vision · análisis nutricional</div>
     <h1>Nutri<span class="green">Lent</span></h1>
     <div class="sub" id="greetUser">Fotografía · Analiza · Aprende</div>
-
-    <!-- 🔐 BOTÓN LOGIN -->
-    <button onclick="loginConGoogle()" style="margin-top:15px;padding:10px 16px;border:none;border-radius:10px;background:#b8f050;color:#000;font-weight:700;cursor:pointer;">
-      🔐 Iniciar sesión con Google
-    </button>
   </div>
+
+  <!-- AUTH BANNER -->
+  <div class="auth-banner">
+    <!-- Botón login (visible cuando no hay sesión) -->
+    <button class="btn-login" id="btnLogin">
+      <span class="g-icon">🔐</span>
+      Iniciar sesión con Google
+    </button>
+    <!-- Pill usuario (visible cuando hay sesión) -->
+    <div class="user-pill" id="userPill">
+      <img class="user-avatar" id="userAvatar" src="" alt="">
+      <div class="user-info">
+        <div class="user-name" id="userDisplayName">—</div>
+        <div class="user-email" id="userEmail">—</div>
+      </div>
+      <button class="btn-logout" id="btnLogout">Salir</button>
+    </div>
+  </div>
+
+  <!-- Sync indicator -->
+  <div class="sync-bar" id="syncBar">
+    <div class="sync-dot"></div>
+    <span id="syncMsg">Sincronizando con la nube...</span>
   </div>
 
   <div class="metas-bar">
@@ -524,7 +597,9 @@ body {
   </div>
 </div>
 
-<!-- PAGE: HISTORIAL -->
+<!-- ══════════════════════════════════════
+     PAGE: HISTORIAL
+══════════════════════════════════════ -->
 <div class="page" id="page-history">
   <div style="margin-bottom:28px">
     <div class="hist-header">
@@ -539,13 +614,18 @@ body {
   </div>
 </div>
 
-<!-- PAGE: PERFIL -->
+<!-- ══════════════════════════════════════
+     PAGE: PERFIL
+══════════════════════════════════════ -->
 <div class="page" id="page-profile">
-  <div class="profile-avatar">🧑</div>
+  <div class="profile-avatar" id="profileAvatarWrap">🧑</div>
   <div class="profile-name" id="profileNameDisplay">Tu perfil</div>
   <div class="profile-goal" id="profileGoalDisplay">configura tus datos</div>
+  <div style="text-align:center">
+    <span class="cloud-badge" id="cloudBadge" style="display:none">☁️ Datos en la nube</span>
+  </div>
 
-  <div class="profile-form">
+  <div class="profile-form" style="margin-top:24px">
     <div>
       <label class="field-label">Nombre</label>
       <input class="field-input" id="pNombre" placeholder="Tu nombre"/>
@@ -610,130 +690,325 @@ body {
 
 <!-- TABS -->
 <nav class="tabs">
-  <button class="tab-btn active" onclick="goTab('scan',this)">
+  <button class="tab-btn active" id="tab-scan" onclick="goTab('scan', this)">
     <span class="tab-icon">🔍</span>
     <span class="tab-label">Analizar</span>
   </button>
-  <button class="tab-btn" onclick="goTab('history',this)">
+  <button class="tab-btn" id="tab-history" onclick="goTab('history', this)">
     <span class="tab-icon">📊</span>
     <span class="tab-label">Historial</span>
   </button>
-  <button class="tab-btn" onclick="goTab('profile',this)">
+  <button class="tab-btn" id="tab-profile" onclick="goTab('profile', this)">
     <span class="tab-icon">👤</span>
     <span class="tab-label">Perfil</span>
   </button>
 </nav>
 
-<script>
+<!-- ══════════════════════════════════════
+     FIREBASE + LÓGICA
+══════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+  deleteDoc,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ── CONFIG FIREBASE ──
+const firebaseConfig = {
+  apiKey: "AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ",
+  authDomain: "nutrilent-813f6.firebaseapp.com",
+  projectId: "nutrilent-813f6",
+  storageBucket: "nutrilent-813f6.firebasestorage.app",
+  messagingSenderId: "438441655569",
+  appId: "1:438441655569:web:ce99c1efd3b5af756160b0"
+};
+
+const app   = initializeApp(firebaseConfig);
+const auth  = getAuth(app);
+const db    = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// ── ESTADO GLOBAL ──
 const WORKER_URL = "https://nutrientes.yoyopomaduro.workers.dev/api/chat";
-let imageBase64 = null;
+let currentUser  = null;
+let historyData  = [];
+let metas        = { cal: 2000, prot: 150 };
+let profile      = {};
+let imageBase64  = null;
 let cameraStream = null;
-let history = [];
-let metas = { cal: 2000, prot: 150 };
-let profile = {};
 
-try { history = JSON.parse(localStorage.getItem('nutrilent_history') || '[]'); } catch(e){}
-try { metas = JSON.parse(localStorage.getItem('nutrilent_metas') || JSON.stringify(metas)); } catch(e){}
-try { profile = JSON.parse(localStorage.getItem('nutrilent_profile') || '{}'); } catch(e){}
+// ── HELPERS localStorage ──
+function lsGet(k, def) {
+  try { return JSON.parse(localStorage.getItem(k) || 'null') ?? def; } catch(e) { return def; }
+}
+function lsSet(k, v) {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
+}
 
-// ── INIT ──
+// ── INIT: cargar localStorage como fallback ──
+historyData = lsGet('nutrilent_history', []);
+metas       = lsGet('nutrilent_metas',   { cal: 2000, prot: 150 });
+profile     = lsGet('nutrilent_profile', {});
 updateMetasUI();
 renderHistory();
 loadProfileUI();
 
-// ── TABS ──
-function goTab(name, btn) {
+// ══════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════
+document.getElementById('btnLogin').addEventListener('click', async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    alert('Error al iniciar sesión: ' + e.message);
+  }
+});
+
+document.getElementById('btnLogout').addEventListener('click', async () => {
+  await signOut(auth);
+});
+
+// Observador de estado de sesión — el núcleo de la autenticación
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    // ── SESIÓN ACTIVA ──
+    document.getElementById('btnLogin').style.display  = 'none';
+    document.getElementById('userPill').classList.add('show');
+    document.getElementById('userAvatar').src          = user.photoURL || '';
+    document.getElementById('userDisplayName').textContent = user.displayName || 'Usuario';
+    document.getElementById('userEmail').textContent   = user.email || '';
+    document.getElementById('greetUser').textContent   = '¡Hola, ' + (user.displayName?.split(' ')[0] || 'tú') + '! 👋';
+    document.getElementById('cloudBadge').style.display = 'inline-flex';
+
+    // Actualizar avatar en perfil si es foto de Google
+    const avatarWrap = document.getElementById('profileAvatarWrap');
+    avatarWrap.innerHTML = `<img src="${user.photoURL}" alt="avatar" onerror="this.parentElement.textContent='🧑'">`;
+
+    // Cargar datos desde Firestore
+    await loadFromFirestore(user.uid);
+  } else {
+    // ── SIN SESIÓN ──
+    document.getElementById('btnLogin').style.display  = '';
+    document.getElementById('userPill').classList.remove('show');
+    document.getElementById('greetUser').textContent   = 'Fotografía · Analiza · Aprende';
+    document.getElementById('cloudBadge').style.display = 'none';
+    document.getElementById('profileAvatarWrap').innerHTML = '🧑';
+    // Datos locales siguen activos
+  }
+});
+
+// ══════════════════════════════════════
+// FIRESTORE — LEER
+// ══════════════════════════════════════
+async function loadFromFirestore(uid) {
+  showSync('Cargando datos de la nube...');
+  try {
+    // Perfil y metas
+    const profileDoc = await getDoc(doc(db, 'users', uid));
+    if (profileDoc.exists()) {
+      const d = profileDoc.data();
+      if (d.profile) { profile = d.profile; lsSet('nutrilent_profile', profile); }
+      if (d.metas)   { metas   = d.metas;   lsSet('nutrilent_metas',   metas);   }
+      loadProfileUI();
+      updateMetasUI();
+    }
+
+    // Historial (últimos 30 registros)
+    const q = query(
+      collection(db, 'users', uid, 'history'),
+      orderBy('id', 'desc'),
+      limit(30)
+    );
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      historyData = snap.docs.map(d => d.data());
+      lsSet('nutrilent_history', historyData);
+      updateMetasUI();
+      renderHistory();
+    }
+  } catch(e) {
+    console.warn('Firestore read error:', e);
+  }
+  hideSync();
+}
+
+// ══════════════════════════════════════
+// FIRESTORE — GUARDAR PERFIL
+// ══════════════════════════════════════
+async function saveProfileToFirestore() {
+  if (!currentUser) return;
+  try {
+    await setDoc(doc(db, 'users', currentUser.uid), { profile, metas }, { merge: true });
+  } catch(e) { console.warn('Firestore profile save error:', e); }
+}
+
+// ══════════════════════════════════════
+// FIRESTORE — GUARDAR ENTRADA HISTORIAL
+// ══════════════════════════════════════
+async function saveEntryToFirestore(entry) {
+  if (!currentUser) return;
+  try {
+    await setDoc(
+      doc(db, 'users', currentUser.uid, 'history', String(entry.id)),
+      entry
+    );
+  } catch(e) { console.warn('Firestore history save error:', e); }
+}
+
+// ══════════════════════════════════════
+// FIRESTORE — BORRAR HISTORIAL
+// ══════════════════════════════════════
+async function clearFirestoreHistory() {
+  if (!currentUser) return;
+  showSync('Borrando historial en la nube...');
+  try {
+    const q = query(collection(db, 'users', currentUser.uid, 'history'));
+    const snap = await getDocs(q);
+    const batch = writeBatch(db);
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+  } catch(e) { console.warn('Firestore clear error:', e); }
+  hideSync();
+}
+
+// ── SYNC UI ──
+function showSync(msg) {
+  const bar = document.getElementById('syncBar');
+  document.getElementById('syncMsg').textContent = msg || 'Sincronizando...';
+  bar.classList.add('show');
+}
+function hideSync() {
+  document.getElementById('syncBar').classList.remove('show');
+}
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+window.goTab = function(name, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   btn.classList.add('active');
   if (name === 'history') renderHistory();
-}
+};
 
-// ── PERFIL ──
+// ══════════════════════════════════════
+// PERFIL
+// ══════════════════════════════════════
 function loadProfileUI() {
-  if (profile.nombre) {
-    document.getElementById('profileNameDisplay').textContent = profile.nombre;
-    document.getElementById('profileGoalDisplay').textContent =
-      profile.objetivo === 'bajar' ? 'Objetivo: bajar de peso' :
-      profile.objetivo === 'musculo' ? 'Objetivo: ganar músculo' : 'Objetivo: mantenerse';
-    document.getElementById('greetUser').textContent = '¡Hola, ' + profile.nombre + '! 👋';
-    document.getElementById('pNombre').value = profile.nombre || '';
-    document.getElementById('pPeso').value = profile.peso || '';
-    document.getElementById('pAltura').value = profile.altura || '';
-    document.getElementById('pEdad').value = profile.edad || '';
-    if (profile.sexo) document.getElementById('pSexo').value = profile.sexo;
-    if (profile.objetivo) document.getElementById('pObjetivo').value = profile.objetivo;
-    if (profile.actividad) document.getElementById('pActividad').value = profile.actividad;
-  }
+  if (!profile.nombre) return;
+  document.getElementById('profileNameDisplay').textContent = profile.nombre;
+  document.getElementById('profileGoalDisplay').textContent = goalLabel(profile.objetivo);
+  document.getElementById('pNombre').value   = profile.nombre  || '';
+  document.getElementById('pPeso').value     = profile.peso    || '';
+  document.getElementById('pAltura').value   = profile.altura  || '';
+  document.getElementById('pEdad').value     = profile.edad    || '';
+  if (profile.sexo)      document.getElementById('pSexo').value      = profile.sexo;
+  if (profile.objetivo)  document.getElementById('pObjetivo').value  = profile.objetivo;
+  if (profile.actividad) document.getElementById('pActividad').value = profile.actividad;
 }
 
-function saveProfile() {
-  const nombre = document.getElementById('pNombre').value.trim();
-  const peso = parseFloat(document.getElementById('pPeso').value) || 70;
-  const altura = parseFloat(document.getElementById('pAltura').value) || 170;
-  const edad = parseInt(document.getElementById('pEdad').value) || 25;
-  const sexo = document.getElementById('pSexo').value;
-  const objetivo = document.getElementById('pObjetivo').value;
+function goalLabel(o) {
+  return o === 'bajar' ? 'Objetivo: bajar de peso'
+       : o === 'musculo' ? 'Objetivo: ganar músculo'
+       : 'Objetivo: mantenerse';
+}
+
+window.saveProfile = async function() {
+  const nombre    = document.getElementById('pNombre').value.trim();
+  const peso      = parseFloat(document.getElementById('pPeso').value)    || 70;
+  const altura    = parseFloat(document.getElementById('pAltura').value)   || 170;
+  const edad      = parseInt(document.getElementById('pEdad').value)       || 25;
+  const sexo      = document.getElementById('pSexo').value;
+  const objetivo  = document.getElementById('pObjetivo').value;
   const actividad = parseFloat(document.getElementById('pActividad').value);
 
   profile = { nombre, peso, altura, edad, sexo, objetivo, actividad };
-  try { localStorage.setItem('nutrilent_profile', JSON.stringify(profile)); } catch(e){}
+  lsSet('nutrilent_profile', profile);
 
-  // Calcular TMB (Mifflin-St Jeor)
+  // Calcular TMB Mifflin-St Jeor
   let tmb = sexo === 'm'
-    ? (10 * peso) + (6.25 * altura) - (5 * edad) + 5
-    : (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
+    ? (10*peso) + (6.25*altura) - (5*edad) + 5
+    : (10*peso) + (6.25*altura) - (5*edad) - 161;
   let tdee = Math.round(tmb * actividad);
 
-  // Ajuste por objetivo
-  let calMeta = objetivo === 'bajar' ? Math.round(tdee * 0.82) :
-                objetivo === 'musculo' ? Math.round(tdee * 1.1) : tdee;
-  let protMeta = objetivo === 'musculo' ? Math.round(peso * 2.2) :
-                 objetivo === 'bajar' ? Math.round(peso * 1.8) : Math.round(peso * 1.4);
+  let calMeta  = objetivo === 'bajar'   ? Math.round(tdee * 0.82)
+               : objetivo === 'musculo' ? Math.round(tdee * 1.1) : tdee;
+  let protMeta = objetivo === 'musculo' ? Math.round(peso * 2.2)
+               : objetivo === 'bajar'   ? Math.round(peso * 1.8) : Math.round(peso * 1.4);
 
   metas = { cal: calMeta, prot: protMeta };
-  try { localStorage.setItem('nutrilent_metas', JSON.stringify(metas)); } catch(e){}
+  lsSet('nutrilent_metas', metas);
 
-  document.getElementById('calcCalVal').textContent = calMeta + ' kcal';
+  document.getElementById('calcCalVal').textContent  = calMeta + ' kcal';
   document.getElementById('calcProtVal').textContent = protMeta + 'g';
   document.getElementById('metasCalcCard').style.display = 'block';
   document.getElementById('profileNameDisplay').textContent = nombre || 'Tu perfil';
-  document.getElementById('profileGoalDisplay').textContent =
-    objetivo === 'bajar' ? 'Objetivo: bajar de peso' :
-    objetivo === 'musculo' ? 'Objetivo: ganar músculo' : 'Objetivo: mantenerse';
-  document.getElementById('greetUser').textContent = nombre ? '¡Hola, ' + nombre + '! 👋' : 'Fotografía · Analiza · Aprende';
+  document.getElementById('profileGoalDisplay').textContent = goalLabel(objetivo);
+  document.getElementById('greetUser').textContent =
+    nombre ? '¡Hola, ' + nombre + '! 👋' : 'Fotografía · Analiza · Aprende';
 
   updateMetasUI();
-}
 
-// ── METAS UI ──
+  // Guardar en Firestore si hay sesión
+  if (currentUser) {
+    showSync('Guardando perfil en la nube...');
+    await saveProfileToFirestore();
+    hideSync();
+  }
+};
+
+// ══════════════════════════════════════
+// METAS UI
+// ══════════════════════════════════════
 function updateMetasUI() {
-  const today = new Date().toDateString();
-  const todayE = history.filter(e => new Date(e.id).toDateString() === today);
-  const tCal = todayE.reduce((s,e) => s+(e.calorias||0), 0);
-  const tProt = todayE.reduce((s,e) => s+(e.proteinas||0), 0);
-  const pCal = Math.min(Math.round((tCal/metas.cal)*100),100);
-  const pProt = Math.min(Math.round((tProt/metas.prot)*100),100);
+  const today  = new Date().toDateString();
+  const todayE = historyData.filter(e => new Date(e.id).toDateString() === today);
+  const tCal   = todayE.reduce((s,e) => s+(e.calorias||0), 0);
+  const tProt  = todayE.reduce((s,e) => s+(e.proteinas||0), 0);
+  const pCal   = Math.min(Math.round((tCal/metas.cal)*100), 100);
+  const pProt  = Math.min(Math.round((tProt/metas.prot)*100), 100);
 
-  document.getElementById('goalCalShow').textContent = metas.cal;
+  document.getElementById('goalCalShow').textContent  = metas.cal;
   document.getElementById('goalProtShow').textContent = metas.prot;
-  document.getElementById('totalCal').textContent = tCal;
+  document.getElementById('totalCal').textContent  = tCal;
   document.getElementById('totalProt').textContent = tProt;
-  document.getElementById('pctCal').textContent = pCal+'%';
+  document.getElementById('pctCal').textContent  = pCal+'%';
   document.getElementById('pctProt').textContent = pProt+'%';
-  document.getElementById('barCal').style.width = pCal+'%';
+  document.getElementById('barCal').style.width  = pCal+'%';
   document.getElementById('barProt').style.width = pProt+'%';
 
-  const cc = pCal>=100?'warn':'green', cp = pProt>=100?'warn':'teal';
-  document.getElementById('pctCal').className = 'meta-pct '+cc;
-  document.getElementById('barCal').className = 'meta-bar-fill '+cc;
-  document.getElementById('pctProt').className = 'meta-pct '+cp;
-  document.getElementById('barProt').className = 'meta-bar-fill '+cp;
+  const cc = pCal>=100  ? 'warn' : 'green';
+  const cp = pProt>=100 ? 'warn' : 'teal';
+  document.getElementById('pctCal').className  = 'meta-pct ' + cc;
+  document.getElementById('barCal').className  = 'meta-bar-fill ' + cc;
+  document.getElementById('pctProt').className = 'meta-pct ' + cp;
+  document.getElementById('barProt').className = 'meta-bar-fill ' + cp;
 }
 
-// ── CÁMARA ──
-async function toggleCamera() {
+// ══════════════════════════════════════
+// CÁMARA
+// ══════════════════════════════════════
+window.toggleCamera = async function() {
   const wrap = document.getElementById('cameraWrap');
   if (wrap.classList.contains('open')) { closeCamera(); return; }
   try {
@@ -743,9 +1018,9 @@ async function toggleCamera() {
   } catch(e) {
     alert('No se pudo acceder a la cámara: ' + e.message);
   }
-}
+};
 
-function capturePhoto() {
+window.capturePhoto = function() {
   const video = document.getElementById('cameraFeed');
   const canvas = document.createElement('canvas');
   canvas.width = video.videoWidth; canvas.height = video.videoHeight;
@@ -754,19 +1029,36 @@ function capturePhoto() {
   imageBase64 = dataUrl;
   const img = document.getElementById('preview');
   img.src = dataUrl; img.style.display = 'block';
-  document.getElementById('uploadIcon').style.display = 'none';
+  document.getElementById('uploadIcon').style.display  = 'none';
   document.getElementById('uploadLabel').style.display = 'none';
   document.getElementById('uploadZone').classList.add('has-image');
   closeCamera();
-}
+};
 
-function closeCamera() {
+window.closeCamera = function() {
   if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
   document.getElementById('cameraWrap').classList.remove('open');
   document.getElementById('cameraFeed').srcObject = null;
-}
+};
 
-// ── IMAGEN ──
+// ══════════════════════════════════════
+// IMAGEN FILE INPUT
+// ══════════════════════════════════════
+document.getElementById('file').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    const converted = await convertToJpeg(ev.target.result);
+    imageBase64 = converted;
+    const img = document.getElementById('preview');
+    img.src = imageBase64; img.style.display = 'block';
+    document.getElementById('uploadIcon').style.display  = 'none';
+    document.getElementById('uploadLabel').style.display = 'none';
+    document.getElementById('uploadZone').classList.add('has-image');
+  };
+  reader.readAsDataURL(file);
+});
+
 function convertToJpeg(dataUrl) {
   return new Promise(resolve => {
     const img = new Image();
@@ -776,33 +1068,20 @@ function convertToJpeg(dataUrl) {
       const ctx = c.getContext('2d');
       ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
       ctx.drawImage(img,0,0);
-      resolve(c.toDataURL('image/jpeg',0.92));
+      resolve(c.toDataURL('image/jpeg', 0.92));
     };
     img.src = dataUrl;
   });
 }
 
-document.getElementById('file').addEventListener('change', e => {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async ev => {
-    const converted = await convertToJpeg(ev.target.result);
-    imageBase64 = converted;
-    const img = document.getElementById('preview');
-    img.src = imageBase64; img.style.display = 'block';
-    document.getElementById('uploadIcon').style.display = 'none';
-    document.getElementById('uploadLabel').style.display = 'none';
-    document.getElementById('uploadZone').classList.add('has-image');
-  };
-  reader.readAsDataURL(file);
-});
-
-// ── SCAN ANIMATION ──
+// ══════════════════════════════════════
+// SCAN ANIMATION
+// ══════════════════════════════════════
 let scanTimer = null;
 function startScanAnimation() {
   document.getElementById('scanOverlay').classList.add('open');
   const steps = ['step1','step2','step3'];
-  const subs = ['detectando ingredientes...','calculando macronutrientes...','generando consejo...'];
+  const subs  = ['detectando ingredientes...','calculando macronutrientes...','generando consejo...'];
   let i = 0;
   scanTimer = setInterval(() => {
     if (i < steps.length) {
@@ -819,14 +1098,16 @@ function stopScanAnimation() {
   document.getElementById('scanSub').textContent = 'preparando análisis';
 }
 
-// ── ANALIZAR ──
-async function analyze() {
+// ══════════════════════════════════════
+// ANALIZAR
+// ══════════════════════════════════════
+window.analyze = async function() {
   const errorBox = document.getElementById('errorBox');
-  const btn = document.getElementById('btnAnalyze');
+  const btn      = document.getElementById('btnAnalyze');
   errorBox.style.display = 'none';
-  document.getElementById('resultCard').style.display = 'none';
-  document.getElementById('aiSummaryBtn').style.display = 'none';
-  document.getElementById('aiSummaryCard').style.display = 'none';
+  document.getElementById('resultCard').style.display       = 'none';
+  document.getElementById('aiSummaryBtn').style.display     = 'none';
+  document.getElementById('aiSummaryCard').style.display    = 'none';
 
   if (!imageBase64) { showError('Sube una imagen primero 👆'); return; }
 
@@ -850,16 +1131,16 @@ async function analyze() {
     });
 
     const data = await res.json();
-    if (!data) throw new Error('Sin respuesta del servidor');
-    if (data.error) throw new Error(data.error);
-    if (!data.text) throw new Error('Respuesta vacía');
+    if (!data)       throw new Error('Sin respuesta del servidor');
+    if (data.error)  throw new Error(data.error);
+    if (!data.text)  throw new Error('Respuesta vacía');
 
     let text = data.text.replace(/```json|```/g,'').trim();
     let r;
-    try { r = JSON.parse(text); } catch(e) { throw new Error('JSON inválido'); }
+    try { r = JSON.parse(text); } catch(e) { throw new Error('JSON inválido: ' + text.slice(0,80)); }
 
     showResult(r);
-    saveToHistory(r, imageBase64);
+    await saveToHistory(r, imageBase64);
     document.getElementById('aiSummaryBtn').style.display = 'flex';
 
   } catch(err) {
@@ -869,15 +1150,15 @@ async function analyze() {
     btn.disabled = false;
     btn.textContent = 'Analizar comida';
   }
-}
+};
 
 function showResult(r) {
-  document.getElementById('dishName').textContent = r.plato || 'Desconocido';
-  document.getElementById('calNum').textContent   = r.calorias || 0;
-  document.getElementById('protVal').textContent  = r.proteinas || 0;
-  document.getElementById('carbVal').textContent  = r.carbos || 0;
-  document.getElementById('fatVal').textContent   = r.grasas || 0;
-  document.getElementById('consejo').textContent  = r.consejo || '';
+  document.getElementById('dishName').textContent = r.plato      || 'Desconocido';
+  document.getElementById('calNum').textContent   = r.calorias   || 0;
+  document.getElementById('protVal').textContent  = r.proteinas  || 0;
+  document.getElementById('carbVal').textContent  = r.carbos     || 0;
+  document.getElementById('fatVal').textContent   = r.grasas     || 0;
+  document.getElementById('consejo').textContent  = r.consejo    || '';
   const tags = document.getElementById('ingTags');
   tags.innerHTML = '';
   (r.ingredientes||[]).forEach(ing => {
@@ -886,7 +1167,7 @@ function showResult(r) {
   });
   const card = document.getElementById('resultCard');
   card.style.display = 'block';
-  setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
 }
 
 function showError(msg) {
@@ -894,28 +1175,128 @@ function showError(msg) {
   box.textContent = msg; box.style.display = 'block';
 }
 
-// ── RESUMEN IA ──
-async function getAISummary() {
-  const btn = document.getElementById('aiSummaryBtn');
-  const card = document.getElementById('aiSummaryCard');
+// ══════════════════════════════════════
+// HISTORIAL — GUARDAR
+// ══════════════════════════════════════
+async function saveToHistory(r, img) {
+  const entry = {
+    id: Date.now(),
+    date: new Date().toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+    plato: r.plato, calorias: r.calorias,
+    proteinas: r.proteinas, carbos: r.carbos, grasas: r.grasas,
+    ingredientes: r.ingredientes || [], consejo: r.consejo || '', img
+  };
+  historyData.unshift(entry);
+  if (historyData.length > 30) historyData = historyData.slice(0,30);
+  lsSet('nutrilent_history', historyData);
+  updateMetasUI();
+
+  if (currentUser) {
+    showSync('Guardando en la nube...');
+    await saveEntryToFirestore(entry);
+    hideSync();
+  }
+}
+
+// ══════════════════════════════════════
+// HISTORIAL — RENDER
+// ══════════════════════════════════════
+function renderHistory() {
+  const list      = document.getElementById('historyList');
+  const chartWrap = document.getElementById('chartWrap');
+
+  if (!historyData.length) {
+    chartWrap.style.display = 'none';
+    list.innerHTML = '<div class="history-empty">Sin análisis aún — ¡sube tu primera comida!</div>';
+    return;
+  }
+
+  chartWrap.style.display = 'block';
+  const today = new Date();
+  const days  = [];
+  for (let i=6; i>=0; i--) {
+    const d   = new Date(today); d.setDate(today.getDate()-i);
+    const key = d.toDateString();
+    const lbl = i===0 ? 'hoy' : d.toLocaleDateString('es-CO',{weekday:'short'}).slice(0,3);
+    const total = historyData.filter(e=>new Date(e.id).toDateString()===key)
+                             .reduce((s,e)=>s+(e.calorias||0),0);
+    days.push({ label:lbl, total, isToday:i===0 });
+  }
+  const maxVal = Math.max(...days.map(d=>d.total), metas.cal, 1);
+  const barsEl = document.getElementById('chartBars');
+  barsEl.innerHTML = '';
+  days.forEach(d => {
+    const h = d.total>0 ? Math.max((d.total/maxVal)*70,4) : 3;
+    const wrap = document.createElement('div');
+    wrap.className = 'chart-bar-wrap';
+    wrap.innerHTML = `
+      <div class="chart-bar${d.isToday?' today':''}" style="height:${h}px"></div>
+      <div class="chart-day">${d.label}</div>
+      ${d.total>0?`<div class="chart-kcal">${d.total}</div>`:''}
+    `;
+    barsEl.appendChild(wrap);
+  });
+
+  list.innerHTML = '';
+  const ul = document.createElement('div');
+  ul.className = 'history-list';
+  historyData.forEach(entry => {
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <img class="history-thumb" src="${entry.img||''}" alt="${entry.plato}">
+      <div>
+        <div class="history-dish">${entry.plato}</div>
+        <div class="history-meta">${entry.date} · 🥩${entry.proteinas}g 🌾${entry.carbos}g</div>
+      </div>
+      <div class="history-kcal">${entry.calorias}<span>kcal</span></div>
+    `;
+    item.onclick = () => {
+      showResult(entry);
+      // Ir a tab de analizar
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('page-scan').classList.add('active');
+      document.getElementById('tab-scan').classList.add('active');
+    };
+    ul.appendChild(item);
+  });
+  list.appendChild(ul);
+}
+
+window.clearHistory = async function() {
+  if (!confirm('¿Borrar todo el historial?')) return;
+  historyData = [];
+  lsSet('nutrilent_history', []);
+  if (currentUser) await clearFirestoreHistory();
+  updateMetasUI();
+  renderHistory();
+};
+
+// ══════════════════════════════════════
+// RESUMEN IA
+// ══════════════════════════════════════
+window.getAISummary = async function() {
+  const btn    = document.getElementById('aiSummaryBtn');
+  const card   = document.getElementById('aiSummaryCard');
   const textEl = document.getElementById('aiSummaryText');
 
-  btn.style.display = 'none';
+  btn.style.display  = 'none';
   card.style.display = 'block';
   textEl.textContent = '';
   textEl.classList.add('ai-typing');
 
-  const today = new Date().toDateString();
-  const todayE = history.filter(e => new Date(e.id).toDateString() === today);
-  const tCal = todayE.reduce((s,e)=>s+(e.calorias||0),0);
-  const tProt = todayE.reduce((s,e)=>s+(e.proteinas||0),0);
-  const tCarb = todayE.reduce((s,e)=>s+(e.carbos||0),0);
-  const tGras = todayE.reduce((s,e)=>s+(e.grasas||0),0);
+  const today  = new Date().toDateString();
+  const todayE = historyData.filter(e => new Date(e.id).toDateString() === today);
+  const tCal   = todayE.reduce((s,e)=>s+(e.calorias||0),0);
+  const tProt  = todayE.reduce((s,e)=>s+(e.proteinas||0),0);
+  const tCarb  = todayE.reduce((s,e)=>s+(e.carbos||0),0);
+  const tGras  = todayE.reduce((s,e)=>s+(e.grasas||0),0);
   const platos = todayE.map(e=>e.plato).join(', ');
 
-  const objetivo = profile.objetivo === 'bajar' ? 'bajar de peso' :
-                   profile.objetivo === 'musculo' ? 'ganar músculo' : 'mantener peso';
-  const nombre = profile.nombre || 'el usuario';
+  const objetivo = profile.objetivo === 'bajar' ? 'bajar de peso'
+                 : profile.objetivo === 'musculo' ? 'ganar músculo' : 'mantener peso';
+  const nombre   = profile.nombre || 'el usuario';
 
   try {
     const res = await fetch(WORKER_URL, {
@@ -933,11 +1314,11 @@ Hoy ha consumido:
 - Grasas: ${tGras}g
 - Platos: ${platos || 'ninguno aún'}
 
-Dame una recomendación personalizada en 3-4 oraciones: qué le falta comer hoy, qué evitar, y una sugerencia concreta para la próxima comida según su objetivo. Sé directo, motivador y específico. En español.` }]
+Dame una recomendación personalizada en 3-4 oraciones: qué le falta comer hoy, qué evitar, y una sugerencia concreta para la próxima comida según su objetivo. Sé directo, motivador y específico. En español.`
+          }]
         }]
       })
     });
-
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     textEl.classList.remove('ai-typing');
@@ -946,123 +1327,8 @@ Dame una recomendación personalizada en 3-4 oraciones: qué le falta comer hoy,
     textEl.classList.remove('ai-typing');
     textEl.textContent = 'Error al obtener recomendación: ' + e.message;
   }
-}
-
-// ── HISTORIAL ──
-function saveToHistory(r, img) {
-  const entry = {
-    id: Date.now(),
-    date: new Date().toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
-    plato: r.plato, calorias: r.calorias,
-    proteinas: r.proteinas, carbos: r.carbos, grasas: r.grasas,
-    ingredientes: r.ingredientes, consejo: r.consejo, img
-  };
-  history.unshift(entry);
-  if (history.length > 30) history = history.slice(0,30);
-  try { localStorage.setItem('nutrilent_history', JSON.stringify(history)); } catch(e){}
-  updateMetasUI();
-}
-
-function renderHistory() {
-  const list = document.getElementById('historyList');
-  const chartWrap = document.getElementById('chartWrap');
-  if (!history.length) {
-    chartWrap.style.display = 'none';
-    list.innerHTML = '<div class="history-empty">Sin análisis aún — ¡sube tu primera comida!</div>';
-    return;
-  }
-  chartWrap.style.display = 'block';
-  const today = new Date();
-  const days = [];
-  for (let i=6;i>=0;i--) {
-    const d = new Date(today); d.setDate(today.getDate()-i);
-    const key = d.toDateString();
-    const label = i===0?'hoy':d.toLocaleDateString('es-CO',{weekday:'short'}).slice(0,3);
-    const total = history.filter(e=>new Date(e.id).toDateString()===key).reduce((s,e)=>s+(e.calorias||0),0);
-    days.push({label,total,isToday:i===0});
-  }
-  const maxVal = Math.max(...days.map(d=>d.total), metas.cal, 1);
-  const barsEl = document.getElementById('chartBars');
-  barsEl.innerHTML = '';
-  days.forEach(d => {
-    const h = d.total>0?Math.max((d.total/maxVal)*70,4):3;
-    const wrap = document.createElement('div');
-    wrap.className = 'chart-bar-wrap';
-    wrap.innerHTML = `
-      <div class="chart-bar${d.isToday?' today':''}" style="height:${h}px"></div>
-      <div class="chart-day">${d.label}</div>
-      ${d.total>0?`<div class="chart-kcal">${d.total}</div>`:''}
-    `;
-    barsEl.appendChild(wrap);
-  });
-
-  list.innerHTML = '';
-  const ul = document.createElement('div');
-  ul.className = 'history-list';
-  history.forEach(entry => {
-    const item = document.createElement('div');
-    item.className = 'history-item';
-    item.innerHTML = `
-      <img class="history-thumb" src="${entry.img}" alt="${entry.plato}">
-      <div>
-        <div class="history-dish">${entry.plato}</div>
-        <div class="history-meta">${entry.date} · 🥩${entry.proteinas}g 🌾${entry.carbos}g</div>
-      </div>
-      <div class="history-kcal">${entry.calorias}<span>kcal</span></div>
-    `;
-    item.onclick = () => { showResult(entry); goTab('scan', document.querySelector('.tab-btn')); };
-    ul.appendChild(item);
-  });
-  list.appendChild(ul);
-}
-
-function clearHistory() {
-  if (!confirm('¿Borrar todo el historial?')) return;
-  history = [];
-  try { localStorage.removeItem('nutrilent_history'); } catch(e){}
-  updateMetasUI();
-  renderHistory();
-}
-</script>
-
-<!-- 🔐 LOGIN CON GOOGLE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ",
-  authDomain: "nutrilent-813f6.firebaseapp.com",
-  projectId: "nutrilent-813f6",
-  storageBucket: "nutrilent-813f6.firebasestorage.app",
-  messagingSenderId: "438441655569",
-  appId: "1:438441655569:web:ce99c1efd3b5af756160b0"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-window.loginConGoogle = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-
-    console.log("Usuario:", user);
-
-    document.getElementById("greetUser").textContent =
-      "Hola, " + user.displayName + " 👋";
-
-  } catch (error) {
-    console.error(error);
-    alert("Error al iniciar sesión: " + error.message);
-  }
-};
 </script>
-
 </body>
 </html>
