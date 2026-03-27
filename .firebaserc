@@ -1,0 +1,7 @@
+# Agrega el contenido a .firebaserc
+echo '{
+  "projects": {
+    "default": "nutrilent-813f6"
+  }
+}' > .firebaserc
+
