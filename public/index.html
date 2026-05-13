@@ -1009,6 +1009,23 @@ getRedirectResult(auth).then(function(result) {
 });
 
 const WORKER_URL = "https://nutrientes.nutrilent.workers.dev/api/chat";
+const DEEPSEEK_API_KEY = 'sk-0684d51e50fe4b9e98da9e5414fdaa01';
+const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
+async function callDeepSeek(prompt) {
+  try {
+    const res = await fetch(DEEPSEEK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+      body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], max_tokens: 2000 })
+    });
+    if (!res.ok) throw new Error('DeepSeek error: ' + res.status);
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || '';
+  } catch(e) {
+    console.error('DeepSeek fallback:', e);
+    return 'Lo siento, el coach no está disponible en este momento.';
+  }
+}
 const FREE_LIMIT = 5;
 
 let currentUser = null, historyData = [], metas = { cal:2000, prot:150, carbs:200, fats:55 }, profile = {}, imageBase64 = null, cameraStream = null, isPro = false, lastAnalysis = null;
@@ -1431,9 +1448,7 @@ async function generateWeeklyReport(){
   const langName = currentLang === 'es' ? 'español' : 'inglés';
   const prompt = `Genera un resumen semanal de nutrición en ${langName} (máximo 40 palabras) basado en: promedio calórico diario: ${Math.round(avgCal)} kcal, objetivo del usuario: ${profile.objetivo || 'mantener'}. Sé motivador y da un consejo práctico.`;
   try{
-    const res = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }) });
-    const data = await res.json();
-    const report = data.text?.trim() || 'Sigue así, cada día cuenta.';
+    const report = await callDeepSeek(prompt) || 'Sigue así, cada día cuenta.';
     localStorage.setItem('nl_last_weekly_report', thisWeekStart.toDateString());
     const reportDiv = document.getElementById('weeklyAISummaryText');
     if(reportDiv){ reportDiv.innerHTML = report; document.getElementById('weeklyAISummaryDate').innerText = today.toLocaleDateString(); document.querySelector('.weekly-ai-summary-card').style.display = 'block'; }
@@ -1656,9 +1671,8 @@ window.getAISummary = async function(){
   if(card) card.style.display = 'block'; if(txtEl) txtEl.textContent = '⏳ Generando recomendación...';
   try{
     const langName = { es: 'español', en: 'English', pt: 'Português', fr: 'Français' }[currentLang] || 'español';
-    const res = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: `Eres un nutricionista experto. Basado en este análisis: ${lastAnalysis.plato} (${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína, ${lastAnalysis.carbos}g carbos, ${lastAnalysis.grasas}g grasas). Perfil del usuario: ${profile.objetivo || 'mantener peso'}, ${profile.peso || '70'}kg. Genera una recomendación nutricional personalizada en ${langName} de 3-4 oraciones. Incluye un tip práctico y motivador.` }] }) });
-    const data = await res.json();
-    if(txtEl) txtEl.textContent = data.text?.trim() || 'No se pudo generar la recomendación.';
+    const text = await callDeepSeek(`Eres un nutricionista experto. Basado en este análisis: ${lastAnalysis.plato} (${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína, ${lastAnalysis.carbos}g carbos, ${lastAnalysis.grasas}g grasas). Perfil del usuario: ${profile.objetivo || 'mantener peso'}, ${profile.peso || '70'}kg. Genera una recomendación nutricional personalizada en ${langName} de 3-4 oraciones. Incluye un tip práctico y motivador.`);
+    if(txtEl) txtEl.textContent = text || 'No se pudo generar la recomendación.';
   }catch(err){ if(txtEl) txtEl.textContent = 'Error al conectar con la IA.'; }
 };
 window.sendCoachMsg = async function(){
@@ -1686,12 +1700,11 @@ window.sendCoachMsg = async function(){
     const contextoHistorial = ultimosAnalisis ? `Últimas comidas registradas:\n${ultimosAnalisis}` : 'No hay comidas registradas aún.';
     const condiciones = selectedConditions.length ? `El usuario tiene las siguientes condiciones de salud: ${selectedConditions.join(', ')}. Adapta tus recomendaciones considerando estas condiciones. Prioriza alimentos seguros y evita los contraindicados.\n\n` : '';
     const prompt = `${condiciones}Eres un coach nutricional profesional, empático y motivador. Conoces al usuario a fondo gracias a estos datos:\n\n${perfil}\n\n${contextoHistorial}\n\nEl usuario te pregunta: "${msg}"\n\nResponde en ${langName} de forma clara, personalizada y práctica (máximo 4 oraciones). Si la pregunta es sobre alimentación, usa los datos del perfil y las metas para dar consejos específicos. Si la pregunta es general (motivación, hábitos, recetas), responde de manera útil y alentadora. No inventes información médica. Si no sabes algo, sugiere consultar a un profesional.`;
-    const res = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }) });
-    const data = await res.json();
+    const dataText = await callDeepSeek(prompt);
     typingEl.remove();
     const aiBubble = document.createElement('div');
     aiBubble.className = 'coach-msg';
-    aiBubble.innerHTML = `<div class="coach-bubble">${data.text?.trim() || 'Lo siento, no pude responder.'}</div>`;
+    aiBubble.innerHTML = `<div class="coach-bubble">${dataText || 'Lo siento, no pude responder.'}</div>`;
     container.appendChild(aiBubble);
   }catch(err){
     typingEl.remove();
@@ -1721,10 +1734,8 @@ window.generateWeeklyPlan = async function(){
   list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)">⏳ Generando tu plan personalizado...</div>';
   try{
     const prompt = `Crea un plan de comidas semanal para:\nNombre: ${profile.nombre || 'usuario'}\nPeso: ${profile.peso || 70} kg\nAltura: ${profile.altura || 170} cm\nObjetivo: ${profile.objetivo === 'bajar' ? 'bajar de peso' : profile.objetivo === 'musculo' ? 'ganar músculo' : 'mantenerse'}\nActividad: ${profile.actividad || 1.375} (factor)\nMeta calórica diaria: ${metas.cal || 2000} kcal/día\nIMPORTANTE: Devuelve SOLO un objeto JSON válido, sin texto adicional, sin markdown, sin comas al final de los arrays, con todas las cadenas entre comillas dobles. Usa esta estructura exacta:\n{"days":[{"day":"Lunes","total_kcal":0,"meals":[{"name":"Desayuno","food":"descripción","kcal":0,"protein":0}]}]}\nIncluye los 7 días (Lunes a Domingo). Cada día con 4 comidas: Desayuno, Almuerzo, Merienda, Cena.\nCRÍTICO: El JSON debe estar COMPLETO, incluyendo todos los corchetes y llaves de cierre. No lo trunques.`;
-    const res = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], max_tokens: 4000 }) });
-    if(!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    const data = await res.json();
-    let raw = (data.text || data.content?.[0]?.text || '').trim();
+    let raw = await callDeepSeek(prompt);
+    raw = (raw || '').trim();
     let cleaned = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
     cleaned = cleaned.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
     const firstBrace = cleaned.indexOf('{');
