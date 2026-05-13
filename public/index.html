@@ -1003,6 +1003,26 @@ import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, g
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
 const app = initializeApp(FB_CONFIG);
 const auth = getAuth(app);
+
+getRedirectResult(auth).then((result) => {
+  if (result?.user) {
+    console.log("Login exitoso:", result.user.displayName);
+  }
+}).catch((err) => {
+  if (err.code !== "auth/no-current-user") {
+    console.error("Error redirect:", err.message);
+  }
+});
+getRedirectResult(auth).then((result) => {
+  if (result?.user) {
+    console.log('Login con redirect exitoso:', result.user.displayName);
+  }
+}).catch((err) => {
+  if (err.code !== 'auth/no-current-user') {
+    console.error('Error en redirect:', err.message);
+    showToast('Error al iniciar sesión');
+  }
+});
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
@@ -1027,6 +1047,8 @@ async function callDeepSeek(prompt) {
   }
 }
 const FREE_LIMIT = 5;
+let coachMessagesToday = 0;
+function _syncCoachMsgs(){ const k='nl_cd_'+new Date().toDateString(); coachMessagesToday=parseInt(lsGet(k,0)); return k; }
 
 let currentUser = null, historyData = [], metas = { cal:2000, prot:150, carbs:200, fats:55 }, profile = {}, imageBase64 = null, cameraStream = null, isPro = false, lastAnalysis = null;
 let scanTimer = null;
@@ -1676,6 +1698,9 @@ window.getAISummary = async function(){
   }catch(err){ if(txtEl) txtEl.textContent = 'Error al conectar con la IA.'; }
 };
 window.sendCoachMsg = async function(){
+  const _ck=_syncCoachMsgs();
+  if (!isPro && coachMessagesToday >= 5) { openModal(); return; }
+  if (!isPro) { lsSet(_ck, coachMessagesToday + 1); }
   if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; }
   const input = document.getElementById('coachInput');
   const msg = input?.value.trim();
@@ -1728,6 +1753,7 @@ function repairTruncatedPlan(jsonStr){
   return { days };
 }
 window.generateWeeklyPlan = async function(){
+  if (!isPro) { openModal(); return; }
   if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; }
   const list = document.getElementById('weeklyPlanList');
   if(!list) return;
@@ -1763,7 +1789,7 @@ window.generateWeeklyPlan = async function(){
   }catch(err){ console.error('Error en generateWeeklyPlan:', err); list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--error)">❌ Error: ${err.message}</div>`; }
 };
 window.clearHistory = async function(){ if(!confirm('¿Borrar todo el historial?')) return; historyData = []; lsSet('nl_history', []); if(currentUser) await clearFSHistory().catch(() => {}); updateMetasUI(); renderHistory(); showToast('🗑️ Historial eliminado'); };
-window.exportPDF = function(){ if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; } const lines = [`NUTRILENT AI — HISTORIAL NUTRICIONAL`, `Exportado: ${new Date().toLocaleString()}`, `Usuario: ${profile.nombre || currentUser?.displayName || '—'}`, `Objetivo: ${profile.objetivo || '—'} | Meta diaria: ${metas.cal} kcal`, `Total de análisis: ${historyData.length}`, '', ...historyData.slice(0,40).map((e,i) => [`${i+1}. ${e.plato}`, `   Fecha: ${e.date}`, `   Calorías: ${e.calorias} kcal | Proteínas: ${e.proteinas}g | Carbos: ${e.carbos}g | Grasas: ${e.grasas}g`, e.consejo ? `   💡 ${e.consejo}` : '', ''].join('\n')), `───────────────────────────────`, `© 2025 NutriLent AI · NutriLent® marca registrada`, `Los análisis son orientativos y no reemplazan asesoramiento médico.`]; const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `NutriLent_${new Date().toISOString().split('T')[0]}.txt`; a.click(); URL.revokeObjectURL(a.href); showToast('📄 Historial exportado'); };
+window.exportPDF = function(){ if (!isPro) { openModal(); return; } if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; } const lines = [`NUTRILENT AI — HISTORIAL NUTRICIONAL`, `Exportado: ${new Date().toLocaleString()}`, `Usuario: ${profile.nombre || currentUser?.displayName || '—'}`, `Objetivo: ${profile.objetivo || '—'} | Meta diaria: ${metas.cal} kcal`, `Total de análisis: ${historyData.length}`, '', ...historyData.slice(0,40).map((e,i) => [`${i+1}. ${e.plato}`, `   Fecha: ${e.date}`, `   Calorías: ${e.calorias} kcal | Proteínas: ${e.proteinas}g | Carbos: ${e.carbos}g | Grasas: ${e.grasas}g`, e.consejo ? `   💡 ${e.consejo}` : '', ''].join('\n')), `───────────────────────────────`, `© 2025 NutriLent AI · NutriLent® marca registrada`, `Los análisis son orientativos y no reemplazan asesoramiento médico.`]; const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `NutriLent_${new Date().toISOString().split('T')[0]}.txt`; a.click(); URL.revokeObjectURL(a.href); showToast('📄 Historial exportado'); };
 window.shareResult = function(){ if(!lastAnalysis){ showToast('No hay resultado para compartir'); return; } const text = `🍽️ Analicé "${lastAnalysis.plato}" con NutriLent AI: ${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína. ¡Descárgalo gratis! → nutrilent.app`; if(navigator.share){ navigator.share({ title: 'NutriLent AI', text }).catch(() => {}); }else{ navigator.clipboard?.writeText(text).then(() => showToast('📋 Copiado al portapapeles')); } };
 function getIMCCategory(imc){
   if(imc < 18.5) return { cls:'bajo', label:'Bajo peso', desc:'Considera aumentar tu ingesta calórica con alimentos nutritivos.' };
