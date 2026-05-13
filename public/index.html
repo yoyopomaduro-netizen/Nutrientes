@@ -997,26 +997,18 @@ const TR = {
 };
 let currentLang = localStorage.getItem('lang') || 'es';
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, writeBatch, deleteDoc } from "firebase/firestore";
 
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
 const app = initializeApp(FB_CONFIG);
 const auth = getAuth(app);
 
-getRedirectResult(auth).then((result) => {
-  if (result?.user) {
-    console.log("Login exitoso:", result.user.displayName);
-  }
 }).catch((err) => {
   if (err.code !== "auth/no-current-user") {
     console.error("Error redirect:", err.message);
   }
 });
-getRedirectResult(auth).then((result) => {
-  if (result?.user) {
-    console.log('Login con redirect exitoso:', result.user.displayName);
-  }
 }).catch((err) => {
   if (err.code !== 'auth/no-current-user') {
     console.error('Error en redirect:', err.message);
@@ -1596,7 +1588,7 @@ let selectedPlan = 'month';
 window.selectPlan = function(plan){ selectedPlan = plan; const mCard = document.getElementById('planMonthCard'); const yCard = document.getElementById('planYearCard'); if(mCard) mCard.classList.toggle('selected', plan === 'month'); if(yCard) yCard.classList.toggle('selected', plan === 'year'); const btn = document.getElementById('btnUpgradeMain'); if(btn) btn.className = 'btn-upgrade' + (plan === 'year' ? ' gold-btn' : ''); };
 window.loginGoogle = async function() {
   try {
-    await signInWithRedirect(auth, provider);
+    await signInWithPopup(auth, provider);
   } catch(err) {
     console.error('loginGoogle error:', err);
     if (typeof showToast === 'function') showToast('Error al iniciar sesión: ' + err.message);
@@ -2043,12 +2035,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('notificationsToggle')?.addEventListener('click', function(){ this.classList.toggle('active'); lsSet('nl_notifications', this.classList.contains('active')); showToast(this.classList.contains('active') ? '🔔 Notificaciones activadas' : '🔕 Notificaciones desactivadas'); });
   const langSel = document.getElementById('languageSelect'); if(langSel) langSel.addEventListener('change', (e) => setLang(e.target.value));
   document.getElementById('fileInput')?.addEventListener('change', async(e) => { const file = e.target.files?.[0]; if(!file) return; if(file.size > 4 * 1024 * 1024){ showToast('❌ Imagen muy pesada (máx. 4MB)'); return; } try{ imageBase64 = await resizeImage(file); showPreview(imageBase64); }catch{ showToast('Error al procesar la imagen'); } });
-  document.getElementById('btnLogin')?.addEventListener('click', async() => { try{ await signInWithRedirect(auth, provider); }catch(err){ showToast('Error al iniciar sesión: ' + err.message); } });
+  document.getElementById('btnLogin')?.addEventListener('click', async() => { try{ await signInWithPopup(auth, provider); }catch(err){ showToast('Error al iniciar sesión: ' + err.message); } });
   document.getElementById('btnLogout')?.addEventListener('click', async() => { await signOut(auth); lsSet('nl_profile', {}); profile = {}; showToast('👋 Sesión cerrada'); });
-  getRedirectResult(auth).then((result) => {
-    if (result?.user) {
-      console.log('Login con redirect exitoso');
-    }
   }).catch((err) => {
     if (err.code !== 'auth/no-current-user') {
       console.error('Redirect error:', err.message);
