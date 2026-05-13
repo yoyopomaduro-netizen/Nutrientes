@@ -997,7 +997,7 @@ const TR = {
 };
 let currentLang = localStorage.getItem('lang') || 'es';
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, writeBatch, deleteDoc } from "firebase/firestore";
 
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
@@ -1006,15 +1006,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Manejar resultado del redirect de Google (al volver a la app)
-getRedirectResult(auth).then(function(result) {
-  if (result) console.log('✅ Login redirect exitoso en index.html');
-}).catch(function(error) {
-  console.warn('Redirect error en index:', error.code);
-  if (error.code === 'auth/account-exists-with-different-credential') {
-    if (typeof showToast === 'function') showToast('Ya existe una cuenta con ese email.');
-  }
-});
+
 
 const WORKER_URL = "https://nutrientes.nutrilent.workers.dev/api/chat";
 const DEEPSEEK_API_KEY = 'sk-0684d51e50fe4b9e98da9e5414fdaa01';
@@ -1582,7 +1574,7 @@ let selectedPlan = 'month';
 window.selectPlan = function(plan){ selectedPlan = plan; const mCard = document.getElementById('planMonthCard'); const yCard = document.getElementById('planYearCard'); if(mCard) mCard.classList.toggle('selected', plan === 'month'); if(yCard) yCard.classList.toggle('selected', plan === 'year'); const btn = document.getElementById('btnUpgradeMain'); if(btn) btn.className = 'btn-upgrade' + (plan === 'year' ? ' gold-btn' : ''); };
 window.loginGoogle = async function() {
   try {
-    await signInWithRedirect(auth, provider);
+    await signInWithPopup(auth, provider);
   } catch(err) {
     console.error('loginGoogle error:', err);
     if (typeof showToast === 'function') showToast('Error al iniciar sesión: ' + err.message);
@@ -2025,14 +2017,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('notificationsToggle')?.addEventListener('click', function(){ this.classList.toggle('active'); lsSet('nl_notifications', this.classList.contains('active')); showToast(this.classList.contains('active') ? '🔔 Notificaciones activadas' : '🔕 Notificaciones desactivadas'); });
   const langSel = document.getElementById('languageSelect'); if(langSel) langSel.addEventListener('change', (e) => setLang(e.target.value));
   document.getElementById('fileInput')?.addEventListener('change', async(e) => { const file = e.target.files?.[0]; if(!file) return; if(file.size > 4 * 1024 * 1024){ showToast('❌ Imagen muy pesada (máx. 4MB)'); return; } try{ imageBase64 = await resizeImage(file); showPreview(imageBase64); }catch{ showToast('Error al procesar la imagen'); } });
-  document.getElementById('btnLogin')?.addEventListener('click', async() => { try{ await signInWithRedirect(auth, provider); }catch(err){ showToast('Error al iniciar sesión: ' + err.message); } });
+  document.getElementById('btnLogin')?.addEventListener('click', async() => { try{ await signInWithPopup(auth, provider); }catch(err){ showToast('Error al iniciar sesión: ' + err.message); } });
   document.getElementById('btnLogout')?.addEventListener('click', async() => { await signOut(auth); lsSet('nl_profile', {}); profile = {}; showToast('👋 Sesión cerrada'); });
-  getRedirectResult(auth).then((result) => {
-    if (result) console.log('Login exitoso con redirect');
-  }).catch((err) => {
-    console.error('Error en redirect:', err.message);
-    showToast('Error al iniciar sesión');
-  });
   onAuthStateChanged(auth, async(user) => { currentUser = user; if(user){ document.getElementById('btnLogin').style.display = 'none'; document.getElementById('userPill').classList.add('show'); const userName = user.displayName || user.email?.split('@')[0] || 'Usuario'; setText('userDisplayName', userName.split(' ')[0]); const avatarWrap = document.getElementById('userAvatarWrap'); if(avatarWrap){ if(user.photoURL){ avatarWrap.innerHTML = `<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}">`; }else{ const ini = (user.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); avatarWrap.innerHTML = `<div class="user-initials">${ini}</div>`; } } const name = user.displayName?.split(' ')[0] || ''; const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = name ? `${greeting}, ${name}! 👋` : t('greet'); const cloud = document.getElementById('cloudBadge'); if(cloud) cloud.classList.add('show'); setText('profileNameDisplay', userName); setText('profileEmailDisplay', user.email || ''); const phrases = ['\"Cada comida es una decisión de salud\" 🥗','\"Tu mejor versión empieza hoy\" 💪','\"Pequeños cambios, grandes resultados\" ⚡','\"La constancia vence al talento\" 🔥','\"Hoy es un buen día para comer bien\" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); if(user.photoURL){ const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = `<img src="${user.photoURL}" alt="">`; }else{ const pa = document.getElementById('profileAvatarWrap'); if(pa){ const initial = (userName[0] || 'U').toUpperCase(); pa.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:Syne;font-weight:800;font-size:32px;border-radius:50%">${initial}</div>`; } } loadConditions(); await loadFromFS(user.uid); }else{ document.getElementById('btnLogin').style.display = ''; document.getElementById('userPill').classList.remove('show'); const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.textContent = t('greet'); document.getElementById('cloudBadge')?.classList.remove('show'); const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = '🧑'; isPro = lsGet('nl_isPro', false); updateUsageUI(); } });
   currentLang = lsGet('nl_lang', 'es'); historyData = lsGet('nl_history', []); metas = lsGet('nl_metas', { cal: 2000, prot: 150, carbs: 200, fats: 55 }); profile = lsGet('nl_profile', {}); isPro = lsGet('nl_isPro', false);
   updateUI(); updateUsageUI(); renderHistory(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); window.updateHydrationDisplay(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
