@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Login Popup</title></head>
+<body>
+  <h1>Test Login Popup</h1>
+  <button id="btn">Iniciar sesión con Google</button>
+  <pre id="result"></pre>
+
+  <script type="importmap">
+  { "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+  }}
+  </script>
+  <script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "firebase/auth";
+    
+    const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
+    const app = initializeApp(FB_CONFIG);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    
+    const resultEl = document.getElementById('result');
+    resultEl.textContent = 'Inicializando...\n';
+    
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resultEl.textContent += '✅ onAuthStateChanged: ' + user.displayName + '\n';
+      } else {
+        resultEl.textContent += 'ℹ️ Usuario no autenticado\n';
+      }
+    });
+    
+    document.getElementById('btn').addEventListener('click', async () => {
+      resultEl.textContent += '🔄 Abriendo popup...\n';
+      try {
+        const result = await signInWithPopup(auth, provider);
+        resultEl.textContent += '✅ Login exitoso: ' + result.user.displayName + '\n';
+      } catch (err) {
+        resultEl.textContent += '❌ Error: ' + err.message + '\n';
+      }
+    });
+  </script>
+</body>
+</html>
