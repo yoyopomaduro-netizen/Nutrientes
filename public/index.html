@@ -9,7 +9,6 @@
 <meta name="description" content="Analiza tus comidas con IA, obtén macros completas, IMC dinámico y recomendaciones personalizadas.">
 <meta name="theme-color" content="#080808">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
@@ -28,12 +27,8 @@ body.light { --bg: #f2f2ee; --text: #111; --text-muted: #666; --text-dim: rgba(0
   --surface: #fff; --surface2: #f0f0ec; --surface3: #e4e4e0; --accent2-dim: rgba(80,240,184,0.09);
   --border: rgba(0,0,0,0.07); --border2: rgba(0,0,0,0.12); --shadow: 0 8px 32px rgba(0,0,0,0.12); }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:#0a0a0a;position:relative;min-height:100vh;overflow-x:hidden;color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.55;transition:background var(--transition),color var(--transition);}
-body::before{content:'';position:fixed;top:20%;left:50%;transform:translate(-50%,-20%);width:100vw;height:100vh;background:radial-gradient(circle at center,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.03) 40%,rgba(0,0,0,0) 70%);z-index:0;pointer-events:none;}
-body::after{content:'';position:fixed;top:0;left:-25%;width:150%;height:150%;background:conic-gradient(from 0deg at 50% 50%,#1a0000,#0d1a00,#000d1a,#1a0000);opacity:0.15;animation:lavaFlow 20s linear infinite;z-index:0;pointer-events:none;}
-@keyframes lavaFlow{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.page{display:none;padding:40px 20px 110px;max-width:480px;margin:0 auto;animation:fadeUp 0.28s ease both;position:relative;z-index:1;}
-#page-scan{position:relative;z-index:1;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.55;min-height:100dvh;transition:background var(--transition),color var(--transition);}
+.page{display:none;padding:40px 20px 110px;max-width:480px;margin:0 auto;animation:fadeUp 0.28s ease both;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 .header{text-align:center;margin-bottom:22px;}
@@ -529,20 +524,6 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .dot{font-size:12px;color:#333;}
 .dot.done{color:#b8f050;text-shadow:0 0 6px rgba(184,240,80,0.5);}
 .dot.today{color:#f0c050;animation:pulse 1.5s infinite;}
-.water-card{background:rgba(17,17,17,0.85);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:14px;}
-.water-header{display:flex;align-items:center;gap:8px;}
-.water-icon{font-size:18px;display:inline-block;animation:waterDrop 2s ease-in-out infinite;}
-@keyframes waterDrop{0%,100%{transform:translateY(0);opacity:1;}50%{transform:translateY(-4px);opacity:0.7;}}
-.water-title{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;flex:1;}
-.water-controls{display:flex;gap:6px;}
-.water-btn{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);background:#111;color:#f0f0f0;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-.water-btn:hover{background:rgba(255,255,255,0.05);}
-.water-body{display:flex;align-items:baseline;gap:4px;margin:8px 0;}
-.water-value{font-family:Syne,sans-serif;font-size:24px;font-weight:700;color:#50b0f0;}
-.water-unit{font-size:12px;color:#888;}
-.water-goal{font-size:12px;color:#666;}
-.water-bar{height:4px;background:#1e1e1e;border-radius:2px;overflow:hidden;}
-.water-fill{height:100%;background:linear-gradient(90deg,#50b0f0,#50f0b8);border-radius:2px;transition:width 0.6s ease;}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.1);opacity:0.8;}}
 .theme-fire .streak-num{color:#ff6b35;text-shadow:0 0 20px rgba(255,107,53,0.4),0 0 40px rgba(255,50,0,0.2);}
 .theme-fire .dot.done{color:#ff6b35;text-shadow:0 0 8px rgba(255,107,53,0.5);}
@@ -577,31 +558,30 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .myplan-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(184,240,80,0.3);}
 .btn-cancel-plan{width:100%;padding:11px;background:transparent;border:1px solid rgba(255,95,95,0.15);border-radius:12px;color:#f05050;font-size:12px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
 .btn-cancel-plan:hover{background:rgba(255,95,95,0.05);border-color:rgba(255,95,95,0.3);}
-body,button,input,textarea,select{font-family:'DM Sans',sans-serif;}
-h1,h2,h3,.section-title,.ring-value,.ring-pct,.macro-value,.streak-num,.dash-tab{font-family:'Syne',sans-serif;font-weight:700;}
-.profile-phrase,.greeting,.coach-message{font-family:'Caveat',cursive;font-size:18px;}
-.ring-value{font-size:36px;font-weight:800;}
-.macro-value{font-size:28px;font-weight:700;}
-.section-title{font-size:16px;letter-spacing:1px;}
-.dash-tab{font-size:12px;font-weight:600;}
-.macro-card{background:linear-gradient(135deg,#111,#1a1a1a)!important;border:1px solid rgba(255,255,255,0.06)!important;border-radius:16px!important;padding:16px!important;box-shadow:0 4px 20px rgba(0,0,0,0.3)!important;transition:all 0.3s cubic-bezier(0.4,0,0.2,1)!important;}
-.macro-card:nth-child(1){border-top:4px solid #f0c050;}
-.macro-card:nth-child(2){border-top:4px solid #50b8f0;}
-.macro-card:nth-child(3){border-top:4px solid #b8f050;}
-.macro-card:nth-child(4){border-top:4px solid #f050b8;}
-.macro-card:hover{transform:translateY(-2px)!important;box-shadow:0 8px 30px rgba(0,0,0,0.5)!important;}
-.macro-value{font-family:'Syne',sans-serif!important;font-size:28px!important;font-weight:700!important;}
-.macro-name{font-family:'DM Sans',sans-serif!important;font-size:11px!important;letter-spacing:1.5px!important;text-transform:uppercase!important;color:#888!important;}
-.macro-bar{height:6px!important;border-radius:3px!important;background:#1e1e1e!important;overflow:hidden!important;margin-top:10px!important;}
-#page-scan,#page-history,#page-plan,#page-myplan,#page-profile,#page-settings{padding:20px 16px!important;}
-.dashboard-top{gap:20px!important;margin-bottom:20px!important;}
-.macros-vertical{gap:12px!important;}
-.section-title{margin-bottom:16px!important;color:#f0f0f0!important;}
-.dash-tab.active{color:#a3d94e!important;border-color:#a3d94e!important;background:rgba(163,217,78,0.08)!important;}
-.ring-progress{stroke:url(#ringGradient)!important;}
-.btn-upgrade,#btnAnalyze{background:linear-gradient(135deg,#a3d94e,#3dd6a7)!important;}
-p,span,div,button,input,textarea,select{color:#e0e0e0;}
-.text-muted,.macro-name,.ring-label,.streak-label,.water-title{color:#888!important;}
+/* === Dashboard Premium Rings === */
+.ring-container-main{position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center;}
+.ring-container-main svg{filter:drop-shadow(0 0 15px rgba(184,240,80,0.2));animation:ringPulse 3s ease-in-out infinite;}
+@keyframes ringPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.02);}}
+.ring-center-main{position:absolute;text-align:center;}
+.ring-label-main{font-family:'DM Sans',sans-serif;font-size:9px;color:#888;letter-spacing:4px;text-transform:uppercase;}
+.ring-value-main{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:#f0f0f0;line-height:1;}
+.ring-total-main{font-family:'DM Sans',sans-serif;font-size:10px;color:#666;}
+.ring-pct-main{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#b8f050;}
+/* Small Rings */
+.small-rings{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
+.small-ring{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;background:rgba(17,17,17,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.06);border-radius:50%;}
+.small-ring-center{position:absolute;text-align:center;}
+.small-ring-icon{font-size:16px;}
+.small-ring-name{font-family:'DM Sans',sans-serif;font-size:9px;color:#888;margin-top:2px;}
+.small-ring-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f0f0f0;line-height:1;}
+.small-ring-pct{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;}
+.small-ring-pct.protein{color:#50b8f0;}
+.small-ring-pct.carbs{color:#f0c050;}
+.small-ring-pct.fats{color:#f050b8;}
+/* Premium Cards */
+.streak-card-premium{background:rgba(17,17,17,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px;text-align:center;width:100%;max-width:350px;}
+.streak-number{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;background:linear-gradient(135deg,#ff8c42,#ff4500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 10px rgba(255,140,66,0.4));}
+#page-scan{display:flex;flex-direction:column;align-items:center;gap:20px;padding:16px;}
 </style>
 </head>
 <body>
@@ -644,10 +624,10 @@ p,span,div,button,input,textarea,select{color:#e0e0e0;}
 <div class="dashboard-premium" id="usageBarWrap">
   <!-- FILA 1: Anillo KCL + Macros verticales -->
   <div class="dashboard-top">
-    <div class="ring-container">
+    <div class="ring-container-main">
       <svg class="ring-svg" viewBox="0 0 160 160">
-        <circle class="ring-track" cx="80" cy="80" r="70" fill="none" stroke="#1a1a1a" stroke-width="10"/>
-        <circle class="ring-progress" id="ringProgress" cx="80" cy="80" r="70" fill="none" stroke="url(#ringGradient)" stroke-width="10" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 80 80)"/>
+        <circle class="ring-track" cx="80" cy="80" r="70" fill="none" stroke="#1a1a1a" stroke-width="12"/>
+        <circle class="ring-progress" id="ringProgress" cx="80" cy="80" r="70" fill="none" stroke="url(#ringGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 80 80)"/>
         <defs>
           <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#b8f050"/>
@@ -656,62 +636,61 @@ p,span,div,button,input,textarea,select{color:#e0e0e0;}
           </linearGradient>
         </defs>
       </svg>
-      <div class="ring-center">
-        <span class="ring-label">KCAL</span>
-        <span class="ring-value" id="ringValue">0</span>
-        <span class="ring-total" id="ringTotal">de 2000</span>
-        <span class="ring-pct" id="ringPct">0%</span>
-        <div class="dial-badge" id="dialBadge">0 / 5 PRO</div>
+      <div class="ring-center-main">
+        <span class="ring-label-main">KCAL</span>
+        <span class="ring-value-main" id="ringValue">0</span>
+        <span class="ring-total-main" id="ringTotal">de 2000</span>
+        <span class="ring-pct-main" id="ringPct">0%</span>
       </div>
     </div>
-    <div class="macros-vertical">
-      <div class="macro-row card-prot">
-        <div class="macro-info">
-          <span class="macro-icon">💪</span>
-          <span class="macro-name">Proteína</span>
+    <div class="small-rings">
+      <div class="small-ring">
+        <div class="small-ring-center">
+          <span class="small-ring-icon">💪</span>
+          <div class="small-ring-name">Proteína</div>
+          <span class="small-ring-value" id="macroProtVal">0g</span>
+          <span class="small-ring-pct protein" id="macroProtPct">0%</span>
         </div>
-        <div class="macro-data">
-          <span class="macro-value" id="macroProtVal">0g</span>
-          <span class="macro-goal" id="macroProtGoal">de 150g</span>
+        <div style="display:none">
+          <span id="macroProtGoal">de 150g</span>
+          <div class="macro-bar"><div class="macro-fill protein" id="macroProtBar"></div></div>
+          <span id="pctProt">0%</span>
+          <span id="totalProt">0</span>
+          <span id="goalProtShow">150</span>
+          <span id="barProt"></span>
         </div>
-        <div class="macro-bar"><div class="macro-fill protein" id="macroProtBar"></div></div>
-        <span class="macro-pct" id="macroProtPct">0%</span>
-        <span style="display:none" id="pctProt">0%</span>
-        <span style="display:none" id="totalProt">0</span>
-        <span style="display:none" id="goalProtShow">150</span>
-        <span style="display:none" id="barProt"></span>
       </div>
-      <div class="macro-row card-carbs">
-        <div class="macro-info">
-          <span class="macro-icon">🌾</span>
-          <span class="macro-name">Carbohidratos</span>
+      <div class="small-ring">
+        <div class="small-ring-center">
+          <span class="small-ring-icon">🌾</span>
+          <div class="small-ring-name">Carbohidratos</div>
+          <span class="small-ring-value" id="macroCarbsVal">0g</span>
+          <span class="small-ring-pct carbs" id="macroCarbsPct">0%</span>
         </div>
-        <div class="macro-data">
-          <span class="macro-value" id="macroCarbsVal">0g</span>
-          <span class="macro-goal" id="macroCarbsGoal">de 200g</span>
+        <div style="display:none">
+          <span id="macroCarbsGoal">de 200g</span>
+          <div class="macro-bar"><div class="macro-fill carbs" id="macroCarbsBar"></div></div>
+          <span id="pctCarbs">0%</span>
+          <span id="totalCarbs">0</span>
+          <span id="goalCarbsShow">200</span>
+          <span id="barCarbs"></span>
         </div>
-        <div class="macro-bar"><div class="macro-fill carbs" id="macroCarbsBar"></div></div>
-        <span class="macro-pct" id="macroCarbsPct">0%</span>
-        <span style="display:none" id="pctCarbs">0%</span>
-        <span style="display:none" id="totalCarbs">0</span>
-        <span style="display:none" id="goalCarbsShow">200</span>
-        <span style="display:none" id="barCarbs"></span>
       </div>
-      <div class="macro-row card-fats">
-        <div class="macro-info">
-          <span class="macro-icon">🫒</span>
-          <span class="macro-name">Grasas</span>
+      <div class="small-ring">
+        <div class="small-ring-center">
+          <span class="small-ring-icon">🫒</span>
+          <div class="small-ring-name">Grasas</div>
+          <span class="small-ring-value" id="macroFatsVal">0g</span>
+          <span class="small-ring-pct fats" id="macroFatsPct">0%</span>
         </div>
-        <div class="macro-data">
-          <span class="macro-value" id="macroFatsVal">0g</span>
-          <span class="macro-goal" id="macroFatsGoal">de 55g</span>
+        <div style="display:none">
+          <span id="macroFatsGoal">de 55g</span>
+          <div class="macro-bar"><div class="macro-fill fats" id="macroFatsBar"></div></div>
+          <span id="pctFats">0%</span>
+          <span id="totalFats">0</span>
+          <span id="goalFatsShow">55</span>
+          <span id="barFats"></span>
         </div>
-        <div class="macro-bar"><div class="macro-fill fats" id="macroFatsBar"></div></div>
-        <span class="macro-pct" id="macroFatsPct">0%</span>
-        <span style="display:none" id="pctFats">0%</span>
-        <span style="display:none" id="totalFats">0</span>
-        <span style="display:none" id="goalFatsShow">55</span>
-        <span style="display:none" id="barFats"></span>
       </div>
     </div>
   </div>
@@ -733,7 +712,7 @@ p,span,div,button,input,textarea,select{color:#e0e0e0;}
       <div class="usage-bar"><div class="usage-fill" id="usageFill"></div></div>
       <button class="btn-pro-small" id="btnProSmall" style="display:none">Pro ⚡</button>
     </div>
-    <div class="streak-card">
+    <div class="streak-card-premium">
       <div class="streak-header">
         <span class="streak-fire">🔥</span>
         <span class="streak-title">Racha</span>
@@ -742,35 +721,11 @@ p,span,div,button,input,textarea,select{color:#e0e0e0;}
         <span class="streak-num" id="streakNum">0</span>
         <span class="streak-label">días seguidos</span>
       </div>
-      <div class="streak-dots" id="streakDots">
-        <span class="dot done">●</span>
-        <span class="dot done">●</span>
-        <span class="dot done">●</span>
-        <span class="dot today">●</span>
-        <span class="dot">●</span>
-        <span class="dot">●</span>
-        <span class="dot">●</span>
-      </div>
+      <div class="streak-dots" id="streakDots"></div>
     </div>
   </div>
 
   <!-- FILA 3: Hidratación -->
-  <div class="water-card">
-    <div class="water-header">
-      <span class="water-icon">💧</span>
-      <span class="water-title">Hidratación hoy</span>
-      <div class="water-controls">
-        <button class="water-btn" id="waterMinus">−</button>
-        <button class="water-btn" id="waterPlus">+</button>
-      </div>
-    </div>
-    <div class="water-body">
-      <span class="water-value" id="waterValue">0</span>
-      <span class="water-unit">vasos</span>
-      <span class="water-goal" id="waterGoal">de 8</span>
-    </div>
-    <div class="water-bar"><div class="water-fill" id="waterFill"></div></div>
-  </div>
   <div style="display:none">
     <span id="totalCal">0</span>
     <span id="goalCalShow">2000</span>
@@ -1019,15 +974,14 @@ const TR = {
 };
 let currentLang = localStorage.getItem('lang') || 'es';
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, writeBatch, deleteDoc } from "firebase/firestore";
 
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
 const app = initializeApp(FB_CONFIG);
-const auth = getAuth(app); window.auth = auth; window.auth = auth;
-
+const auth = getAuth(app); window.auth = auth;
 const db = getFirestore(app);
-const provider = new GoogleAuthProvider(); window.provider = provider; window.provider = provider;
+const provider = new GoogleAuthProvider(); window.provider = provider;
 
 // Manejar resultado del redirect de Google (al volver a la app)
 getRedirectResult(auth).then(function(result) {
@@ -1400,13 +1354,13 @@ function showCanEatCard(calories, protein){
   };
 }
 function applyStreakTheme(days){
-  const card = document.querySelector('.streak-card');
+  const card = document.querySelector('.streak-card-premium');
   if(!card) return;
   const week = Math.ceil(days / 7) || 1;
   const themes = ['theme-fire','theme-ice','theme-earth','theme-ether'];
   const icons = ['🔥','❄️','🌿','✨'];
   const idx = Math.min(week - 1, 3);
-  card.className = 'streak-card ' + themes[idx];
+  card.className = 'streak-card-premium ' + themes[idx];
   const fireEl = card.querySelector('.streak-fire');
   if(fireEl) fireEl.textContent = icons[idx];
 }
@@ -1414,14 +1368,15 @@ function updateStreak(){
   const today = new Date().toDateString();
   const lastDate = localStorage.getItem('nl_last_analysis_date');
   let streak = parseInt(localStorage.getItem('nl_streak') || '0');
+  if(lastDate !== today){
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if(lastDate === yesterday.toDateString()) streak++;
+    else streak = 1;
+    localStorage.setItem('nl_streak', streak);
+    localStorage.setItem('nl_last_analysis_date', today);
+  }
   applyStreakTheme(streak);
-  if(lastDate === today) return streak;
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  if(lastDate === yesterday.toDateString()) streak++;
-  else streak = 1;
-  localStorage.setItem('nl_streak', streak);
-  localStorage.setItem('nl_last_analysis_date', today);
   const streakNum = document.getElementById('streakNum');
   if(streakNum) streakNum.textContent = streak;
   const dotsContainer = document.getElementById('streakDots');
@@ -1607,8 +1562,12 @@ window.loginGoogle = async function() {
   try {
     await signInWithPopup(auth, provider);
   } catch (err) {
-    console.error("loginGoogle error:", err);
-    showToast("Error al iniciar sesión: " + err.message);
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+      await signInWithRedirect(auth, provider);
+    } else {
+      console.error("loginGoogle error:", err);
+      showToast("Error al iniciar sesión");
+    }
   }
 };
 window.capturePhoto = function(){
@@ -1670,12 +1629,26 @@ window.analyze = async function(){
     const culturalContext = obtenerPromptCultural();
     const prompt = `${culturalContext}
 Eres un nutricionista certificado con visión computacional. Analiza ESTA imagen de comida con máxima precisión. Usa el tamaño del plato y utensilios como referencia para estimar porciones en gramos. Agrega +10% a los aceites y grasas ocultas en la cocción. Responde SOLO en ${langName} con el siguiente JSON (sin texto adicional ni markdown): {"plato":"nombre del plato","ingredientes":["ingrediente1","ingrediente2"],"calorias":0,"proteinas":0,"carbos":0,"grasas":0,"fibra":0,"sodio":0,"azucares":0,"indice_glucemico":0,"clasificacion_gi":"low","consejo":"consejo nutricional personalizado de 2-3 oraciones"} clasificacion_gi debe ser: "low" (IG<55), "medium" (55-70), "high" (>70).`;
-    const res = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64Data } }, { type: 'text', text: prompt }] }] }) });
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        imageBase64: base64Data,
+        promptNutrition: prompt
+      })
+    });
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    if(data.error) throw new Error(data.error);
-    let raw = (data.text || data.content?.[0]?.text || '').trim();
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    let text = '';
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      text = data.choices[0].message.content;
+    } else if (data.text) {
+      text = data.text;
+    } else if (data.content) {
+      text = data.content[0]?.text || '';
+    }
+    if (!text) throw new Error('La IA no devolvió texto');
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if(!jsonMatch) throw new Error('Respuesta inesperada de la IA');
     const result = JSON.parse(jsonMatch[0]);
     lastAnalysis = result;
@@ -2031,24 +2004,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if(lsGet('nl_theme', 'dark') === 'light') document.body.classList.add('light'); syncThemeToggles();
   if(lsGet('nl_notifications', false)) document.getElementById('notificationsToggle')?.classList.add('active');
   const proTgl = document.getElementById('proModeToggle'); if(proTgl){ if(lsGet('nl_isPro', false)) proTgl.classList.add('active'); proTgl.addEventListener('click', () => { isPro = !isPro; proTgl.classList.toggle('active', isPro); lsSet('nl_isPro', isPro); updateUsageUI(); showToast(isPro ? t('toastUpgradeSim') : '⚠️ Modo Pro desactivado'); if(isPro) triggerConfetti(); }); }
-  window.waterIntake = parseInt(localStorage.getItem('nl_water')) || 0;
-  window.hydrationGoal = 8;
-  window.updateHydrationDisplay = function(){
-    const wv = document.getElementById('waterValue'); if(wv) wv.textContent = window.waterIntake;
-    const wg = document.getElementById('waterGoal'); if(wg) wg.textContent = 'de ' + window.hydrationGoal;
-    const wf = document.getElementById('waterFill'); if(wf) wf.style.width = Math.min((window.waterIntake / window.hydrationGoal) * 100, 100) + '%';
-  };
-  document.getElementById('waterMinus')?.addEventListener('click', () => { window.waterIntake = Math.max(0, (window.waterIntake||0) - 1); localStorage.setItem('nl_water', window.waterIntake); window.updateHydrationDisplay(); });
-  document.getElementById('waterPlus')?.addEventListener('click', () => { window.waterIntake = Math.min(20, (window.waterIntake||0) + 1); localStorage.setItem('nl_water', window.waterIntake); window.updateHydrationDisplay(); });
   document.getElementById('themeToggleSettings')?.addEventListener('click', toggleTheme);
   document.getElementById('notificationsToggle')?.addEventListener('click', function(){ this.classList.toggle('active'); lsSet('nl_notifications', this.classList.contains('active')); showToast(this.classList.contains('active') ? '🔔 Notificaciones activadas' : '🔕 Notificaciones desactivadas'); });
   const langSel = document.getElementById('languageSelect'); if(langSel) langSel.addEventListener('change', (e) => setLang(e.target.value));
   document.getElementById('fileInput')?.addEventListener('change', async(e) => { const file = e.target.files?.[0]; if(!file) return; if(file.size > 4 * 1024 * 1024){ showToast('❌ Imagen muy pesada (máx. 4MB)'); return; } try{ imageBase64 = await resizeImage(file); showPreview(imageBase64); }catch{ showToast('Error al procesar la imagen'); } });
-  document.getElementById('btnLogin')?.addEventListener('click', async() => { try{ await signInWithRedirect(auth, provider); }catch(err){ showToast('Error al iniciar sesión: ' + err.message); } });
   document.getElementById('btnLogout')?.addEventListener('click', async() => { await signOut(auth); showToast('👋 Sesión cerrada'); });
   onAuthStateChanged(auth, async(user) => { currentUser = user; if(user){ document.getElementById('btnLogin').style.display = 'none'; document.getElementById('userPill').classList.add('show'); const userName = user.displayName || user.email?.split('@')[0] || 'Usuario'; setText('userDisplayName', userName.split(' ')[0]); const avatarWrap = document.getElementById('userAvatarWrap'); if(avatarWrap){ if(user.photoURL){ avatarWrap.innerHTML = `<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}">`; }else{ const ini = (user.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); avatarWrap.innerHTML = `<div class="user-initials">${ini}</div>`; } } const name = user.displayName?.split(' ')[0] || ''; const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = name ? `${greeting}, ${name}! 👋` : t('greet'); const cloud = document.getElementById('cloudBadge'); if(cloud) cloud.classList.add('show'); setText('profileNameDisplay', userName); setText('profileEmailDisplay', user.email || ''); const phrases = ['\"Cada comida es una decisión de salud\" 🥗','\"Tu mejor versión empieza hoy\" 💪','\"Pequeños cambios, grandes resultados\" ⚡','\"La constancia vence al talento\" 🔥','\"Hoy es un buen día para comer bien\" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); if(user.photoURL){ const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = `<img src="${user.photoURL}" alt="">`; }else{ const pa = document.getElementById('profileAvatarWrap'); if(pa){ const initial = (userName[0] || 'U').toUpperCase(); pa.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:Syne;font-weight:800;font-size:32px;border-radius:50%">${initial}</div>`; } } loadConditions(); await loadFromFS(user.uid); }else{ document.getElementById('btnLogin').style.display = ''; document.getElementById('userPill').classList.remove('show'); const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.textContent = t('greet'); document.getElementById('cloudBadge')?.classList.remove('show'); const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = '🧑'; isPro = lsGet('nl_isPro', false); updateUsageUI(); } });
   currentLang = lsGet('nl_lang', 'es'); historyData = lsGet('nl_history', []); metas = lsGet('nl_metas', { cal: 2000, prot: 150, carbs: 200, fats: 55 }); profile = lsGet('nl_profile', {}); isPro = lsGet('nl_isPro', false);
-  updateUI(); updateUsageUI(); renderHistory(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); window.updateHydrationDisplay(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
+  updateUI(); updateUsageUI(); renderHistory(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
   if(!lsGet('nl_cookies', false)){ setTimeout(() => { const b = document.getElementById('cookieBanner'); if(b) b.style.transform = 'translateY(0)'; }, 1200); }
   const onboarded = lsGet('nl_onboarded', false);
   if(!onboarded){
