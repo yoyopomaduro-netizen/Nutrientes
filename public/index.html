@@ -989,12 +989,13 @@ const TR = {
 };
 let currentLang = localStorage.getItem('lang') || 'es';
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, writeBatch, deleteDoc } from "firebase/firestore";
 
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
 const app = initializeApp(FB_CONFIG);
 const auth = getAuth(app); window.auth = auth; window.auth = auth;
+
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider(); window.provider = provider; window.provider = provider;
 
@@ -1574,16 +1575,10 @@ let selectedPlan = 'month';
 window.selectPlan = function(plan){ selectedPlan = plan; const mCard = document.getElementById('planMonthCard'); const yCard = document.getElementById('planYearCard'); if(mCard) mCard.classList.toggle('selected', plan === 'month'); if(yCard) yCard.classList.toggle('selected', plan === 'year'); const btn = document.getElementById('btnUpgradeMain'); if(btn) btn.className = 'btn-upgrade' + (plan === 'year' ? ' gold-btn' : ''); };
 window.loginGoogle = async function() {
   try {
-    const { signInWithPopup, signInWithRedirect } = await import("firebase/auth");
-    await signInWithPopup(window.auth, window.provider);
+    await signInWithPopup(auth, provider);
   } catch (err) {
-    if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
-      const { signInWithRedirect } = await import("firebase/auth");
-      await signInWithRedirect(window.auth, window.provider);
-    } else {
-      console.error("loginGoogle error:", err);
-      showToast("Error al iniciar sesión: " + err.message);
-    }
+    console.error("loginGoogle error:", err);
+    showToast("Error al iniciar sesión: " + err.message);
   }
 };
 window.capturePhoto = function(){
