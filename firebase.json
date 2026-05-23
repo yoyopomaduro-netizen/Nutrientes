@@ -1,7 +1,7 @@
 {
   "hosting": {
     "public": "public",
-    "ignore": [
+    "ignore": [ "**/*.backup*", "**/*_backup*",
       "firebase.json",
       "**/.*",
       "**/node_modules/**"

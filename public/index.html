@@ -467,14 +467,15 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .menu-item i{font-style:normal;font-size:16px;width:20px;text-align:center;flex-shrink:0;}
 .menu-item.active{background:rgba(184,240,80,0.06);border-left-color:#b8f050;color:#f0f0f0;font-weight:600;}
 .menu-item:not(.active):hover{background:var(--surface2);color:var(--text);border-left-color:rgba(184,240,80,0.2);}
+.dashboard-premium{display:flex;flex-direction:column;gap:16px;margin-bottom:18px;}
 .dashboard-top{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;}
-.ring-container{position:relative;width:150px;height:150px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
-.ring-svg{width:150px;height:150px;filter:drop-shadow(0 0 15px rgba(184,240,80,0.2));}
-.ring-center{position:absolute;top:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:150px;height:150px;}
-.ring-label{font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:3px;color:#666;text-transform:uppercase;}
-.ring-value{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;background:linear-gradient(135deg,#b8f050,#50f0b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
-.ring-total{font-family:'DM Sans',sans-serif;font-size:11px;color:#888;margin-top:2px;}
-.ring-pct{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#b8f050;margin-top:2px;}
+.ring-container{position:relative;width:110px;height:130px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
+.ring-svg{width:110px;height:110px;}
+.ring-center{position:absolute;top:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:110px;height:110px;}
+.ring-label{font-size:8px;letter-spacing:3px;color:#888;text-transform:uppercase;}
+.ring-value{font-family:Syne,sans-serif;font-size:26px;font-weight:800;color:#f0f0f0;line-height:1;}
+.ring-total{font-size:9px;color:#666;margin-top:1px;}
+.ring-pct{font-size:10px;font-weight:700;color:#b8f050;margin-top:2px;}
 .ring-progress{animation:ringGlow 4s ease-in-out infinite;}
 @keyframes ringGlow{0%,100%{filter:hue-rotate(0deg) drop-shadow(0 0 6px rgba(184,240,80,0.15));}50%{filter:hue-rotate(15deg) drop-shadow(0 0 12px rgba(80,240,184,0.25));}}
 .dial-badge{font-size:9px;color:#f0c050;background:rgba(240,192,80,0.08);padding:2px 8px;border-radius:10px;position:relative;top:112px;}
@@ -571,44 +572,6 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .myplan-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(184,240,80,0.3);}
 .btn-cancel-plan{width:100%;padding:11px;background:transparent;border:1px solid rgba(255,95,95,0.15);border-radius:12px;color:#f05050;font-size:12px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
 .btn-cancel-plan:hover{background:rgba(255,95,95,0.05);border-color:rgba(255,95,95,0.3);}
-#page-scan{padding:16px!important;max-width:500px!important;margin:0 auto!important;}
-.dashboard-tabs{display:flex;gap:6px;margin-bottom:16px;position:sticky;top:0;z-index:10;background:#080808;padding:8px 0;}
-.dash-tab{flex:1;padding:12px 8px;background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:12px;color:#888;font-size:12px;cursor:pointer;text-align:center;transition:all .3s ease;font-family:'DM Sans',sans-serif;font-weight:500;}
-.dash-tab.active{background:linear-gradient(135deg,rgba(184,240,80,0.15),rgba(80,240,184,0.1));border-color:#b8f050;color:#b8f050;font-weight:700;box-shadow:0 0 20px rgba(184,240,80,0.1);}
-.dash-panel{display:none;animation:fadeIn .3s ease;}
-.dash-panel[style*="display:block"]{display:block!important;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.streak-card,.water-card{background:linear-gradient(135deg,#111,#161616);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:20px;text-align:center;margin-top:8px;}
-.streak-num{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;background:linear-gradient(135deg,#ff8c42,#ff4500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 15px rgba(255,140,66,0.4));}
-.water-icon{font-size:28px;display:block;margin-bottom:8px;animation:waterFloat 2s ease-in-out infinite;}
-@keyframes waterFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-.btn-fridge-mode{width:100%;margin-top:12px;padding:14px;background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid rgba(184,240,80,0.25);border-radius:14px;color:#b8f050;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s ease;}
-.btn-fridge-mode:hover{border-color:#b8f050;box-shadow:0 0 20px rgba(184,240,80,0.2);transform:translateY(-2px);}
-button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ease;}
-.btn-upgrade,#btnAnalyze{background:linear-gradient(135deg,#b8f050,#50f0b8);color:#000;font-weight:700;border:none;font-size:14px;}
-.btn-upgrade:hover,#btnAnalyze:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(184,240,80,0.3);}
-.camera-toggle{background:#111;border:1px solid rgba(255,255,255,0.06);color:#888;}
-.camera-toggle:hover{color:#f0f0f0;}
-.macros-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;}
-.macro-card{background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px;border-top:4px solid transparent;animation:fadeInUp .4s ease both;}
-.macro-card:nth-child(1){animation-delay:.1s;border-top-color:#50b8f0;}
-.macro-card:nth-child(2){animation-delay:.2s;border-top-color:#b8f050;}
-.macro-card:nth-child(3){animation-delay:.3s;border-top-color:#f050b8;}
-.macro-card:nth-child(4){animation-delay:.4s;border-top-color:#f0c050;}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-.macro-card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.macro-card-icon{font-size:22px;}
-.macro-card-name{font-family:'DM Sans',sans-serif;font-size:10px;color:#888;letter-spacing:1.5px;text-transform:uppercase;}
-.macro-card-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;margin:4px 0;}
-.macro-card-goal{font-family:'DM Sans',sans-serif;font-size:10px;color:#666;}
-.macro-card-bar{height:5px;background:#1e1e1e;border-radius:3px;margin-top:8px;overflow:hidden;}
-.macro-card-fill{height:100%;border-radius:3px;transition:width .6s ease;}
-.macro-card-pct{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-align:right;margin-top:4px;}
-.coach-panel{padding:0!important;}
-.coach-panel .coach-messages{max-height:260px;overflow-y:auto;margin-bottom:10px;}
-.coach-panel .coach-input-row{display:flex;gap:8px;}
-.coach-panel .coach-input{flex:1;padding:12px;background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#f0f0f0;font-family:'DM Sans',sans-serif;font-size:13px;}
-.coach-panel .coach-send{padding:12px 16px;background:linear-gradient(135deg,#b8f050,#50f0b8);color:#000;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:14px;}
 </style>
 </head>
 <body>
@@ -648,20 +611,10 @@ button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ea
   </div>
   <div class="welcome-card"><div class="welcome-card-inner"><span class="welcome-emoji">🌱</span><div><div class="welcome-title" data-i18n="welcomeTitle">¡Bienvenido a NutriLent!</div><div class="welcome-msg" id="welcomeMessage" data-i18n="welcomeMsg">Comienza subiendo una foto de tu comida para analizarla con IA.</div></div></div></div>
   <div class="sync-bar" id="syncBar"><div class="sync-dot"></div><span id="syncMsg">Sincronizando...</span></div>
-  <div class="upload-zone" id="uploadZone"><input type="file" id="fileInput" accept="image/*"><span class="upload-icon">🥗</span><img id="preview"><div class="upload-label" id="uploadLabelEl"><strong id="uploadStrong" data-i18n="uploadStrong">Toca para subir</strong> <span id="uploadText" data-i18n="uploadText">una foto de tu comida</span><span id="noFileText" data-i18n="noFileSelected" style="display:block; font-size:10px; margin-top:4px;">Sin archivo seleccionado</span></div></div>
-  <div class="camera-section"><button class="camera-toggle" onclick="toggleCamera()"><span>📷</span> <span id="cameraToggleLabel" data-i18n="cameraToggle">Usar cámara en tiempo real</span></button><div class="camera-wrap" id="cameraWrap"><video id="cameraFeed" autoplay playsinline muted></video><button class="camera-capture" onclick="capturePhoto()">📸</button><button class="camera-close" onclick="closeCamera()">✕</button></div></div>
-  <button class="btn-analyze" id="btnAnalyze" onclick="analyze()">✨ Analizar comida</button>
-<button class="btn-fridge-mode" id="btnFridgeMode" style="display:none" onclick="openFridgeMode()">🥗 Modo Nevera Vacía</button>
-<div class="dashboard-tabs">
-  <button class="dash-tab active" data-tab="progreso" onclick="switchDashTab('progreso')">📊 Progreso</button>
-  <button class="dash-tab" data-tab="streak" onclick="switchDashTab('streak')">🔥 Racha</button>
-  <button class="dash-tab" data-tab="water" onclick="switchDashTab('water')">💧 Agua</button>
-  <button class="dash-tab" data-tab="coach" onclick="switchDashTab('coach')">🤖 Coach</button>
-</div>
-
-<div class="dash-panel" style="display:block" data-tab="progreso">
+<div class="dashboard-premium" id="usageBarWrap">
+  <!-- FILA 1: Anillo KCL + Macros verticales -->
   <div class="dashboard-top">
-    <div class="ring-container" style="width:150px;height:150px;">
+    <div class="ring-container">
       <svg class="ring-svg" viewBox="0 0 160 160">
         <circle class="ring-track" cx="80" cy="80" r="70" fill="none" stroke="#1a1a1a" stroke-width="10"/>
         <circle class="ring-progress" id="ringProgress" cx="80" cy="80" r="70" fill="none" stroke="url(#ringGradient)" stroke-width="10" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 80 80)"/>
@@ -681,53 +634,61 @@ button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ea
         <div class="dial-badge" id="dialBadge">0 / 5 PRO</div>
       </div>
     </div>
-    <div class="macros-grid">
-      <div class="macro-card">
-        <div class="macro-card-header"><span class="macro-card-icon">💪</span><span class="macro-card-name">Proteína</span></div>
-        <div class="macro-card-value" id="macroProtVal" style="color:#50b8f0">0g</div>
-        <div class="macro-card-goal" id="macroProtGoal">de 150g</div>
-        <div class="macro-card-bar"><div class="macro-card-fill" id="macroProtBar" style="width:0%;background:linear-gradient(90deg,#50b8f0,#70d0ff)"></div></div>
-        <div class="macro-card-pct" id="macroProtPct" style="color:#50b8f0">0%</div>
+    <div class="macros-vertical">
+      <div class="macro-row card-prot">
+        <div class="macro-info">
+          <span class="macro-icon">💪</span>
+          <span class="macro-name">Proteína</span>
+        </div>
+        <div class="macro-data">
+          <span class="macro-value" id="macroProtVal">0g</span>
+          <span class="macro-goal" id="macroProtGoal">de 150g</span>
+        </div>
+        <div class="macro-bar"><div class="macro-fill protein" id="macroProtBar"></div></div>
+        <span class="macro-pct" id="macroProtPct">0%</span>
         <span style="display:none" id="pctProt">0%</span>
         <span style="display:none" id="totalProt">0</span>
         <span style="display:none" id="goalProtShow">150</span>
         <span style="display:none" id="barProt"></span>
       </div>
-      <div class="macro-card">
-        <div class="macro-card-header"><span class="macro-card-icon">🌾</span><span class="macro-card-name">Carbos</span></div>
-        <div class="macro-card-value" id="macroCarbsVal" style="color:#b8f050">0g</div>
-        <div class="macro-card-goal" id="macroCarbsGoal">de 200g</div>
-        <div class="macro-card-bar"><div class="macro-card-fill" id="macroCarbsBar" style="width:0%;background:linear-gradient(90deg,#b8f050,#d0ff70)"></div></div>
-        <div class="macro-card-pct" id="macroCarbsPct" style="color:#b8f050">0%</div>
+      <div class="macro-row card-carbs">
+        <div class="macro-info">
+          <span class="macro-icon">🌾</span>
+          <span class="macro-name">Carbohidratos</span>
+        </div>
+        <div class="macro-data">
+          <span class="macro-value" id="macroCarbsVal">0g</span>
+          <span class="macro-goal" id="macroCarbsGoal">de 200g</span>
+        </div>
+        <div class="macro-bar"><div class="macro-fill carbs" id="macroCarbsBar"></div></div>
+        <span class="macro-pct" id="macroCarbsPct">0%</span>
         <span style="display:none" id="pctCarbs">0%</span>
         <span style="display:none" id="totalCarbs">0</span>
         <span style="display:none" id="goalCarbsShow">200</span>
         <span style="display:none" id="barCarbs"></span>
       </div>
-      <div class="macro-card">
-        <div class="macro-card-header"><span class="macro-card-icon">🫒</span><span class="macro-card-name">Grasas</span></div>
-        <div class="macro-card-value" id="macroFatsVal" style="color:#f050b8">0g</div>
-        <div class="macro-card-goal" id="macroFatsGoal">de 55g</div>
-        <div class="macro-card-bar"><div class="macro-card-fill" id="macroFatsBar" style="width:0%;background:linear-gradient(90deg,#f050b8,#ff70d0)"></div></div>
-        <div class="macro-card-pct" id="macroFatsPct" style="color:#f050b8">0%</div>
+      <div class="macro-row card-fats">
+        <div class="macro-info">
+          <span class="macro-icon">🫒</span>
+          <span class="macro-name">Grasas</span>
+        </div>
+        <div class="macro-data">
+          <span class="macro-value" id="macroFatsVal">0g</span>
+          <span class="macro-goal" id="macroFatsGoal">de 55g</span>
+        </div>
+        <div class="macro-bar"><div class="macro-fill fats" id="macroFatsBar"></div></div>
+        <span class="macro-pct" id="macroFatsPct">0%</span>
         <span style="display:none" id="pctFats">0%</span>
         <span style="display:none" id="totalFats">0</span>
         <span style="display:none" id="goalFatsShow">55</span>
         <span style="display:none" id="barFats"></span>
       </div>
-      <div class="macro-card">
-        <div class="macro-card-header"><span class="macro-card-icon">📊</span><span class="macro-card-name">Score</span></div>
-        <div class="macro-card-value" id="scoreVal" style="color:#f0c050">—</div>
-        <div class="macro-card-goal">Balance general</div>
-        <div class="macro-card-bar"><div class="macro-card-fill" id="scoreBar" style="width:0%;background:linear-gradient(90deg,#f0c050,#ffd870)"></div></div>
-        <div class="macro-card-pct" id="scorePct" style="color:#f0c050">—</div>
-      </div>
     </div>
   </div>
-</div>
 
   <!-- FILA 2: Análisis de uso + Racha -->
-    <div class="dashboard-usage" style="display:none">
+  <div class="dashboard-mid">
+    <div class="dashboard-usage">
       <div class="usage-header">
         <span class="usage-icon">📊</span>
         <span class="usage-title">Análisis de uso</span>
@@ -742,7 +703,6 @@ button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ea
       <div class="usage-bar"><div class="usage-fill" id="usageFill"></div></div>
       <button class="btn-pro-small" id="btnProSmall" style="display:none">Pro ⚡</button>
     </div>
-<div class="dash-panel" style="display:none" data-tab="streak">
     <div class="streak-card">
       <div class="streak-header">
         <span class="streak-fire">🔥</span>
@@ -762,9 +722,8 @@ button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ea
         <span class="dot">●</span>
       </div>
     </div>
-</div>
+  </div>
 
-<div class="dash-panel" style="display:none" data-tab="water">
   <!-- FILA 3: Hidratación -->
   <div class="water-card">
     <div class="water-header">
@@ -782,26 +741,27 @@ button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ea
     </div>
     <div class="water-bar"><div class="water-fill" id="waterFill"></div></div>
   </div>
-</div>
-<div class="dash-panel" style="display:none" data-tab="coach" class="coach-panel">
-  <div class="coach-section" id="coachSection"><div class="coach-card"><div class="coach-header"><div class="coach-title" id="coachTitleEl" data-i18n="coachTitle">🤖 Coach Nutricional IA</div><div class="coach-pro-tag">PRO</div></div><div id="coachLocked" class="coach-locked"><div class="coach-locked-text" id="coachLockedText" data-i18n="coachLocked">Hazte Pro para acceder al coach nutricional IA personalizado 24/7.</div><button class="btn-unlock-coach" onclick="openModal()" data-i18n="btnUnlockCoach">Desbloquear Coach ⚡</button></div><div id="coachChat" style="display:none"><div class="coach-messages" id="coachMessages"></div><div class="coach-suggestions"><button class="suggestion-chip" onclick="sendSuggestion('¿Qué puedo comer si tengo antojo de algo dulce?')">🍫 Antojo dulce</button><button class="suggestion-chip" onclick="sendSuggestion('¿Cuánta proteína necesito al día?')">💪 Proteína</button><button class="suggestion-chip" onclick="sendSuggestion('¿Es malo cenar tarde?')">🌙 Cena tarde</button><button class="suggestion-chip" onclick="sendSuggestion('Recomiéndame un desayuno rápido')">🍳 Desayuno</button></div><div class="coach-input-row"><input class="coach-input" id="coachInput" type="text" data-i18n-placeholder="coachPlaceholder" placeholder="Pregunta a tu coach..." onkeydown="if(event.key==='Enter')sendCoachMsg()"><button class="coach-send" onclick="sendCoachMsg()">➤</button></div></div></div></div>
-</div>
   <div style="display:none">
     <span id="totalCal">0</span>
     <span id="goalCalShow">2000</span>
     <span id="pctCal">0%</span>
     <span id="barCal"></span>
   </div>
+</div>
   <div class="macro-chart-wrap" style="display:none"><div class="macro-chart-title">📈 Macros acumulados (últimos 7 días)</div><div class="macro-chart-legend"><div class="macro-legend-item"><span class="macro-legend-dot" style="background:#b8f050;"></span> Proteína</div><div class="macro-legend-item"><span class="macro-legend-dot" style="background:#50f0b8;"></span> Carbos</div><div class="macro-legend-item"><span class="macro-legend-dot" style="background:#f0c050;"></span> Grasas</div></div><canvas id="macrosCanvas" width="400" height="160" style="max-width:100%; height:auto;"></canvas></div>
   <div id="allergenContainer" class="allergen-section" style="display:none"><div class="allergen-title">⚠️ Alérgenos detectados</div><div class="allergen-tags" id="allergenTags"></div></div>
   <button class="can-eat-btn" id="canEatBtn" style="display:none">🤔 ¿Puedo comerlo?</button>
   <div id="canEatCard" class="can-eat-card" style="display:none"></div>
   <div class="weekly-ai-summary-card" style="display:none"><div class="weekly-ai-header"><div class="weekly-ai-title">📊 Resumen semanal NutriLent AI</div><div class="weekly-ai-date" id="weeklyAISummaryDate"></div></div><div class="weekly-ai-text" id="weeklyAISummaryText"></div></div>
   <div class="month-compare-card" style="display:none"><div class="month-compare-title">📆 Comparativa mes a mes</div><div class="month-bars"><div class="month-bar-wrap"><div class="month-bar" id="monthBar1" style="height:0px; background:var(--accent2);"></div><div class="month-bar-label" id="monthLabel1">—</div><div class="month-bar-val" id="monthVal1">0 kcal</div></div><div class="month-bar-wrap"><div class="month-bar" id="monthBar2" style="height:0px; background:var(--accent);"></div><div class="month-bar-label" id="monthLabel2">—</div><div class="month-bar-val" id="monthVal2">0 kcal</div></div></div></div>
+  <div class="upload-zone" id="uploadZone"><input type="file" id="fileInput" accept="image/*"><span class="upload-icon">🥗</span><img id="preview"><div class="upload-label" id="uploadLabelEl"><strong id="uploadStrong" data-i18n="uploadStrong">Toca para subir</strong> <span id="uploadText" data-i18n="uploadText">una foto de tu comida</span><span id="noFileText" data-i18n="noFileSelected" style="display:block; font-size:10px; margin-top:4px;">Sin archivo seleccionado</span></div></div>
+  <div class="camera-section"><button class="camera-toggle" onclick="toggleCamera()"><span>📷</span> <span id="cameraToggleLabel" data-i18n="cameraToggle">Usar cámara en tiempo real</span></button><div class="camera-wrap" id="cameraWrap"><video id="cameraFeed" autoplay playsinline muted></video><button class="camera-capture" onclick="capturePhoto()">📸</button><button class="camera-close" onclick="closeCamera()">✕</button></div></div>
+  <button class="btn-analyze" id="btnAnalyze" onclick="analyze()">Analizar comida</button>
   <div class="error-box" id="errorBox" style="display:none"></div>
-  <div class="result-card" id="resultCard" style="display:none"><div class="result-header"><div class="result-dish" id="dishName">—</div><div class="result-cal"><span class="cal-num" id="calNum">0</span><span class="cal-label">kcal</span></div></div><div class="macros"><div class="macro-item"><div class="macro-icon">🥩</div><span class="macro-val"><span id="protVal">0</span><em>g</em></span><div class="macro-name" data-i18n="macroProt">Proteína</div></div><div class="macro-item"><div class="macro-icon">🌾</div><span class="macro-val"><span id="carbVal">0</span><em>g</em></span><div class="macro-name" data-i18n="macroCarb">Carbos</div></div><div class="macro-item"><div class="macro-icon">🫒</div><span class="macro-val"><span id="fatVal">0</span><em>g</em></span><div class="macro-name" data-i18n="macroFat">Grasas</div></div></div><div class="micro-section" id="microSection" style="display:none"><div class="micro-label" id="microLabelEl"><span data-i18n="microLabel">Micronutrientes</span> <span class="pro-tag">PRO</span></div><div class="micro-grid" id="microGrid"></div><div id="giBadgeWrap"></div></div><div class="metas-compare" id="metasCompare" style="display:none"><div class="metas-compare-title" data-i18n="metasCompareTitle">Aporte a tus metas del día</div><div class="compare-row"><span class="compare-label" data-i18n="cmpCal">Calorías</span><div class="compare-track"><div class="compare-fill green" id="cmpCalFill"></div></div><span class="compare-pct" id="cmpCalPct">0%</span></div><div class="compare-row"><span class="compare-label" data-i18n="cmpProt">Proteínas</span><div class="compare-track"><div class="compare-fill gold" id="cmpProtFill"></div></div><span class="compare-pct" id="cmpProtPct">0%</span></div></div><div class="ingredients"><div class="ing-label" id="ingLabelEl" data-i18n="ingLabel">Ingredientes detectados</div><div class="ing-tags" id="ingTags"></div></div><div class="consejo" id="consejoEl"></div><div class="share-result"><button class="suggesti... (line truncated to 2000 chars)
+  <div class="result-card" id="resultCard" style="display:none"><div class="result-header"><div class="result-dish" id="dishName">—</div><div class="result-cal"><span class="cal-num" id="calNum">0</span><span class="cal-label">kcal</span></div></div><div class="macros"><div class="macro-item"><div class="macro-icon">🥩</div><span class="macro-val"><span id="protVal">0</span><em>g</em></span><div class="macro-name" data-i18n="macroProt">Proteína</div></div><div class="macro-item"><div class="macro-icon">🌾</div><span class="macro-val"><span id="carbVal">0</span><em>g</em></span><div class="macro-name" data-i18n="macroCarb">Carbos</div></div><div class="macro-item"><div class="macro-icon">🫒</div><span class="macro-val"><span id="fatVal">0</span><em>g</em></span><div class="macro-name" data-i18n="macroFat">Grasas</div></div></div><div class="micro-section" id="microSection" style="display:none"><div class="micro-label" id="microLabelEl"><span data-i18n="microLabel">Micronutrientes</span> <span class="pro-tag">PRO</span></div><div class="micro-grid" id="microGrid"></div><div id="giBadgeWrap"></div></div><div class="metas-compare" id="metasCompare" style="display:none"><div class="metas-compare-title" data-i18n="metasCompareTitle">Aporte a tus metas del día</div><div class="compare-row"><span class="compare-label" data-i18n="cmpCal">Calorías</span><div class="compare-track"><div class="compare-fill green" id="cmpCalFill"></div></div><span class="compare-pct" id="cmpCalPct">0%</span></div><div class="compare-row"><span class="compare-label" data-i18n="cmpProt">Proteínas</span><div class="compare-track"><div class="compare-fill gold" id="cmpProtFill"></div></div><span class="compare-pct" id="cmpProtPct">0%</span></div></div><div class="ingredients"><div class="ing-label" id="ingLabelEl" data-i18n="ingLabel">Ingredientes detectados</div><div class="ing-tags" id="ingTags"></div></div><div class="consejo" id="consejoEl"></div><div class="share-result"><button class="suggestion-chip" onclick="shareResult()" data-i18n="shareBtn">📤 Compartir resultado</button></div></div>
   <button class="ai-summary-btn" id="aiSummaryBtn" onclick="getAISummary()" style="display:none">✦ <span id="aiSummaryBtnLabel" data-i18n="aiSummaryBtn">Pedir recomendación de IA para hoy</span></button>
   <div class="ai-summary-card" id="aiSummaryCard" style="display:none"><div class="ai-label" id="aiLabelEl" data-i18n="aiLabel">✦ Recomendación IA</div><div class="ai-summary-text" id="aiSummaryText"></div></div>
+  <div class="coach-section" id="coachSection" style="display:none"><div class="coach-card"><div class="coach-header"><div class="coach-title" id="coachTitleEl" data-i18n="coachTitle">🤖 Coach Nutricional IA</div><div class="coach-pro-tag">PRO</div></div><div id="coachLocked" class="coach-locked"><div class="coach-locked-text" id="coachLockedText" data-i18n="coachLocked">Hazte Pro para acceder al coach nutricional IA personalizado 24/7.</div><button class="btn-unlock-coach" onclick="openModal()" data-i18n="btnUnlockCoach">Desbloquear Coach ⚡</button></div><div id="coachChat" style="display:none"><div class="coach-messages" id="coachMessages"></div><div class="coach-suggestions"><button class="suggestion-chip" onclick="sendSuggestion('¿Qué puedo comer si tengo antojo de algo dulce?')">🍫 Antojo dulce</button><button class="suggestion-chip" onclick="sendSuggestion('¿Cuánta proteína necesito al día?')">💪 Proteína</button><button class="suggestion-chip" onclick="sendSuggestion('¿Es malo cenar tarde?')">🌙 Cena tarde</button><button class="suggestion-chip" onclick="sendSuggestion('Recomiéndame un desayuno rápido')">🍳 Desayuno</button></div><div class="coach-input-row"><input class="coach-input" id="coachInput" type="text" data-i18n-placeholder="coachPlaceholder" placeholder="Pregunta a tu coach..." onkeydown="if(event.key==='Enter')sendCoachMsg()"><button class="coach-send" onclick="sendCoachMsg()">➤</button></div></div></div></div>
   <div class="legal-footer" id="legalFooter">
     <span data-i18n="copyright">© 2025 NutriLent AI · Todos los derechos reservados</span> · <span data-i18n="trademark">NutriLent® marca registrada</span><br>
     <span data-i18n="disclaimer">Los análisis son orientativos y no reemplazan el criterio de un profesional de la salud.</span><br>
@@ -949,7 +909,7 @@ button{font-family:'DM Sans',sans-serif;border-radius:12px;transition:all .2s ea
 const TR = {
   es: {
     greet: "Fotografía · Analiza · Aprende", analyzeBtn: "Analizar comida", analyzing: "Analizando...", usageLabel: "Análisis este mes", noImage: "Sube una imagen primero 👆",
-    toastSaved: "✅ Perfil guardado", toastUpgradeSim: "🚀 Modo Pro activado (demo)", syncCloud: "Sincronizando...", coachLocked: "🤖 5 mensajes gratis por día · Hazte Pro para acceso ilimitado 24/7.",
+    toastSaved: "✅ Perfil guardado", toastUpgradeSim: "🚀 Modo Pro activado (demo)", syncCloud: "Sincronizando...", coachLocked: "Hazte Pro para acceder al coach nutricional IA 24/7.",
     coachPlaceholder: "Pregunta a tu coach...", planLocked: "Genera tu plan de comidas personalizado.", btnGenPlan: "✨ Generar Plan Semanal", exportPDF: "📄 Exportar", clearHistory: "Limpiar",
     saveProfile: "Calcular y guardar metas", login: "Iniciar sesión con Google", logout: "salir", proBadge: "⚡ Pro", metaCal: "Calorías hoy", metaProt: "Proteínas hoy",
     histSection: "Historial", planSection: "Plan Semanal", menuHistory: "Historial", menuPlan: "Plan Semanal", menuProfile: "Perfil", menuSettings: "Configuración", menuHelp: "Ayuda", menuTerms: "Términos y Políticas",
@@ -976,7 +936,7 @@ const TR = {
   },
   en: {
     greet: "Photograph · Analyze · Learn", analyzeBtn: "Analyze food", analyzing: "Analyzing...", usageLabel: "Monthly analyses", noImage: "Upload an image first 👆",
-    toastSaved: "✅ Profile saved", toastUpgradeSim: "🚀 Pro mode activated (demo)", syncCloud: "Syncing...", coachLocked: "🤖 5 free messages per day · Upgrade to Pro for unlimited 24/7 access.",
+    toastSaved: "✅ Profile saved", toastUpgradeSim: "🚀 Pro mode activated (demo)", syncCloud: "Syncing...", coachLocked: "Upgrade to Pro to access the 24/7 AI nutrition coach.",
     coachPlaceholder: "Ask your coach...", planLocked: "Generate your personalized meal plan.", btnGenPlan: "✨ Generate Weekly Plan", exportPDF: "📄 Export", clearHistory: "Clear",
     saveProfile: "Calculate & save goals", login: "Sign in with Google", logout: "sign out", proBadge: "⚡ Pro", metaCal: "Today's calories", metaProt: "Today's protein",
     histSection: "History", planSection: "Weekly Plan", menuHistory: "History", menuPlan: "Weekly Plan", menuProfile: "Profile", menuSettings: "Settings", menuHelp: "Help", menuTerms: "Terms & Policies",
@@ -1002,7 +962,7 @@ const TR = {
     giLow: "Low GI", giMedium: "Medium GI", giHigh: "High GI"
   },
   pt: { greet: "Fotografe · Analise · Aprenda", analyzeBtn: "Analisar comida", analyzing: "Analisando...", usageLabel: "Análises este mês", noImage: "Envie uma imagem primeiro 👆",
-    toastSaved: "✅ Perfil salvo", toastUpgradeSim: "🚀 Modo Pro ativado (demo)", syncCloud: "Sincronizando...", coachLocked: "🤖 5 mensagens grátis por dia · Torne-se Pro para acesso ilimitado 24/7.",
+    toastSaved: "✅ Perfil salvo", toastUpgradeSim: "🚀 Modo Pro ativado (demo)", syncCloud: "Sincronizando...", coachLocked: "Torne-se Pro para acessar o coach nutricional IA 24/7.",
     coachPlaceholder: "Pergunte ao seu coach...", planLocked: "Gere seu plano de refeições personalizado.", btnGenPlan: "✨ Gerar Plano Semanal", exportPDF: "📄 Exportar", clearHistory: "Limpar",
     saveProfile: "Calcular e salvar metas", login: "Entrar com Google", logout: "sair", proBadge: "⚡ Pro", metaCal: "Calorias hoje", metaProt: "Proteínas hoje",
     histSection: "Histórico", planSection: "Plano Semanal", menuHistory: "Histórico", menuPlan: "Plano Semanal", menuProfile: "Perfil", menuSettings: "Configurações", menuHelp: "Ajuda", menuTerms: "Termos e Políticas",
@@ -1034,9 +994,9 @@ import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, g
 
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
 const app = initializeApp(FB_CONFIG);
-const auth = getAuth(app);
+const auth = getAuth(app); window.auth = auth; window.auth = auth;
 const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+const provider = new GoogleAuthProvider(); window.provider = provider; window.provider = provider;
 
 // Manejar resultado del redirect de Google (al volver a la app)
 getRedirectResult(auth).then(function(result) {
@@ -1132,7 +1092,7 @@ function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); } catch{}
 function getUsageKey(){ return `nl_usage_${new Date().getFullYear()}_${new Date().getMonth()}`; }
 function getUsage(){ return lsGet(getUsageKey(), 0); }
 function incUsage(){ const k = getUsageKey(); lsSet(k, lsGet(k, 0) + 1); }
-function checkLimit(){ if(window.isPro ? window.isPro : isPro) return true; if(getUsage() >= FREE_LIMIT){ openModal(); return false; } return true; }
+function checkLimit(){ if(window.isPro ? window.isPro() : isPro) return true; if(getUsage() >= FREE_LIMIT){ openModal(); return false; } return true; }
 window.requirePro = function() { if (window.userPlan === "free") { openModal(); return false; } return true; };
 function triggerConfetti(){
   const colors = ['#b8f050','#50f0b8','#f0c050','#ff9f50'];
@@ -1152,6 +1112,7 @@ function triggerConfetti(){
 }
 function updateUsageUI(){
   const used = getUsage();
+  const usageBarWrap = document.getElementById('usageBarWrap');
   const proBadge = document.getElementById('proBadge');
   const usageCount = document.getElementById('usageCount');
   const usageTotal = document.getElementById('usageTotal');
@@ -1159,9 +1120,9 @@ function updateUsageUI(){
   const usageFill = document.getElementById('usageFill');
   const btnProSmall = document.getElementById('btnProSmall');
   const dialBadge = document.getElementById('dialBadge');
-  const isProUser = window.isPro ? window.isPro : isPro;
-  var fb = document.getElementById('btnFridgeMode'); if(fb) fb.style.display = isProUser ? 'block' : 'none';
+  const isProUser = window.isPro ? window.isPro() : isPro;
   if(isProUser){
+    if(usageBarWrap) usageBarWrap.style.display = 'none';
     if(proBadge) proBadge.classList.add('show');
     var c1=document.getElementById('coachLocked'); if(c1) c1.style.display='none';
     var c2=document.getElementById('coachChat'); if(c2) c2.style.display='block';
@@ -1175,6 +1136,7 @@ function updateUsageUI(){
     var pb=document.getElementById('profileBadge'); if(pb) pb.textContent = '⚡ Pro';
     return;
   }
+  if(usageBarWrap) usageBarWrap.style.display = 'flex';
   if(proBadge) proBadge.classList.remove('show');
   var pb=document.getElementById('profileBadge'); if(pb) pb.textContent = '🆓 Gratis';
   if(usageCount) usageCount.textContent = used;
@@ -1524,7 +1486,7 @@ function showResult(r){
   const consejo = document.getElementById('consejoEl'); if(consejo) consejo.textContent = r.consejo || '';
   const ingWrap = document.getElementById('ingTags');
   if(ingWrap){ ingWrap.innerHTML = ''; (r.ingredientes || []).forEach(ing => { const sp = document.createElement('span'); sp.className = 'tag'; sp.textContent = ing; ingWrap.appendChild(sp); }); }
-  if(window.isPro ? window.isPro : isPro){
+  if(window.isPro ? window.isPro() : isPro){
     const microGrid = document.getElementById('microGrid');
     if(microGrid){ microGrid.innerHTML = `<div class="micro-item"><div class="micro-name">Fibra</div><div class="micro-val green">${r.fibra || 0}g</div></div><div class="micro-item"><div class="micro-name">Azúcares</div><div class="micro-val gold">${r.azucares || 0}g</div></div><div class="micro-item"><div class="micro-name">Sodio</div><div class="micro-val ${(r.sodio || 0) > 600 ? 'red' : 'green'}">${r.sodio || 0}mg</div></div>`; }
     const giWrap = document.getElementById('giBadgeWrap');
@@ -1593,7 +1555,7 @@ async function loadFromFS(uid){
       if(d.profile){ profile = d.profile; lsSet('nl_profile', profile); }
       if(d.metas){ metas = d.metas; lsSet('nl_metas', metas); }
       if(d.isPro !== undefined){ isPro = d.isPro; lsSet('nl_isPro', isPro); }
-      if(window.isPro ? window.isPro : false){ isPro = true; lsSet('nl_isPro', true); }
+      if(window.isPro ? window.isPro() : false){ isPro = true; lsSet('nl_isPro', true); }
       if(d.lang){ currentLang = d.lang; lsSet('nl_lang', currentLang); updateUI(); }
       loadProfileUI(); updateMetasUI(); updateUsageUI();
     }
@@ -1612,21 +1574,17 @@ let selectedPlan = 'month';
 window.selectPlan = function(plan){ selectedPlan = plan; const mCard = document.getElementById('planMonthCard'); const yCard = document.getElementById('planYearCard'); if(mCard) mCard.classList.toggle('selected', plan === 'month'); if(yCard) yCard.classList.toggle('selected', plan === 'year'); const btn = document.getElementById('btnUpgradeMain'); if(btn) btn.className = 'btn-upgrade' + (plan === 'year' ? ' gold-btn' : ''); };
 window.loginGoogle = async function() {
   try {
-    await signInWithRedirect(auth, provider);
-  } catch(err) {
-    console.error('loginGoogle error:', err);
-    if (typeof showToast === 'function') showToast('Error al iniciar sesión: ' + err.message);
+    const { signInWithPopup, signInWithRedirect } = await import("firebase/auth");
+    await signInWithPopup(window.auth, window.provider);
+  } catch (err) {
+    if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+      const { signInWithRedirect } = await import("firebase/auth");
+      await signInWithRedirect(window.auth, window.provider);
+    } else {
+      console.error("loginGoogle error:", err);
+      showToast("Error al iniciar sesión: " + err.message);
+    }
   }
-};
-window.handleUpgrade = function(){ isPro = true; lsSet('nl_isPro', true); closeModal(); updateUsageUI(); showToast(t('toastUpgradeSim'), 3000); triggerConfetti(); };
-window.toggleCamera = async function(){
-  const wrap = document.getElementById('cameraWrap');
-  if(wrap?.classList.contains('open')){ closeCamera(); return; }
-  try{
-    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
-    const feed = document.getElementById('cameraFeed'); if(feed) feed.srcObject = cameraStream;
-    wrap?.classList.add('open');
-  }catch(err){ showToast('❌ No se pudo acceder a la cámara'); }
 };
 window.capturePhoto = function(){
   const video = document.getElementById('cameraFeed');
@@ -1714,7 +1672,7 @@ window.getAISummary = async function(){
   }catch(err){ if(txtEl) txtEl.textContent = 'Error al conectar con la IA.'; }
 };
 window.sendCoachMsg = async function(){
-  if(!(window.isPro ? window.isPro : isPro)){ openModal(); return; }
+  if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; }
   const input = document.getElementById('coachInput');
   const msg = input?.value.trim();
   if(!msg) return;
@@ -1766,7 +1724,7 @@ function repairTruncatedPlan(jsonStr){
   return { days };
 }
 window.generateWeeklyPlan = async function(){
-  if(!(window.isPro ? window.isPro : isPro)){ openModal(); return; }
+  if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; }
   const list = document.getElementById('weeklyPlanList');
   if(!list) return;
   list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)">⏳ Generando tu plan personalizado...</div>';
@@ -1801,91 +1759,7 @@ window.generateWeeklyPlan = async function(){
   }catch(err){ console.error('Error en generateWeeklyPlan:', err); list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--error)">❌ Error: ${err.message}</div>`; }
 };
 window.clearHistory = async function(){ if(!confirm('¿Borrar todo el historial?')) return; historyData = []; lsSet('nl_history', []); if(currentUser) await clearFSHistory().catch(() => {}); updateMetasUI(); renderHistory(); showToast('🗑️ Historial eliminado'); };
-window.switchDashTab = function(tab) {
-  document.querySelectorAll('.dash-tab').forEach(function(t){t.classList.remove('active')});
-  document.querySelectorAll('.dash-panel').forEach(function(p){p.style.display='none'});
-  var at = document.querySelector('.dash-tab[data-tab="'+tab+'"]');
-  var ap = document.querySelector('.dash-panel[data-tab="'+tab+'"]');
-  if(at) at.classList.add('active');
-  if(ap) ap.style.display='block';
-};
-window.exportPDF = function() {
-  if (!(window.isPro ? window.isPro : isPro)) { openModal(); return; }
-  
-  const name = currentUser?.displayName || profile.nombre || 'Usuario';
-  const date = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
-  
-  if (typeof window.jspdf === 'undefined') {
-    const text = '🥗 NUTRILENT AI — Reporte Nutricional\n' + date + '\n' + name + '\n\nMacros: ' + metas.cal + ' kcal, ' + metas.prot + 'g prot, ' + metas.carbs + 'g carb, ' + metas.fats + 'g grasas\n\n' + historyData.slice(0,40).map(e => e.plato + ' - ' + e.calorias + ' kcal').join('\n');
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'NutriLent_Reporte_' + new Date().toISOString().split('T')[0] + '.txt';
-    a.click();
-    showToast('📄 TXT descargado');
-    return;
-  }
-  
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const BG = '#080808', SURFACE = '#111111', ACCENT = '#b8f050', TEXT = '#f0f0f0', MUTED = '#888888';
-  let y = 20;
-  const margin = 20;
-  const pageWidth = 210;
-  
-  doc.setFillColor(BG);
-  doc.rect(0, 0, pageWidth, 297, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
-  doc.setTextColor(ACCENT);
-  doc.text('NutriLent AI', margin, y);
-  doc.setFontSize(9);
-  doc.setTextColor(MUTED);
-  doc.text('Reporte Nutricional', margin, y + 6);
-  y += 12;
-  doc.setDrawColor(ACCENT);
-  doc.line(margin, y, pageWidth - margin, y);
-  y += 10;
-  doc.setFontSize(11);
-  doc.setTextColor(TEXT);
-  doc.text(name, margin, y);
-  doc.setFontSize(8);
-  doc.setTextColor(MUTED);
-  doc.text(date, margin, y + 5);
-  y += 14;
-  doc.setFillColor(SURFACE);
-  doc.roundedRect(margin, y, pageWidth - margin * 2, 16, 2, 2, 'F');
-  doc.setFontSize(8);
-  doc.setTextColor(MUTED);
-  doc.text('MACROS', margin + 4, y + 6);
-  doc.setFontSize(11);
-  doc.setTextColor(ACCENT);
-  doc.text(metas.cal + ' kcal  ' + metas.prot + 'g prot  ' + metas.carbs + 'g carb  ' + metas.fats + 'g grasas', margin + 4, y + 12);
-  y += 24;
-  doc.setFontSize(10);
-  doc.setTextColor(ACCENT);
-  doc.text('TUS PLATOS', margin, y);
-  y += 6;
-  
-  historyData.slice(0, 40).forEach(function(meal) {
-    if (y > 260) { doc.addPage(); doc.setFillColor(BG); doc.rect(0, 0, pageWidth, 297, 'F'); y = 20; }
-    doc.setFillColor('#111111');
-    doc.roundedRect(margin, y, pageWidth - margin * 2, 18, 2, 2, 'F');
-    doc.setFontSize(8);
-    doc.setTextColor(MUTED);
-    doc.text((meal.date || '') + ' · ' + (meal.comida || 'Comida'), margin + 4, y + 6);
-    doc.setFontSize(10);
-    doc.setTextColor(TEXT);
-    doc.text(meal.plato || 'Sin nombre', margin + 4, y + 13);
-    y += 22;
-  });
-  
-  doc.setFontSize(7);
-  doc.setTextColor('#333333');
-  doc.text('NutriLent AI · Cada comida es una decision de salud', pageWidth / 2, 287, { align: 'center' });
-  doc.save('NutriLent_Reporte_' + new Date().toISOString().split('T')[0] + '.pdf');
-  showToast('📄 PDF descargado');
-};
+window.exportPDF = function(){ if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; } const lines = [`NUTRILENT AI — HISTORIAL NUTRICIONAL`, `Exportado: ${new Date().toLocaleString()}`, `Usuario: ${profile.nombre || currentUser?.displayName || '—'}`, `Objetivo: ${profile.objetivo || '—'} | Meta diaria: ${metas.cal} kcal`, `Total de análisis: ${historyData.length}`, '', ...historyData.slice(0,40).map((e,i) => [`${i+1}. ${e.plato}`, `   Fecha: ${e.date}`, `   Calorías: ${e.calorias} kcal | Proteínas: ${e.proteinas}g | Carbos: ${e.carbos}g | Grasas: ${e.grasas}g`, e.consejo ? `   💡 ${e.consejo}` : '', ''].join('\n')), `───────────────────────────────`, `© 2025 NutriLent AI · NutriLent® marca registrada`, `Los análisis son orientativos y no reemplazan asesoramiento médico.`]; const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `NutriLent_${new Date().toISOString().split('T')[0]}.txt`; a.click(); URL.revokeObjectURL(a.href); showToast('📄 Historial exportado'); };
 window.shareResult = function(){ if(!lastAnalysis){ showToast('No hay resultado para compartir'); return; } const text = `🍽️ Analicé "${lastAnalysis.plato}" con NutriLent AI: ${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína. ¡Descárgalo gratis! → nutrilent.app`; if(navigator.share){ navigator.share({ title: 'NutriLent AI', text }).catch(() => {}); }else{ navigator.clipboard?.writeText(text).then(() => showToast('📋 Copiado al portapapeles')); } };
 function getIMCCategory(imc){
   if(imc < 18.5) return { cls:'bajo', label:'Bajo peso', desc:'Considera aumentar tu ingesta calórica con alimentos nutritivos.' };
@@ -2057,6 +1931,14 @@ window.goTab = function(tabName, btn) {
     page.style.display = 'block';
     page.style.visibility = 'visible';
     page.style.opacity = '1';
+    var ancestor = page.parentElement;
+    while (ancestor && ancestor !== document.body) {
+      if (ancestor.style.display === 'none' || getComputedStyle(ancestor).display === 'none') {
+        ancestor.style.display = 'block';
+        ancestor.style.opacity = '1';
+      }
+      ancestor = ancestor.parentElement;
+    }
     console.log('✅ Página activada y visible:', tabName);
   } else {
     console.error('❌ No se encontró la página:', 'page-' + tabName);
@@ -2092,7 +1974,7 @@ function initMenuDots() {
       const action = item.dataset.action;
       if (action === 'history') goTab('history');
       else if (action === 'plan') goTab('plan');
-      else if (action === 'myplan') showMyPlan();
+      else if (action === 'myplan') goTab('myplan');
       else if (action === 'profile') goTab('profile');
       else if (action === 'settings') goTab('settings');
       else if (action === 'help') showHelpModal();
@@ -2139,11 +2021,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('fileInput')?.addEventListener('change', async(e) => { const file = e.target.files?.[0]; if(!file) return; if(file.size > 4 * 1024 * 1024){ showToast('❌ Imagen muy pesada (máx. 4MB)'); return; } try{ imageBase64 = await resizeImage(file); showPreview(imageBase64); }catch{ showToast('Error al procesar la imagen'); } });
   document.getElementById('btnLogin')?.addEventListener('click', async() => { try{ await signInWithRedirect(auth, provider); }catch(err){ showToast('Error al iniciar sesión: ' + err.message); } });
   document.getElementById('btnLogout')?.addEventListener('click', async() => { await signOut(auth); showToast('👋 Sesión cerrada'); });
-  onAuthStateChanged(auth, async(user) => { currentUser = user;
-    if (user && user.email === "yoyopomaduro@gmail.com") { window.userPlan = "admin"; window.isPro = true; lsSet("nl_isPro", true); updateUsageUI(); }
-    if(user){ document.getElementById('btnLogin').style.display = 'none'; document.getElementById('userPill').classList.add('show'); const userName = user.displayName || user.email?.split('@')[0] || 'Usuario'; setText('userDisplayName', userName.split(' ')[0]); const avatarWrap = document.getElementById('userAvatarWrap'); if(avatarWrap){ if(user.photoURL){ avatarWrap.innerHTML = `<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}">`; }else{ const ini = (user.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); avatarWrap.innerHTML = `<div class="user-initials">${ini}</div>`; } } const name = user.displayName?.split(' ')[0] || ''; const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = name ? `${greeting}, ${name}! 👋` : t('greet'); const cloud = document.getElementById('cloudBadge'); if(cloud) cloud.classList.add('show'); setText('profileNameDisplay', userName); setText('profileEmailDisplay', user.email || ''); const phrases = ['\"Cada comida es una decisión de salud\" 🥗','\"Tu mejor versión empieza hoy\" 💪','\"Pequeños cambios, grandes resultados\" ⚡','\"La constancia vence al talento\" 🔥','\"Hoy es un buen día para comer bien\" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); if(user.photoURL){ const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = `<img src="${user.photoURL}" alt="">`; }else{ const pa = document.getElementById('profileAvatarWrap'); if(pa){ const initial = (userName[0] || 'U').toUpperCase(); pa.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:Syne;font-weight:800;font-size:32px;border-radius:50%">${initial}</div>`; } } loadConditions(); await loadFromFS(user.uid); }else{ document.getElementById('btnLogin').style.display = ''; document.getElementById('userPill').classList.remove('show'); const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.textContent = t('greet'); document.getElementById('cloudBadge')?.classList.remove('show'); const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = '🧑'; isPro = lsGet('nl_isPro', false); updateUsageUI(); } });
+  onAuthStateChanged(auth, async(user) => { currentUser = user; if(user){ document.getElementById('btnLogin').style.display = 'none'; document.getElementById('userPill').classList.add('show'); const userName = user.displayName || user.email?.split('@')[0] || 'Usuario'; setText('userDisplayName', userName.split(' ')[0]); const avatarWrap = document.getElementById('userAvatarWrap'); if(avatarWrap){ if(user.photoURL){ avatarWrap.innerHTML = `<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}">`; }else{ const ini = (user.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); avatarWrap.innerHTML = `<div class="user-initials">${ini}</div>`; } } const name = user.displayName?.split(' ')[0] || ''; const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = name ? `${greeting}, ${name}! 👋` : t('greet'); const cloud = document.getElementById('cloudBadge'); if(cloud) cloud.classList.add('show'); setText('profileNameDisplay', userName); setText('profileEmailDisplay', user.email || ''); const phrases = ['\"Cada comida es una decisión de salud\" 🥗','\"Tu mejor versión empieza hoy\" 💪','\"Pequeños cambios, grandes resultados\" ⚡','\"La constancia vence al talento\" 🔥','\"Hoy es un buen día para comer bien\" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); if(user.photoURL){ const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = `<img src="${user.photoURL}" alt="">`; }else{ const pa = document.getElementById('profileAvatarWrap'); if(pa){ const initial = (userName[0] || 'U').toUpperCase(); pa.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:Syne;font-weight:800;font-size:32px;border-radius:50%">${initial}</div>`; } } loadConditions(); await loadFromFS(user.uid); }else{ document.getElementById('btnLogin').style.display = ''; document.getElementById('userPill').classList.remove('show'); const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.textContent = t('greet'); document.getElementById('cloudBadge')?.classList.remove('show'); const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = '🧑'; isPro = lsGet('nl_isPro', false); updateUsageUI(); } });
   currentLang = lsGet('nl_lang', 'es'); historyData = lsGet('nl_history', []); metas = lsGet('nl_metas', { cal: 2000, prot: 150, carbs: 200, fats: 55 }); profile = lsGet('nl_profile', {}); isPro = lsGet('nl_isPro', false);
-  updateUI(); updateUsageUI(); switchDashTab('progreso'); renderHistory(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); window.updateHydrationDisplay(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
+  updateUI(); updateUsageUI(); renderHistory(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); window.updateHydrationDisplay(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
   if(!lsGet('nl_cookies', false)){ setTimeout(() => { const b = document.getElementById('cookieBanner'); if(b) b.style.transform = 'translateY(0)'; }, 1200); }
   const onboarded = lsGet('nl_onboarded', false);
   if(!onboarded){
@@ -2195,50 +2075,4 @@ function updatePlanInfo() {
     info.innerHTML += '<p style="color:#b8f050;font-size:13px">✅ Disfrutas de todas las funciones premium.</p>';
   }
 }
-</script>
-<style>
-.dashboard-top{display:flex;gap:16px;align-items:flex-start;}
-.ring-container{width:130px;height:150px;flex-shrink:0;}
-.ring-svg{width:100%;height:100%;}
-.coach-panel .coach-card{border:none;padding:0;background:transparent;}
-.coach-panel .coach-header{margin-bottom:12px;}
-.coach-panel .coach-locked{text-align:center;padding:30px 16px;background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid rgba(255,255,255,0.06);border-radius:16px;}
-.coach-panel .coach-locked-text{font-size:13px;color:#888;margin-bottom:16px;line-height:1.6;}
-.coach-panel .btn-unlock-coach{background:linear-gradient(135deg,#b8f050,#50f0b8);color:#000;border:none;border-radius:12px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;}
-.coach-panel .coach-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
-.coach-panel .suggestion-chip{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:8px 14px;font-size:11px;color:#888;cursor:pointer;transition:all .2s;}
-.coach-panel .suggestion-chip:hover{background:rgba(184,240,80,0.08);border-color:rgba(184,240,80,0.2);color:#b8f050;}
-</style>
-<script>
-window.openFridgeMode = function() { var m = document.getElementById("fridgeModal"); if (m) { m.style.display = "flex"; } else { alert("Modo Nevera Vacía próximamente"); } };
-  var modal = document.getElementById('fridgeModal');
-  if (modal) {
-    modal.style.display = 'flex';
-  } else {
-    showToast('🥗 Modo Nevera Vacía próximamente');
-  }
-};
-
-window.closeFridgeModal = function() {
-  var modal = document.getElementById('fridgeModal');
-  if (modal) modal.style.display = 'none';
-};
-
-window.analyzeFridge = async function() {
-  var loading = document.getElementById('fridgeLoading');
-  var recipes = document.getElementById('fridgeRecipes');
-  if (loading) loading.style.display = 'block';
-  if (recipes) recipes.innerHTML = '';
-  
-  try {
-    var response = await callDeepSeek('Actúa como chef. Sugiere 3 recetas saludables con ingredientes comunes. Responde en español con emojis.');
-    if (recipes) {
-      recipes.innerHTML = response;
-    }
-    if (loading) loading.style.display = 'none';
-  } catch(e) {
-    if (recipes) recipes.innerHTML = '<p style="color:#ff5f5f">Error al analizar. Intenta de nuevo.</p>';
-    if (loading) loading.style.display = 'none';
-  }
-};
 </script>
