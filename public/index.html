@@ -1493,6 +1493,7 @@ function showResult(r){
   const allergens = detectAllergens(r.ingredientes || []);
   showAllergens(allergens);
   showCanEatCard(r.calorias || 0, r.proteinas || 0);
+  document.getElementById('resultCard').style.display = 'block';
 }
 async function saveToHistory(r, img){
   const thumb = await makeThumbnail(img);
@@ -1653,6 +1654,7 @@ Eres un nutricionista certificado con visión computacional. Analiza ESTA imagen
     const result = JSON.parse(jsonMatch[0]);
     lastAnalysis = result;
     showResult(result);
+    document.getElementById('resultCard').style.display = 'block';
     incUsage();
     updateUsageUI();
     await saveToHistory(result, imageBase64);
