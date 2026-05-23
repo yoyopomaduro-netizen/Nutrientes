@@ -9,6 +9,7 @@
 <meta name="description" content="Analiza tus comidas con IA, obtén macros completas, IMC dinámico y recomendaciones personalizadas.">
 <meta name="theme-color" content="#080808">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
@@ -27,8 +28,12 @@ body.light { --bg: #f2f2ee; --text: #111; --text-muted: #666; --text-dim: rgba(0
   --surface: #fff; --surface2: #f0f0ec; --surface3: #e4e4e0; --accent2-dim: rgba(80,240,184,0.09);
   --border: rgba(0,0,0,0.07); --border2: rgba(0,0,0,0.12); --shadow: 0 8px 32px rgba(0,0,0,0.12); }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.55;min-height:100dvh;transition:background var(--transition),color var(--transition);}
-.page{display:none;padding:40px 20px 110px;max-width:480px;margin:0 auto;animation:fadeUp 0.28s ease both;}
+body{background:#0a0a0a;position:relative;min-height:100vh;overflow-x:hidden;color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.55;transition:background var(--transition),color var(--transition);}
+body::before{content:'';position:fixed;top:20%;left:50%;transform:translate(-50%,-20%);width:100vw;height:100vh;background:radial-gradient(circle at center,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.03) 40%,rgba(0,0,0,0) 70%);z-index:0;pointer-events:none;}
+body::after{content:'';position:fixed;top:0;left:-25%;width:150%;height:150%;background:conic-gradient(from 0deg at 50% 50%,#1a0000,#0d1a00,#000d1a,#1a0000);opacity:0.15;animation:lavaFlow 20s linear infinite;z-index:0;pointer-events:none;}
+@keyframes lavaFlow{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.page{display:none;padding:40px 20px 110px;max-width:480px;margin:0 auto;animation:fadeUp 0.28s ease both;position:relative;z-index:1;}
+#page-scan{position:relative;z-index:1;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 .header{text-align:center;margin-bottom:22px;}
@@ -572,6 +577,31 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .myplan-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(184,240,80,0.3);}
 .btn-cancel-plan{width:100%;padding:11px;background:transparent;border:1px solid rgba(255,95,95,0.15);border-radius:12px;color:#f05050;font-size:12px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
 .btn-cancel-plan:hover{background:rgba(255,95,95,0.05);border-color:rgba(255,95,95,0.3);}
+body,button,input,textarea,select{font-family:'DM Sans',sans-serif;}
+h1,h2,h3,.section-title,.ring-value,.ring-pct,.macro-value,.streak-num,.dash-tab{font-family:'Syne',sans-serif;font-weight:700;}
+.profile-phrase,.greeting,.coach-message{font-family:'Caveat',cursive;font-size:18px;}
+.ring-value{font-size:36px;font-weight:800;}
+.macro-value{font-size:28px;font-weight:700;}
+.section-title{font-size:16px;letter-spacing:1px;}
+.dash-tab{font-size:12px;font-weight:600;}
+.macro-card{background:linear-gradient(135deg,#111,#1a1a1a)!important;border:1px solid rgba(255,255,255,0.06)!important;border-radius:16px!important;padding:16px!important;box-shadow:0 4px 20px rgba(0,0,0,0.3)!important;transition:all 0.3s cubic-bezier(0.4,0,0.2,1)!important;}
+.macro-card:nth-child(1){border-top:4px solid #f0c050;}
+.macro-card:nth-child(2){border-top:4px solid #50b8f0;}
+.macro-card:nth-child(3){border-top:4px solid #b8f050;}
+.macro-card:nth-child(4){border-top:4px solid #f050b8;}
+.macro-card:hover{transform:translateY(-2px)!important;box-shadow:0 8px 30px rgba(0,0,0,0.5)!important;}
+.macro-value{font-family:'Syne',sans-serif!important;font-size:28px!important;font-weight:700!important;}
+.macro-name{font-family:'DM Sans',sans-serif!important;font-size:11px!important;letter-spacing:1.5px!important;text-transform:uppercase!important;color:#888!important;}
+.macro-bar{height:6px!important;border-radius:3px!important;background:#1e1e1e!important;overflow:hidden!important;margin-top:10px!important;}
+#page-scan,#page-history,#page-plan,#page-myplan,#page-profile,#page-settings{padding:20px 16px!important;}
+.dashboard-top{gap:20px!important;margin-bottom:20px!important;}
+.macros-vertical{gap:12px!important;}
+.section-title{margin-bottom:16px!important;color:#f0f0f0!important;}
+.dash-tab.active{color:#a3d94e!important;border-color:#a3d94e!important;background:rgba(163,217,78,0.08)!important;}
+.ring-progress{stroke:url(#ringGradient)!important;}
+.btn-upgrade,#btnAnalyze{background:linear-gradient(135deg,#a3d94e,#3dd6a7)!important;}
+p,span,div,button,input,textarea,select{color:#e0e0e0;}
+.text-muted,.macro-name,.ring-label,.streak-label,.water-title{color:#888!important;}
 </style>
 </head>
 <body>
