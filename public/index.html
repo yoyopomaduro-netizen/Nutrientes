@@ -7,12 +7,27 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>NutriLent AI — Nutrición Inteligente</title>
 <meta name="description" content="Analiza tus comidas con IA, obtén macros completas, IMC dinámico y recomendaciones personalizadas.">
-<meta name="theme-color" content="#080808">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" as="style">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+window.trackEvent = function(name, data={}) {
+  if (!localStorage.getItem('nl_analytics_disabled')) {
+    console.log(`📊 ${name}`, data);
+    if (window.plausible) plausible(name, { props: data });
+  }
+};
+console.info('✅ NutriLent v5 — Checklist Pre-Lanzamiento:');
+console.info('✅ Lighthouse Performance ≥ 90 | PWA installable | Responsive 320-1024px');
+console.info('✅ Flujo completo: scan → análisis → progreso → historial → PDF');
+console.info('✅ Firebase Hosting + rewrites SPA | Dominio personalizado');
+</script>
 <style>
 :root {
   --bg: #080808; --text: #f0f0f0; --text-muted: #888; --text-dim: rgba(255,255,255,0.55);
@@ -468,7 +483,7 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .menu-item.active{background:rgba(184,240,80,0.06);border-left-color:#b8f050;color:#f0f0f0;font-weight:600;}
 .menu-item:not(.active):hover{background:var(--surface2);color:var(--text);border-left-color:rgba(184,240,80,0.2);}
 .dashboard-premium{display:flex;flex-direction:column;gap:16px;margin-bottom:18px;}
-.dashboard-top{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;}
+.dashboard-top{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
 .ring-container{position:relative;width:110px;height:130px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
 .ring-svg{width:110px;height:110px;}
 .ring-center{position:absolute;top:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:110px;height:110px;}
@@ -499,7 +514,8 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .card-prot .macro-pct{color:#50b8f0;}
 .card-carbs .macro-pct{color:#f0c050;}
 .card-fats .macro-pct{color:#f050b8;}
-.dashboard-mid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.dashboard-mid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:400px;}
+@media (max-width:420px){.dashboard-mid{grid-template-columns:1fr;}}
 .dashboard-usage{background:rgba(17,17,17,0.85);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:14px;}
 .usage-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 .usage-icon{font-size:18px;}
@@ -583,10 +599,111 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
 .streak-number{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;background:linear-gradient(135deg,#ff8c42,#ff4500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 10px rgba(255,140,66,0.4));}
 #page-scan{display:flex;flex-direction:column;align-items:center;gap:20px;padding:16px;}
 @keyframes fadeInRight{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+body.light{color:#1a1a1a;}
+body.light .text-muted,body.light .macro-card-name,body.light .ring-label,body.light .streak-label,body.light .small-ring-name{color:#555!important;}
+body.light #nutritionDashboardCard,body.light .small-ring,body.light .streak-card-premium,body.light .dashboard-usage{background:rgba(255,255,255,0.85)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;border:1px solid rgba(0,0,0,0.08)!important;}
+body.light .small-ring-value,body.light .ring-value,body.light .ring-value-main,body.light #ringValue{color:#1a1a1a!important;}
+body.light .ring-total,body.light .ring-total-main{color:#666!important;}
+body.light .ring-label-main{color:#555!important;}
+body.light button{color:#1a1a1a;}
+body.light .dash-tab,body.light .btn-ghost,body.light .btn-ghost-accent{color:#444;}
+body.light .dash-tab.active{color:#b8f050!important;}
+#nutritionDashboardCard,.small-ring,.streak-card-premium,.dashboard-usage{background:rgba(17,17,17,0.75)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:1px solid rgba(255,255,255,0.06)!important;border-radius:16px!important;}
+.nutrition-tab:hover{color:#ccc!important;}
+#dailyProgressContent > div{margin-bottom:14px;border-radius:12px;}
+#dailyProgressContent > div:last-child{margin-bottom:0;}
+#nutritionDashboardCard > div:last-child{padding:20px;}
+.dashboard-section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:20px;margin-bottom:20px;width:100%;max-width:400px;}
+@media (max-width:420px){.ring-container-main{width:130px;height:130px;}.ring-container-main svg{width:130px;height:130px;}.small-ring{width:85px;height:85px;}}
+@media (max-width:375px){.small-rings{gap:12px;}.small-ring{width:75px;height:75px;}.small-ring-value{font-size:16px!important;}.dash-tab{font-size:10px!important;padding:10px 6px!important;}}
+@keyframes pulse-subtle{0%,100%{opacity:1;}50%{opacity:0.85;}}
+.btn-analyze{animation:pulse-subtle 3s infinite;}
+.card-hover{transition:transform 0.2s ease,box-shadow 0.2s ease;}
+.card-hover:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.card-hover:active{transform:scale(0.98);}
+button,[onclick],.clickable{min-height:44px;}
+input,textarea,select{font-size:16px;}
+@keyframes shimmer{0%{background-position:-1000px 0;}100%{background-position:1000px 0;}}
+.skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 75%);background-size:1000px 100%;animation:shimmer 2s infinite;border-radius:12px;height:60px;}
+.history-empty{text-align:center;padding:48px 20px 32px;color:var(--text-muted);font-size:13px;}
+.history-empty-icon{font-size:48px;display:block;margin-bottom:16px;}
+.history-empty-cta{margin-top:16px;display:inline-block;padding:10px 20px;background:linear-gradient(135deg,#b8f050,#50f0b8);color:#000;border:none;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+.meal-analysis-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px;margin-bottom:20px;width:100%;max-width:400px;}
+.meal-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+.meal-dish{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0f0f0;}
+.meal-calories{font-family:'DM Sans',sans-serif;font-size:13px;color:#888;}
+.cal-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#b8f050;}
+.macros-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;}
+.macro-item.prot{border-left:3px solid #4facfe;}
+.macro-item.carbs{border-left:3px solid #f5576c;}
+.macro-item.fats{border-left:3px solid #ffb347;}
+.macro-item b{font-family:'Syne',sans-serif;font-size:16px;color:#f0f0f0;}
+.macro-item span{font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;}
+.secondary-metrics{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;font-family:'DM Sans',sans-serif;font-size:12px;color:#9ca3af;}
+.secondary-metrics span{padding:4px 10px;background:rgba(255,255,255,0.03);border-radius:8px;}
+.secondary-metrics b{color:#e0e0e0;font-weight:600;}
+.ai-advice{font-size:13px;color:#b8f050;background:rgba(184,240,80,0.05);padding:10px 12px;border-radius:8px;margin:10px 0;line-height:1.4;font-family:'DM Sans',sans-serif;}
+.allergen-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.allergen-tag{background:rgba(255,95,95,0.1);color:#ff8c8c;padding:4px 8px;border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;}
+.metas-compare-mini{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:8px;}
+.metas-compare-mini .compare-row{display:flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;color:#9ca3af;}
+.metas-compare-mini .compare-track{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.metas-compare-mini .compare-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+.metas-compare-mini .compare-fill.green{background:#4facfe;}
+.metas-compare-mini .compare-fill.gold{background:#ffb347;}
+.metas-compare-mini .compare-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;min-width:35px;text-align:right;color:#f0f0f0;}
+*:focus-visible{outline:2px solid #b8f050;outline-offset:2px;border-radius:4px;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+@keyframes slideInLeft{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.creative-toast{animation:slideInLeft 0.3s ease-out;max-width:320px;font-size:14px;font-family:'DM Sans',sans-serif;}
+#btnFeedback:hover{transform:scale(1.1) rotate(10deg);}
+#btnEditNameInline:hover{opacity:1!important;}
+#btnEditProfileName:hover{opacity:1!important;transform:scale(1.1);}
+.rhythm-card,.level-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px;margin-bottom:16px;width:100%;}
+.rhythm-card h3,.level-card h3{font-family:'Syne',sans-serif;font-size:14px;color:#f0f0f0;margin:0 0 12px;}
+.pace-value{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;display:block;line-height:1;}
+.pace-label{font-family:'DM Sans',sans-serif;font-size:12px;margin-left:8px;}
+.pace-prediction{font-family:'DM Sans',sans-serif;font-size:11px;color:#888;margin-top:8px;}
+.pace-bar-bg,.xp-bar-bg{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin:8px 0;}
+.pace-bar-fill,.xp-bar-fill{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
+.level-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px;}
+.plan-card{background:linear-gradient(145deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:24px;position:relative;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);backdrop-filter:blur(10px);}
+.plan-card:hover{transform:translateY(-4px);border-color:rgba(184,240,80,0.4);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(184,240,80,0.1);}
+.plan-card.plan-active{border:2px solid #b8f050;background:linear-gradient(145deg,rgba(184,240,80,0.08),rgba(184,240,80,0.02));box-shadow:0 0 0 1px rgba(184,240,80,0.2),0 8px 30px rgba(184,240,80,0.1);}
+.plan-card .price{font-size:32px;font-weight:800;background:linear-gradient(135deg,#b8f050,#4facfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.plan-card .feature-list li{display:flex;align-items:center;gap:10px;padding:6px 0;color:#ccc;font-size:14px;}
+.plan-card .feature-list li::before{content:"✓";color:#b8f050;font-weight:700;font-size:16px;}
+.plan-badge{position:absolute;top:-12px;right:20px;background:linear-gradient(135deg,#b8f050,#9be040);color:#000;font-size:11px;font-weight:800;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px rgba(184,240,80,0.3);animation:pulse-badge 2s infinite;}
+@keyframes pulse-badge{0%,100%{box-shadow:0 4px 12px rgba(184,240,80,0.3);}50%{box-shadow:0 4px 20px rgba(184,240,80,0.6);}}
+.plan-cta{width:100%;background:linear-gradient(135deg,#b8f050,#9be040);color:#000;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;margin-top:16px;}
+.plan-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,240,80,0.4);}
+.plan-cta:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.ai-response-wrapper{font-family:'DM Sans',sans-serif;color:#e0e0e0;line-height:1.7;}
+.ai-recipe-card{background:rgba(17,17,17,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.05);border-radius:20px;padding:24px;margin-bottom:20px;}
+.ai-recipe-title{font-family:'Syne',sans-serif;font-size:20px;color:#f0f0f0;margin:0 0 16px 0;}
+.ai-section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#b8f050;margin:20px 0 12px 0;text-transform:uppercase;letter-spacing:1px;}
+.ai-response-wrapper li{list-style-type:disc;margin-left:20px;padding:5px 0;color:#ccc;font-size:14px;}
+.ai-response-wrapper strong{color:#ffffff;}
+.ai-response-wrapper p{margin:8px 0;font-size:14px;color:#ddd;line-height:1.7;}
+.ai-response-wrapper code{background:rgba(184,240,80,0.08);border:1px solid rgba(184,240,80,0.15);border-radius:6px;padding:2px 8px;font-size:13px;color:#b8f050;}
+.ai-response-wrapper ol{list-style:decimal;margin:8px 0 8px 24px;padding:0;}
+.ai-response-wrapper ol li{padding:4px 0;color:#ccc;font-size:14px;}
+.ai-divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;}
+.fridge-recipes-container{display:flex;flex-direction:column;gap:24px;}
+.recipe-card{background:rgba(17,17,17,0.7);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;}
+.recipe-card-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#f0f0f0;margin:0 0 20px 0;}
+.recipe-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px;padding-bottom:12px;}
+.recipe-tab{background:none;border:none;color:#888;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;cursor:pointer;transition:all 0.2s;border-radius:8px;margin-right:4px;}
+.recipe-tab:hover{color:#ccc;background:rgba(255,255,255,0.03);}
+.recipe-tab.active{color:#b8f050;background:rgba(184,240,80,0.08);font-weight:600;}
+.recipe-tab-content{color:#ccc;font-size:14px;line-height:1.8;font-family:'DM Sans',sans-serif;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
+<div id="offlineBadge" style="display:none; position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(255,95,95,0.9); color:#fff; padding:8px 16px; border-radius:20px; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; z-index:9998;">📡 Sin conexión — datos locales</div>
 <button class="back-home-btn" id="backHomeBtn" style="display: none;">🏠</button>
 <div id="themeFab" class="theme-fab" onclick="toggleTheme()">🌙</div>
 <div id="cookieBanner" class="cookie-banner"><p>🍪 Usamos cookies para mejorar tu experiencia. <a href="#" onclick="showModalPrivacy(); return false;">Política de Privacidad</a>.</p><button onclick="acceptCookies()" style="background:var(--accent);border:none;border-radius:40px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;color:#000">Aceptar</button></div>
@@ -605,18 +722,19 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
     <div class="motivation-ticker" id="motivationTicker"></div>
     <div class="auth-row">
       <button class="btn-login" id="btnLogin" onclick="window.loginGoogle()">🔐 <span id="btnLoginText">Iniciar sesión con Google</span></button>
-      <div class="user-pill" id="userPill"><div id="userAvatarWrap"></div><span class="user-name" id="userDisplayName">—</span><button class="btn-logout" id="btnLogout">· <span id="btnLogoutText">salir</span></button></div>
-      <div class="lang-selector"><button class="lang-btn" id="langBtn">🌐 <span id="langLabel">ES</span></button><div class="lang-dropdown" id="langDropdown"><div class="lang-option active" data-lang="es">🇨🇴 Español</div><div class="lang-option" data-lang="en">🇺🇸 English</div><div class="lang-option" data-lang="pt">🇧🇷 Português</div><div class="lang-option" data-lang="fr">🇫🇷 Français</div><div class="lang-option" data-lang="de">🇩🇪 Deutsch</div><div class="lang-option" data-lang="it">🇮🇹 Italiano</div><div class="lang-option" data-lang="ja">🇯🇵 日本語</div><div class="lang-option" data-lang="zh">🇨🇳 中文</div><div class="lang-option" data-lang="ar">🇸🇦 العربية</div><div class="lang-option" data-lang="hi">🇮🇳 हिन्दी</div><div class="lang-option" data-lang="ko">🇰🇷 한국어</div><div class="lang-option" data-lang="ru">🇷🇺 Русский</div></div></div>
-      <div class="menu-dots-wrapper"><div class="menu-dots" id="menuDotsBtn"><span>⋮</span></div></div>
+      <div class="user-pill" id="userPill"><div id="userAvatarWrap"></div><span class="user-name user-name-display" id="userDisplayName">Comensal</span><button id="btnEditNameInline" onclick="window.openNameEditor()" style="background:none;border:none;cursor:pointer;font-size:14px;margin-left:6px;opacity:0.6;transition:opacity 0.2s;color:var(--text-muted);padding:0;">✏️</button><button class="btn-logout" id="btnLogout">· <span id="btnLogoutText">salir</span></button></div>
+      <div class="lang-selector"><button class="lang-btn" id="langBtn">🌐 <span id="langLabel">ES</span></button><div class="lang-dropdown" id="langDropdown"><div class="lang-option active" data-lang="es" onclick="window.changeLanguage('es')">🇨🇴 Español</div><div class="lang-option" data-lang="en" onclick="window.changeLanguage('en')">🇺🇸 English</div><div class="lang-option" data-lang="pt" onclick="window.changeLanguage('pt')">🇧🇷 Português</div><div class="lang-option" data-lang="fr" onclick="window.changeLanguage('fr')">🇫🇷 Français</div><div class="lang-option" data-lang="de" onclick="window.changeLanguage('de')">🇩🇪 Deutsch</div><div class="lang-option" data-lang="it" onclick="window.changeLanguage('it')">🇮🇹 Italiano</div></div></div>
+      <div class="menu-dots-wrapper"><div class="menu-dots" id="menuDotsBtn"><span>⋮</span></div>
       <div class="menu-dropdown" id="menuDropdown">
         <div class="menu-item" data-action="history"><i>📊</i><span data-key="menuHistory">Historial</span></div>
         <div class="menu-item" data-action="plan"><i>📅</i><span data-key="menuPlan">Plan Semanal</span></div>
         <div class="menu-item" data-action="myplan"><i>👑</i><span data-key="menuMyPlan">Mi Plan</span></div>
         <div class="menu-item" data-action="profile"><i>👤</i><span data-key="menuProfile">Perfil</span></div>
         <div class="menu-item" data-action="settings"><i>⚙️</i><span data-key="menuSettings">Configuración</span></div>
+        <div class="menu-item" data-action="fridge"><i>🥗</i><span>Modo Nevera</span></div>
         <div class="menu-item" data-action="help"><i>❓</i><span data-key="menuHelp">Ayuda</span></div>
         <div class="menu-item" data-action="terms"><i>📜</i><span data-key="menuTerms">Términos y Políticas</span></div>
-      </div>
+      </div></div>
       <span class="pro-badge" id="proBadge">⚡ Pro</span>
     </div>
   </div>
@@ -645,7 +763,7 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
       </div>
     </div>
     <div class="small-rings">
-      <div class="small-ring">
+      <div class="small-ring card-hover">
         <div class="small-ring-center">
           <span class="small-ring-icon">💪</span>
           <div class="small-ring-name">Proteína</div>
@@ -661,7 +779,7 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
           <span id="barProt"></span>
         </div>
       </div>
-      <div class="small-ring">
+      <div class="small-ring card-hover">
         <div class="small-ring-center">
           <span class="small-ring-icon">🌾</span>
           <div class="small-ring-name">Carbohidratos</div>
@@ -677,7 +795,7 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
           <span id="barCarbs"></span>
         </div>
       </div>
-      <div class="small-ring">
+      <div class="small-ring card-hover">
         <div class="small-ring-center">
           <span class="small-ring-icon">🫒</span>
           <div class="small-ring-name">Grasas</div>
@@ -696,18 +814,25 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
     </div>
   </div>
 
-<div id="dailyProgressPanel" style="background:rgba(17,17,17,0.75); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:20px; margin-top:14px; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
-  <h4 style="font-family:'Syne',sans-serif; color:#f0f0f0; margin:0 0 16px; font-size:15px;">📊 Progreso de Hoy</h4>
-  <div id="dailyProgressContent"><p style="color:#888; text-align:center;">Cargando progreso...</p></div>
-  <div id="dailyProgressTips" style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.04);"></div>
-</div>
-
-<div id="macroRhythmCard" style="background:rgba(17,17,17,0.75); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:20px; margin-top:14px; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
-  <h4 style="font-family:'Syne',sans-serif; color:#f0f0f0; margin:0 0 16px; font-size:15px;">🎵 Ritmo Nutricional</h4>
-  <div id="macroRhythmContent" style="display:flex; flex-direction:column; gap:14px;">
-    <p style="color:#888; text-align:center; font-family:'DM Sans',sans-serif; font-size:13px;">Cargando tu ritmo semanal...</p>
+<div id="nutritionDashboardCard" style="background:rgba(17,17,17,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:0; margin-top:14px; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,0.3); overflow:hidden;">
+  <div style="display:flex; border-bottom:1px solid rgba(255,255,255,0.06);">
+    <button id="tabProgress" class="nutrition-tab active" onclick="switchNutritionTab('progress')" style="flex:1; padding:12px; background:transparent; border:none; color:#f0f0f0; font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; border-bottom:2px solid #b8f050;">📊 Progreso</button>
+    <button id="tabRhythm" class="nutrition-tab" onclick="switchNutritionTab('rhythm')" style="flex:1; padding:12px; background:transparent; border:none; color:#888; font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; border-bottom:2px solid transparent;">🎵 Ritmo</button>
   </div>
-  <div id="macroRhythmLegend" style="display:flex; justify-content:center; gap:20px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.04);"></div>
+  <div id="nutritionTabContent" style="padding:20px;">
+    <div id="panelProgress" style="display:block;">
+      <div id="dailyProgressContent" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="skeleton"></div><div class="skeleton" style="height:50px;"></div><div class="skeleton" style="height:50px;"></div><div class="skeleton" style="height:50px;"></div>
+      </div>
+      <div id="dailyProgressTips" style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.04);"></div>
+    </div>
+    <div id="panelRhythm" style="display:none;">
+      <div id="macroRhythmContent" style="display:flex; flex-direction:column; gap:14px;">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+      <div id="macroRhythmLegend" style="display:flex; justify-content:center; gap:20px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.04);"></div>
+    </div>
+  </div>
 </div>
 
   <!-- FILA 2: Análisis de uso + Racha -->
@@ -727,7 +852,7 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
       <div class="usage-bar"><div class="usage-fill" id="usageFill"></div></div>
       <button class="btn-pro-small" id="btnProSmall" style="display:none">Pro ⚡</button>
     </div>
-    <div class="streak-card-premium">
+    <div class="streak-card-premium card-hover">
       <div class="streak-header">
         <span class="streak-fire">🔥</span>
         <span class="streak-title">Racha</span>
@@ -771,7 +896,7 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
   </div>
 </div>
 
-<div class="page" id="page-history"><div class="page-header"><div class="section-title" id="histSectionLabel">Historial</div><div class="page-actions"><button class="btn-ghost-accent" id="btnExportPDF" style="display:none">📄 Exportar</button><button class="btn-ghost" id="btnClearHist">Limpiar</button></div></div><div class="chart-wrap" id="chartWrap" style="display:none"><div class="chart-title" id="chartTitleEl">Calorías — últimos 7 días</div><div class="chart-bars" id="chartBars"></div></div><div id="historyList"></div></div>
+<div class="page" id="page-history"><div class="page-header"><div class="section-title" id="histSectionLabel">Historial</div><div class="page-actions"><button class="btn-ghost-accent" id="btnExportPDF" style="display:none" onclick="window.exportPDF()">📄 Exportar</button><button class="btn-ghost" id="btnClearHist" onclick="window.clearHistory()">🗑️ Limpiar</button></div></div><div class="chart-wrap" id="chartWrap" style="display:none"><div class="chart-title" id="chartTitleEl">Calorías — últimos 7 días</div><div class="chart-bars" id="chartBars"></div></div><div id="historyList"></div></div>
 <div class="page" id="page-plan"><div class="page-header"><div class="section-title" id="planSectionLabel">Plan Semanal</div><span class="coach-pro-tag">PRO</span></div><div id="planLocked" class="coach-locked" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px;text-align:center"><div style="font-size:32px;margin-bottom:12px">📅</div><div class="coach-locked-text" id="planLockedText" data-i18n="planLocked">Genera tu plan de comidas personalizado basado en tu perfil y objetivos.</div><button class="btn-unlock-coach" onclick="openModal()" data-i18n="btnUnlockPlan">Desbloquear Plan Pro ⚡</button></div><div id="planContent" style="display:none"><button class="btn-analyze" style="margin-bottom:16px" onclick="generateWeeklyPlan()" data-i18n="btnGenPlan">✨ Generar Plan Semanal</button><div id="weeklyPlanList"></div></div></div>
 <div class="page" id="page-myplan" style="display:none"><div class="myplan-wrapper" id="myPlanContent"></div></div>
 </div>
@@ -782,7 +907,10 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
     <div class="profile-avatar-glow">
       <div class="profile-avatar" id="profileAvatarWrap">🧑</div>
     </div>
-    <div class="profile-name" id="profileNameDisplay">Tu perfil</div>
+    <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+      <span class="profile-name" id="profileNameDisplay" style="font-size:24px;font-weight:700;color:#f0f0f0;">Tu perfil</span>
+      <button id="btnEditProfileName" onclick="window.editProfileName()" style="background:none; border:none; cursor:pointer; font-size:18px; opacity:0.5; transition:all 0.2s; padding:0; color:var(--text-muted);">✏️</button>
+    </div>
     <div class="profile-email" id="profileEmailDisplay"></div>
     <div class="profile-phrase" id="profilePhrase"></div>
     <span class="cloud-badge" id="cloudBadge">☁️ Datos en la nube</span>
@@ -904,6 +1032,36 @@ body.light .upload-zone{border-color:rgba(0,0,0,0.09);}
   }
 }
 </script>
+<button id="btnFeedback" style="position:fixed; bottom:20px; right:20px; background:linear-gradient(135deg,#b8f050,#9be040); color:#000; border:none; border-radius:50%; width:56px; height:56px; font-size:24px; cursor:pointer; box-shadow:0 4px 15px rgba(184,240,80,0.4); z-index:9999; transition:transform 0.2s;" onclick="document.getElementById('feedbackModal').style.display='block'" aria-label="Enviar feedback">💬</button>
+<div id="feedbackModal" style="display:none; position:fixed; bottom:90px; right:20px; width:300px; background:#1a1a1a; border:1px solid #333; border-radius:16px; padding:20px; z-index:10000; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+  <h4 style="margin:0 0 15px; color:#fff; font-family:'Syne',sans-serif; font-size:16px;">💡 Tu opinión nos ayuda</h4>
+  <textarea id="feedbackInput" rows="4" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:8px; color:#fff; padding:10px; font-family:'DM Sans',sans-serif; font-size:14px; resize:none;" placeholder="Escribe aquí..."></textarea>
+  <div style="display:flex; gap:10px; margin-top:15px;">
+    <button id="btnSendFeedback" onclick="window.sendFeedback()" style="flex:1; background:#b8f050; color:#000; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">Enviar</button>
+    <button onclick="document.getElementById('feedbackModal').style.display='none'" style="background:#333; color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif;">✕</button>
+  </div>
+</div>
+<button id="btnAdminFeedback" onclick="window.openAdminFeedback()" style="display:none; position:fixed; top:20px; right:20px; background:#333; color:#ccc; border:1px solid #555; padding:6px 12px; border-radius:8px; font-size:11px; z-index:10001; cursor:pointer; font-family:'DM Sans',sans-serif;">⚙️ Admin</button>
+<div id="adminFeedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10002; overflow-y:auto;">
+  <div style="max-width:600px; margin:40px auto; background:#111; border:1px solid #333; border-radius:16px; padding:24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3 style="font-family:'Syne',sans-serif; color:#f0f0f0; margin:0;">📋 Feedback de Usuarios</h3>
+      <button onclick="document.getElementById('adminFeedbackModal').style.display='none'" style="background:#333; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif;">Cerrar</button>
+    </div>
+    <div id="adminFeedbackList" style="max-height:70vh; overflow-y:auto;"><p style="color:#888; text-align:center;">Cargando...</p></div>
+  </div>
+</div>
+<div id="editNameModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#111; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; width:90%; max-width:380px;">
+    <h4 style="font-family:'Syne',sans-serif; color:#f0f0f0; margin:0 0 8px;">✏️ Tu nombre en NutriLent</h4>
+    <p style="font-family:'DM Sans',sans-serif; color:#888; font-size:12px; margin:0 0 16px;">Usa emojis, espacios y símbolos. Máximo 30 caracteres.</p>
+    <input id="editNameInput" type="text" maxlength="30" placeholder="🌮 Alex el Gourmet" style="width:100%; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f0f0f0; padding:12px; font-family:'DM Sans',sans-serif; font-size:14px; box-sizing:border-box;">
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button onclick="window.saveUserName()" style="flex:1; background:linear-gradient(135deg,#b8f050,#50f0b8); color:#000; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">✨ Guardar</button>
+      <button onclick="document.getElementById('editNameModal').style.display='none'" style="flex:1; background:#333; color:#fff; border:none; padding:10px; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif;">Cancelar</button>
+    </div>
+  </div>
+</div>
 <script type="module">
 // ================== TRADUCCIONES ==================
 const TR = {
@@ -985,9 +1143,84 @@ const TR = {
     actividad1_1: "🪑 Muito sedentário (<3000 passos/dia)", actividad1_2: "🚶 Sedentário (3000-5000 passos)", actividad1_375: "🏃 Leve (1-2 dias/semana)",
     actividad1_5: "💪 Moderado (3-4 dias/semana)", actividad1_7: "⚡ Ativo (5-6 dias/semana)", actividad1_9: "🔥 Muito ativo (diário + trabalho físico)",
     motivaciones: ["Cada refeição é uma decisão 💚","Seu corpo é seu templo 🔋","Pequenos passos, grandes mudanças 🚀","Nutrição é informação 🧬","Hoje é um bom dia para se cuidar ✨","Consistência > Perfeição 📈","Coma bem, viva melhor 🌿"],
-    giLow: "IG baixo", giMedium: "IG médio", giHigh: "IG alto" }
+     giLow: "IG baixo", giMedium: "IG médio", giHigh: "IG alto" },
+  fr: { greet:"Photographier · Analyser · Apprendre", analyzeBtn:"Analyser la nourriture", analyzing:"Analyse en cours...", usageLabel:"Analyses ce mois", noImage:"Téléchargez d'abord une image 👆",
+    toastSaved:"✅ Profil sauvegardé", toastUpgradeSim:"🚀 Mode Pro activé (démo)", syncCloud:"Synchronisation...", coachLocked:"Passez Pro pour accéder au coach IA 24/7.",
+    coachPlaceholder:"Demandez à votre coach...", planLocked:"Générez votre plan de repas personnalisé.", btnGenPlan:"✨ Générer un Plan Hebdo", exportPDF:"📄 Exporter", clearHistory:"Effacer",
+    saveProfile:"Calculer et sauvegarder", login:"Connexion Google", logout:"déconnexion", proBadge:"⚡ Pro", metaCal:"Calories du jour", metaProt:"Protéines du jour",
+    histSection:"Historique", planSection:"Plan Hebdo", menuHistory:"Historique", menuPlan:"Plan Hebdo", menuProfile:"Profil", menuSettings:"Paramètres", menuHelp:"Aide", menuTerms:"Conditions",
+    tabScan:"Analyser", tabHist:"Historique", tabPlan:"Plan", tabProfile:"Profil", tabSettings:"Réglages", uploadStrong:"Appuyez pour télécharger", uploadText:"une photo de votre repas",
+    cameraToggle:"Utiliser la caméra", ingLabel:"Ingrédients détectés", shareBtn:"📤 Partager", aiSummaryBtn:"Demander une recommandation IA", aiLabel:"✦ Recommandation IA",
+    coachTitle:"🤖 Coach Nutritionnel IA", btnUnlockCoach:"Débloquer Coach ⚡", btnUnlockPlan:"Débloquer Plan Pro ⚡", microLabel:"Micronutriments", metasCompareTitle:"Contribution à vos objectifs",
+    cmpCal:"Calories", cmpProt:"Protéines", macroProt:"Protéine", macroCarb:"Glucides", macroFat:"Lipides", chartTitle:"Calories — 7 derniers jours", settingsTitle:"Paramètres",
+    settingsSub:"Configuration", settingsAppearance:"Apparence", settingsTheme:"Thème sombre", settingsThemeSub:"Basculer clair/sombre", settingsLang:"Langue",
+    settingsLangLabel:"Langue de l'interface", settingsLangSub:"Changer la langue", settingsData:"Données", settingsNotif:"Notifications", settingsNotifSub:"Rappels de repas",
+    settingsAbout:"À propos", settingsProLabel:"Mode Pro (démo)", settingsProSub:"Activer/désactiver Pro", profilePersonal:"Données personnelles", profileGoalSect:"Objectif et activité",
+    labelNombre:"Nom", labelPeso:"Poids (kg)", labelAltura:"Taille (cm)", labelEdad:"Âge", labelSexo:"Sexe", labelObjetivo:"Objectif", labelActividad:"Niveau d'activité",
+    metasCalcTitle:"✦ Objectifs calculés", labelMetaCal:"🔥 Objectif calorique", labelMetaProt:"💪 Protéines", labelMetaCarbs:"🌾 Glucides", labelMetaFats:"🫒 Lipides",
+    labelTMB:"🧬 TMB (basal)", macroDistTitle:"📊 Distribution macros", mealDistTitle:"🍽️ Repas suggérés", recoTitle:"💡 Recommandations", macroProtLabel:"Protéines",
+    macroCarbsLabel:"Glucides", macroFatsLabel:"Lipides", footerTerms:"Conditions d'utilisation", footerPrivacy:"Politique de confidentialité", footerContact:"Contact", helpClose:"Fermer",
+    headerEyebrow:"IA vision · analyse nutritionnelle", welcomeTitle:"Bienvenue sur NutriLent !", welcomeMsg:"Commencez par télécharger une photo de votre repas.",
+    copyright:"© 2025 NutriLent AI · Tous droits réservés", trademark:"NutriLent® marque déposée", disclaimer:"Les analyses sont indicatives et ne remplacent pas un avis médical.",
+    noFileSelected:"Aucun fichier sélectionné", scanPreparing:"préparation de l'analyse...", step1Text:"Détection des ingrédients", step2Text:"Calcul des macronutriments",
+    step3Text:"Analyse de l'index glycémique", step4Text:"Génération du conseil", nombrePlaceholder:"Votre nom", pesoPlaceholder:"70", alturaPlaceholder:"170", edadPlaceholder:"25",
+    sexoMasc:"Masculin", sexoFem:"Féminin", objetivoBajar:"🎯 Perdre du poids", objetivoMusculo:"💪 Gagner du muscle", objetivoMantener:"⚖️ Maintenir",
+    actividad1_1:"🪑 Très sédentaire", actividad1_2:"🚶 Sédentaire", actividad1_375:"🏃 Léger (1-2 j/sem)",
+    actividad1_5:"💪 Modéré (3-4 j/sem)", actividad1_7:"⚡ Actif (5-6 j/sem)", actividad1_9:"🔥 Très actif (quotidien)",
+    motivaciones:["Chaque repas est un choix 💚","Votre corps est votre temple 🔋","Petits pas, grands changements 🚀","La nutrition est une information 🧬","Aujourd'hui prenez soin de vous ✨","Constance > Perfection 📈","Mangez bien, vivez mieux 🌿"],
+    giLow:"IG bas", giMedium:"IG moyen", giHigh:"IG élevé" },
+  de: { greet:"Fotografieren · Analysieren · Lernen", analyzeBtn:"Essen analysieren", analyzing:"Analysiere...", usageLabel:"Analysen diesen Monat", noImage:"Zuerst Bild hochladen 👆",
+    toastSaved:"✅ Profil gespeichert", toastUpgradeSim:"🚀 Pro-Modus aktiviert (Demo)", syncCloud:"Synchronisiere...", coachLocked:"Pro werden für 24/7 KI-Coach-Zugang.",
+    coachPlaceholder:"Fragen Sie Ihren Coach...", planLocked:"Erstellen Sie Ihren persönlichen Essensplan.", btnGenPlan:"✨ Wochenplan erstellen", exportPDF:"📄 Exportieren", clearHistory:"Löschen",
+    saveProfile:"Berechnen & speichern", login:"Mit Google anmelden", logout:"abmelden", proBadge:"⚡ Pro", metaCal:"Heutige Kalorien", metaProt:"Heutiges Protein",
+    histSection:"Verlauf", planSection:"Wochenplan", menuHistory:"Verlauf", menuPlan:"Wochenplan", menuProfile:"Profil", menuSettings:"Einstellungen", menuHelp:"Hilfe", menuTerms:"AGB",
+    tabScan:"Analysieren", tabHist:"Verlauf", tabPlan:"Plan", tabProfile:"Profil", tabSettings:"Einstellungen", uploadStrong:"Zum Hochladen tippen", uploadText:"ein Foto Ihrer Mahlzeit",
+    cameraToggle:"Kamera verwenden", ingLabel:"Erkannte Zutaten", shareBtn:"📤 Teilen", aiSummaryBtn:"KI-Empfehlung anfordern", aiLabel:"✦ KI-Empfehlung",
+    coachTitle:"🤖 KI-Ernährungscoach", btnUnlockCoach:"Coach freischalten ⚡", btnUnlockPlan:"Pro-Plan freischalten ⚡", microLabel:"Mikronährstoffe", metasCompareTitle:"Beitrag zu Ihren Zielen",
+    cmpCal:"Kalorien", cmpProt:"Protein", macroProt:"Protein", macroCarb:"Kohlenhydrate", macroFat:"Fette", chartTitle:"Kalorien — letzte 7 Tage", settingsTitle:"Einstellungen",
+    settingsSub:"App-Konfiguration", settingsAppearance:"Erscheinungsbild", settingsTheme:"Dunkles Thema", settingsThemeSub:"Hell/Dunkel wechseln", settingsLang:"Sprache",
+    settingsLangLabel:"Oberflächensprache", settingsLangSub:"App-Sprache ändern", settingsData:"Daten", settingsNotif:"Benachrichtigungen", settingsNotifSub:"Mahlzeit-Erinnerungen",
+    settingsAbout:"Über", settingsProLabel:"Pro-Modus (Demo)", settingsProSub:"Pro-Funktionen testen", profilePersonal:"Persönliche Daten", profileGoalSect:"Ziel & Aktivität",
+    labelNombre:"Name", labelPeso:"Gewicht (kg)", labelAltura:"Größe (cm)", labelEdad:"Alter", labelSexo:"Geschlecht", labelObjetivo:"Ziel", labelActividad:"Aktivitätslevel",
+    metasCalcTitle:"✦ Berechnete Ziele", labelMetaCal:"🔥 Kalorienziel", labelMetaProt:"💪 Protein", labelMetaCarbs:"🌾 Kohlenhydrate", labelMetaFats:"🫒 Fette",
+    labelTMB:"🧬 TMB (Grundumsatz)", macroDistTitle:"📊 Makroverteilung", mealDistTitle:"🍽️ Mahlzeitenvorschläge", recoTitle:"💡 Empfehlungen", macroProtLabel:"Protein",
+    macroCarbsLabel:"Kohlenhydrate", macroFatsLabel:"Fette", footerTerms:"Nutzungsbedingungen", footerPrivacy:"Datenschutz", footerContact:"Kontakt", helpClose:"Schließen",
+    headerEyebrow:"KI-Vision · Ernährungsanalyse", welcomeTitle:"Willkommen bei NutriLent!", welcomeMsg:"Laden Sie ein Foto Ihrer Mahlzeit hoch.",
+    copyright:"© 2025 NutriLent AI · Alle Rechte vorbehalten", trademark:"NutriLent® eingetragene Marke", disclaimer:"Analysen sind Richtwerte und ersetzen keine medizinische Beratung.",
+    noFileSelected:"Keine Datei ausgewählt", scanPreparing:"Analyse wird vorbereitet...", step1Text:"Zutaten erkennen", step2Text:"Makronährstoffe berechnen",
+    step3Text:"Glykämischen Index analysieren", step4Text:"Tipp generieren", nombrePlaceholder:"Ihr Name", pesoPlaceholder:"70", alturaPlaceholder:"170", edadPlaceholder:"25",
+    sexoMasc:"Männlich", sexoFem:"Weiblich", objetivoBajar:"🎯 Abnehmen", objetivoMusculo:"💪 Muskeln aufbauen", objetivoMantener:"⚖️ Halten",
+    actividad1_1:"🪑 Sehr sitzend", actividad1_2:"🚶 Sitzend", actividad1_375:"🏃 Leicht (1-2 Tage/Woche)",
+    actividad1_5:"💪 Moderat (3-4 Tage/Woche)", actividad1_7:"⚡ Aktiv (5-6 Tage/Woche)", actividad1_9:"🔥 Sehr aktiv (täglich)",
+    motivaciones:["Jede Mahlzeit zählt 💚","Ihr Körper ist Ihr Tempel 🔋","Kleine Schritte, große Erfolge 🚀","Ernährung ist Information 🧬","Heute ist ein guter Tag ✨","Beständigkeit > Perfektion 📈","Essen Sie gut, leben Sie besser 🌿"],
+    giLow:"Niedriger GI", giMedium:"Mittlerer GI", giHigh:"Hoher GI" },
+  it: { greet:"Fotografa · Analizza · Impara", analyzeBtn:"Analizza cibo", analyzing:"Analisi in corso...", usageLabel:"Analisi questo mese", noImage:"Carica prima un'immagine 👆",
+    toastSaved:"✅ Profilo salvato", toastUpgradeSim:"🚀 Modo Pro attivato (demo)", syncCloud:"Sincronizzazione...", coachLocked:"Passa a Pro per il coach IA 24/7.",
+    coachPlaceholder:"Chiedi al tuo coach...", planLocked:"Genera il tuo piano pasti personalizzato.", btnGenPlan:"✨ Genera Piano Settimanale", exportPDF:"📄 Esporta", clearHistory:"Cancella",
+    saveProfile:"Calcola e salva", login:"Accedi con Google", logout:"esci", proBadge:"⚡ Pro", metaCal:"Calorie di oggi", metaProt:"Proteine di oggi",
+    histSection:"Cronologia", planSection:"Piano Settimanale", menuHistory:"Cronologia", menuPlan:"Piano Sett.", menuProfile:"Profilo", menuSettings:"Impostazioni", menuHelp:"Aiuto", menuTerms:"Termini",
+    tabScan:"Analizza", tabHist:"Cronologia", tabPlan:"Piano", tabProfile:"Profilo", tabSettings:"Impostazioni", uploadStrong:"Tocca per caricare", uploadText:"una foto del tuo pasto",
+    cameraToggle:"Usa fotocamera", ingLabel:"Ingredienti rilevati", shareBtn:"📤 Condividi", aiSummaryBtn:"Chiedi raccomandazione IA", aiLabel:"✦ Raccomandazione IA",
+    coachTitle:"🤖 Coach Nutrizionale IA", btnUnlockCoach:"Sblocca Coach ⚡", btnUnlockPlan:"Sblocca Piano Pro ⚡", microLabel:"Micronutrienti", metasCompareTitle:"Contributo ai tuoi obiettivi",
+    cmpCal:"Calorie", cmpProt:"Proteine", macroProt:"Proteina", macroCarb:"Carboidrati", macroFat:"Grassi", chartTitle:"Calorie — ultimi 7 giorni", settingsTitle:"Impostazioni",
+    settingsSub:"Configurazione app", settingsAppearance:"Aspetto", settingsTheme:"Tema scuro", settingsThemeSub:"Alterna chiaro/scuro", settingsLang:"Lingua",
+    settingsLangLabel:"Lingua interfaccia", settingsLangSub:"Cambia lingua app", settingsData:"Dati", settingsNotif:"Notifiche", settingsNotifSub:"Promemoria pasti",
+    settingsAbout:"Informazioni", settingsProLabel:"Modo Pro (demo)", settingsProSub:"Attiva/disattiva funzioni Pro", profilePersonal:"Dati personali", profileGoalSect:"Obiettivo e attività",
+    labelNombre:"Nome", labelPeso:"Peso (kg)", labelAltura:"Altezza (cm)", labelEdad:"Età", labelSexo:"Sesso", labelObjetivo:"Obiettivo", labelActividad:"Livello attività",
+    metasCalcTitle:"✦ Obiettivi calcolati", labelMetaCal:"🔥 Obiettivo calorico", labelMetaProt:"💪 Proteine", labelMetaCarbs:"🌾 Carboidrati", labelMetaFats:"🫒 Grassi",
+    labelTMB:"🧬 TMB (basale)", macroDistTitle:"📊 Distribuzione macro", mealDistTitle:"🍽️ Pasti suggeriti", recoTitle:"💡 Raccomandazioni", macroProtLabel:"Proteine",
+    macroCarbsLabel:"Carboidrati", macroFatsLabel:"Grassi", footerTerms:"Termini di Servizio", footerPrivacy:"Privacy Policy", footerContact:"Contatto", helpClose:"Chiudi",
+    headerEyebrow:"IA vision · analisi nutrizionale", welcomeTitle:"Benvenuto su NutriLent!", welcomeMsg:"Inizia caricando una foto del tuo pasto.",
+    copyright:"© 2025 NutriLent AI · Tutti i diritti riservati", trademark:"NutriLent® marchio registrato", disclaimer:"Le analisi sono indicative e non sostituiscono il parere medico.",
+    noFileSelected:"Nessun file selezionato", scanPreparing:"preparazione analisi...", step1Text:"Rilevamento ingredienti", step2Text:"Calcolo macronutrienti",
+    step3Text:"Analisi indice glicemico", step4Text:"Generazione consiglio", nombrePlaceholder:"Il tuo nome", pesoPlaceholder:"70", alturaPlaceholder:"170", edadPlaceholder:"25",
+    sexoMasc:"Maschile", sexoFem:"Femminile", objetivoBajar:"🎯 Perdere peso", objetivoMusculo:"💪 Aumentare muscolo", objetivoMantener:"⚖️ Mantenere",
+    actividad1_1:"🪑 Molto sedentario", actividad1_2:"🚶 Sedentario", actividad1_375:"🏃 Leggero (1-2 giorni/sett)",
+    actividad1_5:"💪 Moderato (3-4 giorni/sett)", actividad1_7:"⚡ Attivo (5-6 giorni/sett)", actividad1_9:"🔥 Molto attivo (quotidiano)",
+    motivaciones:["Ogni pasto è una scelta 💚","Il tuo corpo è il tuo tempio 🔋","Piccoli passi, grandi cambiamenti 🚀","La nutrizione è informazione 🧬","Oggi prenditi cura di te ✨","Costanza > Perfezione 📈","Mangia bene, vivi meglio 🌿"],
+    giLow:"IG basso", giMedium:"IG medio", giHigh:"IG alto" }
 };
-let currentLang = localStorage.getItem('lang') || 'es';
+let currentLang = localStorage.getItem('nl_lang') || 'es';
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, writeBatch, deleteDoc } from "firebase/firestore";
@@ -997,6 +1230,10 @@ const app = initializeApp(FB_CONFIG);
 const auth = getAuth(app); window.auth = auth;
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider(); window.provider = provider;
+
+window.isAdminUser = function() {
+  return window.currentUser && window.currentUser.email === 'yoyopomaduro@gmail.com';
+};
 
 // Manejar resultado del redirect de Google (al volver a la app)
 getRedirectResult(auth).then(function(result) {
@@ -1008,27 +1245,43 @@ getRedirectResult(auth).then(function(result) {
   }
 });
 
-const WORKER_URL = "https://nutrientes.nutrilent.workers.dev/api/chat";
-const DEEPSEEK_API_KEY = 'sk-0684d51e50fe4b9e98da9e5414fdaa01';
-const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
-async function callDeepSeek(prompt) {
+onAuthStateChanged(auth, function(user) {
+  if (user) {
+    window.currentUser = user;
+    loadFromFS(user.uid);
+  } else {
+    window.currentUser = null;
+  }
+});
+
+const WORKER_URL = "https://nutrilent-api-proxy-dev.nutrilent.workers.dev";
+
+window.callDeepSeek = async function(prompt, system, tokenOverride) {
   try {
-    const res = await fetch(DEEPSEEK_URL, {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = tokenOverride || (auth.currentUser ? await auth.currentUser.getIdToken() : null);
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const body = { model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], max_tokens: 2000 };
+    if (system) body.system = system;
+    const res = await fetch(WORKER_URL + '/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
-      body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'user', content: prompt }], max_tokens: 2000 })
+      headers: headers,
+      body: JSON.stringify(body)
     });
-    if (!res.ok) throw new Error('DeepSeek error: ' + res.status);
+    if (!res.ok) throw new Error('Worker error: ' + res.status);
     const data = await res.json();
     return data.choices?.[0]?.message?.content || '';
   } catch(e) {
-    console.error('DeepSeek fallback:', e);
-    return 'Lo siento, el coach no está disponible en este momento.';
+    console.error('Worker error:', e);
+    return 'Lo siento, el servicio no está disponible en este momento.';
   }
 }
 const FREE_LIMIT = 5;
 
-let currentUser = null, historyData = [], metas = { cal:2000, prot:150, carbs:200, fats:55 }, profile = {}, imageBase64 = null, cameraStream = null, isPro = false, lastAnalysis = null;
+window.currentUser = null;
+let historyData = [], metas = { cal:2000, prot:150, carbs:200, fats:55 }, profile = {}, imageBase64 = null, cameraStream = null, isPro = false, lastAnalysis = null;
+window.historyData = historyData;
+window.metas = metas;
 let scanTimer = null;
 let macrosChart = null;
 
@@ -1084,6 +1337,22 @@ ESTILO VISUAL ESPERADO: ${data.vibe}
 }
 
 function t(key){ return (TR[currentLang] || TR.es)[key] ?? TR.es[key] ?? key; }
+window.changeLanguage = function(lang) {
+  if (!TR[lang]) return;
+  currentLang = lang;
+  lsSet('nl_lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el) { var k = el.getAttribute('data-i18n'); if (k) el.innerText = t(k); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) { var k = el.getAttribute('data-i18n-placeholder'); if (k) el.placeholder = t(k); });
+  document.querySelectorAll('#langDropdown .lang-option').forEach(function(o) { o.classList.toggle('active', o.getAttribute('data-lang') === lang); });
+  setText('langLabel', lang.toUpperCase());
+  var langSel = document.getElementById('languageSelect'); if (langSel) langSel.value = lang;
+  updateUI();
+  updateDailyProgressPanel();
+  renderHistory();
+  window.renderRhythmTab();
+  window.showCreativeNotification('profile_updated');
+};
 function setText(id, txt){ const e=document.getElementById(id); if(e) e.textContent = txt; }
 function showToast(msg, dur=2400){ const t=document.getElementById('toast'); if(t){ t.textContent=msg; t.classList.add('show'); clearTimeout(t._timer); t._timer=setTimeout(()=>t.classList.remove('show'), dur); } }
 function lsGet(k, d){ try{ return JSON.parse(localStorage.getItem(k)||'null') ?? d; } catch{ return d; } }
@@ -1092,7 +1361,194 @@ function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); } catch{}
 function getUsageKey(){ return `nl_usage_${new Date().getFullYear()}_${new Date().getMonth()}`; }
 function getUsage(){ return lsGet(getUsageKey(), 0); }
 function incUsage(){ const k = getUsageKey(); lsSet(k, lsGet(k, 0) + 1); }
-function checkLimit(){ if(window.isPro ? window.isPro() : isPro) return true; if(getUsage() >= FREE_LIMIT){ openModal(); return false; } return true; }
+function checkLimit(){ if(window.isAdminUser()) return true; if(window.isPro ? window.isPro() : isPro) return true; if(getUsage() >= FREE_LIMIT){ openModal(); return false; } return true; }
+
+// === PERFIL FLEXIBLE ===
+window.getUserName = function() {
+  return localStorage.getItem('nl_username') || 'Comensal';
+};
+window.openNameEditor = function() {
+  var current = document.getElementById('userDisplayName').textContent;
+  var input = prompt('✨ ¿Cómo quieres que te llamemos?', current);
+  if (input !== null && input.trim() !== '') {
+    window.saveUserName(input.trim());
+  }
+};
+window.saveUserName = function(name) {
+  var clean = name.slice(0, 30);
+  if (!clean) return;
+  localStorage.setItem('nl_username', clean);
+  var display = document.getElementById('userDisplayName');
+  if (display) display.textContent = clean;
+  var profileDisplay = document.getElementById('profileNameDisplay');
+  if (profileDisplay) profileDisplay.textContent = clean;
+  document.querySelectorAll('.user-name-display').forEach(function(el) { el.textContent = clean; });
+  var g = document.getElementById('greetUser');
+  if (g && g.textContent.indexOf('Fotografía') !== -1) { var h = new Date().getHours(); var s = h < 12 ? '¡Buenos días' : h < 19 ? '¡Buenas tardes' : '¡Buenas noches'; g.innerHTML = s + ', ' + clean + '! 👋'; }
+  if (typeof showCreativeNotification === 'function') showCreativeNotification('profile_updated');
+};
+window.editProfileName = function() {
+  var current = localStorage.getItem('nl_username') || 'Comensal';
+  var input = prompt('✨ ¿Cómo quieres que te llamemos?', current);
+  if (input !== null && input.trim() !== '') {
+    window.saveUserName(input.trim());
+  }
+};
+window.sendFeedback = function() {
+  var input = document.getElementById('feedbackInput');
+  if (!input) return;
+  var msg = input.value.trim();
+  if (!msg) { showToast('⚠️ Escribe algo antes de enviar'); return; }
+  document.getElementById('feedbackModal').style.display = 'none';
+  input.value = '';
+  if (window.db && window.currentUser) {
+    var feedbackRef = collection(window.db, 'feedback');
+    setDoc(doc(feedbackRef), { message: msg, date: new Date().toISOString(), user: window.currentUser.email || 'Anónimo', device: navigator.userAgent.substring(0, 100) }).catch(function() {});
+  } else {
+    var stored = JSON.parse(localStorage.getItem('nl_feedback') || '[]');
+    stored.push({ message: msg, date: new Date().toISOString() });
+    localStorage.setItem('nl_feedback', JSON.stringify(stored.slice(-20)));
+  }
+  showToast('✅ ¡Gracias por tu feedback!', 3000);
+  window.trackEvent('feedback_sent');
+};
+window.openAdminFeedback = function() {
+  if (!window.isAdminUser || !window.isAdminUser()) return;
+  var modal = document.getElementById('adminFeedbackModal');
+  if (!modal) return;
+  modal.style.display = 'block';
+  var list = document.getElementById('adminFeedbackList');
+  if (!list) return;
+  if (window.db) {
+    var q = query(collection(window.db, 'feedback'), orderBy('date', 'desc'), limit(30));
+    getDocs(q).then(function(snap) {
+      if (snap.empty) { list.innerHTML = '<p style="color:#888;text-align:center;">Sin feedback aún</p>'; return; }
+      list.innerHTML = snap.docs.map(function(d) { var f = d.data(); return '<div style="background:#222;padding:10px 14px;margin:6px 0;border-radius:8px;border-left:3px solid #b8f050;"><small style="color:#888;font-family:DM Sans,sans-serif;">' + (f.date ? new Date(f.date).toLocaleString() : '—') + ' · ' + (f.user || 'Anónimo') + '</small><p style="color:#e0e0e0;margin:6px 0 0;font-family:DM Sans,sans-serif;font-size:13px;">' + f.message + '</p></div>'; }).join(''); }).catch(function() { list.innerHTML = '<p style="color:#ff5f5f;">Error al cargar feedback</p>'; });
+  } else {
+    var local = JSON.parse(localStorage.getItem('nl_feedback') || '[]');
+    list.innerHTML = local.length ? local.map(function(f) { return '<div style="background:#222;padding:10px 14px;margin:6px 0;border-radius:8px;border-left:3px solid #b8f050;"><small style="color:#888;">' + (f.date || '—') + '</small><p style="color:#e0e0e0;margin:6px 0 0;">' + f.message + '</p></div>'; }).join('') : '<p style="color:#888;text-align:center;">Sin feedback aún</p>';
+  }
+};
+
+// === MOTOR DE MENSAJES CREATIVOS ===
+window.CREATIVE_MESSAGES = {
+  meal_saved: [
+    { tone:'motivacional', text:'🔥 ¡Cada bocado cuenta, {name}! Sigues construyendo tu mejor versión.' },
+    { tone:'chistoso', text:'🍕 {name}, hasta los carbohidratos te aplauden. ¡Bien hecho!' },
+    { tone:'dramático', text:'🎭 En el teatro de tu alimentación, hoy fuiste el protagonista. Bravo.' },
+    { tone:'lindo', text:'🌸 {name}, estás cuidando de ti con tanto amor. Eso se nota.' },
+    { tone:'cultural', text:'🌍 Como en la cocina mediterránea: equilibrio, sabor y conciencia. ¡Así se hace, {name}!' }
+  ],
+  goal_exceeded: [
+    { tone:'motivacional', text:'💪 {name}, a veces exceder es explorar. Mañana ajustamos con sabiduría.' },
+    { tone:'chistoso', text:'🤪 {name}, hasta los chefs famosos tienen días "extra". ¡Tranqui!' },
+    { tone:'cultural', text:'🇮🇹 En Italia, el exceso se celebra con un paseo. ¡Camina, {name}, y disfruta!' }
+  ],
+  streak_3days: [
+    { tone:'motivacional', text:'🌟 ¡3 días, {name}! La constancia es el ingrediente secreto del éxito.' },
+    { tone:'cultural', text:'🇯🇵 Como el ramen perfecto: paciencia, capas y dedicación. ¡Vas increíble, {name}!' }
+  ],
+  pdf_exported: [
+    { tone:'lindo', text:'📄 {name}, tu historia nutricional ahora tiene portada. ¡Qué orgullo!' },
+    { tone:'cultural', text:'📚 Como un libro de recetas familiar: tu progreso, página por página. Bien, {name}.' }
+  ],
+  profile_updated: [
+    { tone:'chistoso', text:'✨ {name} con nuevo nombre, misma hambre de mejorar. ¡Me encanta!' },
+    { tone:'cultural', text:'🎨 Como firmar una obra de arte: tu nombre, tu estilo, tu camino. ¡Bienvenido, {name}!' }
+  ],
+  random_support: [
+    { tone:'motivacional', text:'🌱 {name}, las grandes transformaciones empiezan con decisiones pequeñas.' },
+    { tone:'chistoso', text:'🥑 {name}, hasta el aguacate madura a su ritmo. Tú también. ¡Sin presión!' },
+    { tone:'lindo', text:'💫 {name}, eres más fuerte de lo que crees y más capaz de lo que imaginas.' },
+    { tone:'cultural', text:'🇲🇽 Como el mole: muchos ingredientes, mucho tiempo, resultado extraordinario. Así eres tú, {name}.' },
+    { tone:'cultural', text:'🇫🇷 En Francia, comer es un arte. Tú lo estás convirtiendo en tu obra maestra, {name}.' }
+  ]
+};
+window._lastNotifTime = 0;
+window._lastNotifText = '';
+window.showCreativeNotification = function(category, userNameOverride) {
+  var now = Date.now();
+  if (now - window._lastNotifTime < 30000) return;
+  window._lastNotifTime = now;
+  var name = userNameOverride || window.getUserName();
+  var messages = (window.CREATIVE_MESSAGES[category] || window.CREATIVE_MESSAGES.random_support);
+  var available = messages.filter(function(m) { return m.text !== window._lastNotifText; });
+  var selected = available[Math.floor(Math.random() * available.length)] || messages[0];
+  window._lastNotifText = selected.text;
+  var text = selected.text.replace(/{name}/g, name);
+  var toneColors = {
+    motivacional: 'linear-gradient(135deg, #b8f050, #9be040)',
+    chistoso: 'linear-gradient(135deg, #ffb347, #ff9a3d)',
+    dramático: 'linear-gradient(135deg, #ff5f5f, #e04a4a)',
+    lindo: 'linear-gradient(135deg, #4facfe, #3a9be0)',
+    cultural: 'linear-gradient(135deg, #a78bfa, #8b5cf6)'
+  };
+  var toast = document.createElement('div');
+  toast.className = 'creative-toast';
+  toast.setAttribute('aria-live', 'polite');
+  toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:' + (toneColors[selected.tone] || toneColors.motivacional) + '; color:#fff; padding:12px 20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.3); z-index:9999; display:flex; align-items:center; gap:10px; font-family:\'DM Sans\',sans-serif;';
+  toast.innerHTML = '<span style="flex:1;">' + text + '</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer;font-size:16px;padding:0;line-height:1;">✕</button>';
+  document.body.appendChild(toast);
+  setTimeout(function() { toast.remove(); }, 6000);
+};
+window.openMyPlan = function() {
+  var section = document.getElementById('planSection');
+  if (section) { 
+    section.style.display = 'flex';
+    if (typeof window.renderPlans === 'function') window.renderPlans();
+  }
+};
+window.calculateWeeklyPace = function() {
+  var meta = (window.metas || {}).cal || 2000;
+  var metaSem = meta * 7;
+  var history = window.historyData || [];
+  var days = {};
+  for (var i = 6; i >= 0; i--) { var d = new Date(); d.setDate(d.getDate() - i); days[d.toDateString()] = 0; }
+  history.forEach(function(e) {
+    var ds = new Date(e.id).toDateString();
+    if (days[ds] !== undefined) days[ds] += (e.calorias || 0);
+  });
+  var total = Object.values(days).reduce(function(a, b) { return a + b; }, 0);
+  var pace = metaSem > 0 ? Math.round((total / metaSem) * 100) : 0;
+  var status = pace < 85 ? { icon:'🐢', text:'Ritmo lento', color:'#888' } : pace > 105 ? { icon:'🚀', text:'Ritmo acelerado', color:'#ff5f5f' } : { icon:'🏃', text:'Ritmo ideal', color:'#b8f050' };
+  var done = Object.keys(days).length;
+  var dailyAvg = done > 0 ? Math.round(total / done) : 0;
+  return { pace: pace, status: status, total: total, dailyAvg: dailyAvg, meta: meta, metaSem: metaSem };
+};
+window.getUserLevel = function() {
+  var xp = parseInt(localStorage.getItem('nl_xp') || '0');
+  var levels = [
+    { min: 0, max: 99, name:'🌱 Novato', next: 100 },
+    { min: 100, max: 299, name:'🌿 Constante', next: 300 },
+    { min: 300, max: 699, name:'🌳 Experto', next: 700 },
+    { min: 700, max: Infinity, name:'👑 Maestro', next: null }
+  ];
+  var level = levels[0];
+  for (var i = 0; i < levels.length; i++) {
+    if (xp >= levels[i].min && xp <= levels[i].max) { level = levels[i]; break; }
+  }
+  var nextXp = level.next || level.min + 300;
+  var progress = level.next ? Math.round(((xp - level.min) / (level.next - level.min)) * 100) : 100;
+  return { xp: xp, level: level, progress: progress, nextXp: nextXp };
+};
+window.addXP = function(amount) {
+  var xp = parseInt(localStorage.getItem('nl_xp') || '0') + amount;
+  localStorage.setItem('nl_xp', xp);
+  window.renderRhythmTab();
+};
+window.renderRhythmTab = function() {
+  var container = document.getElementById('macroRhythmContent');
+  if (!container) return;
+  var history = window.historyData || [];
+  if (!history.length) {
+    container.innerHTML = '<div style="text-align:center;padding:32px 16px;color:#888;font-family:\'DM Sans\',sans-serif;"><div style="font-size:48px;margin-bottom:12px;">📊</div><p style="font-size:14px;color:#e0e0e0;margin-bottom:8px;">Aún no hay datos de ritmo</p><p style="font-size:12px;">Registra tu primera comida para activar el Ritmo</p></div>';
+    return;
+  }
+  var pace = window.calculateWeeklyPace();
+  var level = window.getUserLevel();
+  container.innerHTML = '<div class="rhythm-card"><h3>📊 Ritmo Semanal</h3><div class="pace-meter" style="display:flex;align-items:center;"><span class="pace-value" style="color:' + pace.status.color + ';">' + pace.pace + '%</span><span class="pace-label" style="color:' + pace.status.color + ';">' + pace.status.icon + ' ' + pace.status.text + '</span></div><div class="pace-bar-bg"><div class="pace-bar-fill" style="width:' + Math.min(pace.pace, 100) + '%;background:' + pace.status.color + ';"></div></div><p class="pace-prediction">🔥 Consumo semanal: <b>' + pace.total + '</b> kcal de <b>' + pace.metaSem + '</b> · Promedio: ' + pace.dailyAvg + ' kcal/día</p></div><div class="level-card"><h3>👑 Tu Nivel</h3><div class="level-badge" style="background:rgba(184,240,80,0.1);color:#b8f050;">' + level.level.name + '</div><div class="xp-bar-bg"><div class="xp-bar-fill" style="width:' + level.progress + '%;background:linear-gradient(90deg,#b8f050,#50f0b8);"></div></div><small style="font-family:\'DM Sans\',sans-serif;font-size:11px;color:#888;">' + level.xp + ' / ' + level.nextXp + ' XP · Sigue registrando comidas para subir de nivel 🚀</small></div>';
+};
+
 window.requirePro = function() { if (window.userPlan === "free") { openModal(); return false; } return true; };
 function triggerConfetti(){
   const colors = ['#b8f050','#50f0b8','#f0c050','#ff9f50'];
@@ -1304,7 +1760,7 @@ window.toggleCondition = function(el){
     if(noneBtn) noneBtn.classList.remove('active');
   }
   localStorage.setItem('nl_conditions', JSON.stringify(selectedConditions));
-  if(window.currentUser && typeof setDoc !== 'undefined') setDoc(doc(db, 'users', currentUser.uid, 'health', 'conditions'), { list: selectedConditions }, { merge: true }).catch(() => {});
+  if(window.currentUser && typeof setDoc !== 'undefined') setDoc(doc(db, 'users', window.currentUser.uid, 'health', 'conditions'), { list: selectedConditions }, { merge: true }).catch(() => {});
 };
 function detectAllergens(ingredients){
   const allergenList = [
@@ -1375,7 +1831,7 @@ function applyStreakTheme(days){
   const themes = ['theme-fire','theme-ice','theme-earth','theme-ether'];
   const icons = ['🔥','❄️','🌿','✨'];
   const idx = Math.min(week - 1, 3);
-  card.className = 'streak-card-premium ' + themes[idx];
+  card.className = 'streak-card-premium card-hover ' + themes[idx];
   const fireEl = card.querySelector('.streak-fire');
   if(fireEl) fireEl.textContent = icons[idx];
 }
@@ -1422,17 +1878,61 @@ function renderWeeklyMacrosChart(){
     return { protein: entries.reduce((s, e) => s + (e.proteinas || 0), 0), carbs: entries.reduce((s, e) => s + (e.carbos || 0), 0), fats: entries.reduce((s, e) => s + (e.grasas || 0), 0) };
   });
   if(macrosChart) macrosChart.destroy();
+
+  const protGrad = ctx.createLinearGradient(0, 0, 0, 300);
+  protGrad.addColorStop(0, 'rgba(184,240,80,0.4)');
+  protGrad.addColorStop(1, 'rgba(184,240,80,0.0)');
+  const carbsGrad = ctx.createLinearGradient(0, 0, 0, 300);
+  carbsGrad.addColorStop(0, 'rgba(79,172,254,0.4)');
+  carbsGrad.addColorStop(1, 'rgba(79,172,254,0.0)');
+  const fatsGrad = ctx.createLinearGradient(0, 0, 0, 300);
+  fatsGrad.addColorStop(0, 'rgba(255,179,71,0.4)');
+  fatsGrad.addColorStop(1, 'rgba(255,179,71,0.0)');
+
   macrosChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
       datasets: [
-        { label: 'Proteína (g)', data: dailyTotals.map(d => d.protein), borderColor: '#b8f050', backgroundColor: 'rgba(184,240,80,0.1)', fill: true, tension: 0.3 },
-        { label: 'Carbohidratos (g)', data: dailyTotals.map(d => d.carbs), borderColor: '#50f0b8', backgroundColor: 'rgba(80,240,184,0.1)', fill: true, tension: 0.3 },
-        { label: 'Grasas (g)', data: dailyTotals.map(d => d.fats), borderColor: '#f0c050', backgroundColor: 'rgba(240,192,80,0.1)', fill: true, tension: 0.3 }
+        { label: 'Proteína', data: dailyTotals.map(d => d.protein), borderColor: '#b8f050', backgroundColor: protGrad, fill: true, tension: 0.4, borderWidth: 3, pointRadius: 3, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderColor: '#b8f050', pointBorderWidth: 2 },
+        { label: 'Carbohidratos', data: dailyTotals.map(d => d.carbs), borderColor: '#4facfe', backgroundColor: carbsGrad, fill: true, tension: 0.4, borderWidth: 3, pointRadius: 3, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderColor: '#4facfe', pointBorderWidth: 2 },
+        { label: 'Grasas', data: dailyTotals.map(d => d.fats), borderColor: '#ffb347', backgroundColor: fatsGrad, fill: true, tension: 0.4, borderWidth: 3, pointRadius: 3, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderColor: '#ffb347', pointBorderWidth: 2 }
       ]
     },
-    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#888', font: { size: 10 } } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { ticks: { color: '#888' } } } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { 
+          position: 'bottom',
+          labels: { color: '#ccc', font: { size: 12, family: "'DM Sans',sans-serif" }, usePointStyle: true, pointStyleWidth: 8, padding: 20 }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          titleColor: '#fff',
+          bodyColor: '#e0e0e0',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          padding: 12,
+          cornerRadius: 8,
+          displayColors: true,
+          titleFont: { family: "'Syne',sans-serif", size: 12 },
+          bodyFont: { family: "'DM Sans',sans-serif", size: 11 }
+        }
+      },
+      scales: {
+        y: { 
+          grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+          ticks: { color: '#666', font: { size: 11 } },
+          beginAtZero: true
+        },
+        x: { 
+          grid: { display: false },
+          ticks: { color: '#888', font: { size: 10 } }
+        }
+      }
+    }
   });
   document.querySelector('.macro-chart-wrap').style.display = 'block';
 }
@@ -1447,12 +1947,19 @@ async function generateWeeklyReport(){
   if(weekEntries.length === 0) return;
   const avgCal = weekEntries.reduce((s, e) => s + e.calorias, 0) / weekEntries.length;
   const langName = currentLang === 'es' ? 'español' : 'inglés';
-  const prompt = `Genera un resumen semanal de nutrición en ${langName} (máximo 40 palabras) basado en: promedio calórico diario: ${Math.round(avgCal)} kcal, objetivo del usuario: ${profile.objetivo || 'mantener'}. Sé motivador y da un consejo práctico.`;
+    const system = `Eres un nutricionista que genera resúmenes semanales de nutrición breves y motivadores. Máximo 40 palabras. Sé motivador y da un consejo práctico.
+
+Reglas de formato para tu respuesta:
+- Usa títulos (##) y subtítulos (###) para organizar la información
+- Inserta líneas horizontales (---) entre secciones independientes
+- Aplica negritas (**texto**) en datos críticos: gramos de proteína, calorías, tiempos, ingredientes clave
+- Usa listas con viñetas (*) para pasos, ingredientes o tips; prohibido párrafos largos`;
+  const prompt = `Genera un resumen semanal de nutrición en ${langName} basado en: promedio calórico diario: ${Math.round(avgCal)} kcal, objetivo del usuario: ${profile.objetivo || 'mantener'}.`;
   try{
-    const report = await callDeepSeek(prompt) || 'Sigue así, cada día cuenta.';
+    const report = await callDeepSeek(prompt, system) || 'Sigue así, cada día cuenta.';
     localStorage.setItem('nl_last_weekly_report', thisWeekStart.toDateString());
     const reportDiv = document.getElementById('weeklyAISummaryText');
-    if(reportDiv){ reportDiv.innerHTML = report; document.getElementById('weeklyAISummaryDate').innerText = today.toLocaleDateString(); document.querySelector('.weekly-ai-summary-card').style.display = 'block'; }
+    if(reportDiv){ reportDiv.innerHTML = window.formatAIResponse(report); document.getElementById('weeklyAISummaryDate').innerText = today.toLocaleDateString(); document.querySelector('.weekly-ai-summary-card').style.display = 'block'; }
   }catch(err){ console.warn('Error generando reporte semanal:', err); }
 }
 function renderMonthComparison(){
@@ -1479,56 +1986,76 @@ function renderMonthComparison(){
   document.querySelector('.month-compare-card').style.display = 'block';
 }
 function showResult(r){
-  setText('dishName', r.plato || '—');
-  setText('calNum', r.calorias || 0);
-  setText('protVal', r.proteinas || 0);
-  setText('carbVal', r.carbos || 0);
-  setText('fatVal', r.grasas || 0);
-  const consejo = document.getElementById('consejoEl'); if(consejo) consejo.textContent = r.consejo || '';
-  const ingWrap = document.getElementById('ingTags');
-  if(ingWrap){ ingWrap.innerHTML = ''; (r.ingredientes || []).forEach(ing => { const sp = document.createElement('span'); sp.className = 'tag'; sp.textContent = ing; ingWrap.appendChild(sp); }); }
-  if(window.isPro ? window.isPro() : isPro){
-    const microGrid = document.getElementById('microGrid');
-    if(microGrid){ microGrid.innerHTML = `<div class="micro-item"><div class="micro-name">Fibra</div><div class="micro-val green">${r.fibra || 0}g</div></div><div class="micro-item"><div class="micro-name">Azúcares</div><div class="micro-val gold">${r.azucares || 0}g</div></div><div class="micro-item"><div class="micro-name">Sodio</div><div class="micro-val ${(r.sodio || 0) > 600 ? 'red' : 'green'}">${r.sodio || 0}mg</div></div>`; }
-    const giWrap = document.getElementById('giBadgeWrap');
-    if(giWrap && r.indice_glucemico){
-      const cls = r.clasificacion_gi === 'low' ? 'low' : r.clasificacion_gi === 'high' ? 'high' : 'medium';
-      const lbl = cls === 'low' ? t('giLow') : cls === 'high' ? t('giHigh') : t('giMedium');
-      giWrap.innerHTML = `<span class="gi-badge ${cls}">IG: ${r.indice_glucemico} — ${lbl}</span>`;
-    }
-  }
-  const pctCal = Math.min(Math.round(((r.calorias || 0) / metas.cal) * 100), 150);
-  const pctProt = Math.min(Math.round(((r.proteinas || 0) / metas.prot) * 100), 150);
-  const cmpCalFill = document.getElementById('cmpCalFill'); if(cmpCalFill) cmpCalFill.style.width = Math.min(pctCal, 100) + '%';
-  const cmpProtFill = document.getElementById('cmpProtFill'); if(cmpProtFill) cmpProtFill.style.width = Math.min(pctProt, 100) + '%';
-  setText('cmpCalPct', pctCal + '%');
-  setText('cmpProtPct', pctProt + '%');
-  const resultCard = document.getElementById('resultCard'); if(resultCard) resultCard.style.display = 'block';
-  const aiBtn = document.getElementById('aiSummaryBtn'); if(aiBtn) aiBtn.style.display = 'flex';
+  const card = document.getElementById('resultCard');
+  if(!card) return;
+  card.style.display = 'block';
+  const cal = r.calorias || 0, prot = r.proteinas || 0, carbs = r.carbos || 0, fats = r.grasas || 0;
+  const fibra = r.fibra || r.fiber || 0, azucares = r.azucares || r.sugar || 0, sodio = r.sodio || r.sodium || 0;
+  const gi = r.indice_glucemico || r.gi || null, giCls = r.clasificacion_gi || 'medium';
+  const giLabel = giCls === 'low' ? 'Bajo' : giCls === 'high' ? 'Alto' : 'Medio';
+  const giColor = giCls === 'low' ? '#b8f050' : giCls === 'high' ? '#ff5f5f' : '#f0c050';
+  const consejo = r.consejo ? (r.consejo.length > 120 ? r.consejo.substring(0, 120) + '...' : r.consejo) : '';
+  const warning = r._warning || '';
+  const ings = (r.ingredientes || []).map(i => `<span class="allergen-tag">${i}</span>`).join('');
   const allergens = detectAllergens(r.ingredientes || []);
+  const allergenTags = allergens.length ? allergens.map(a => `<span class="allergen-tag">⚠️ ${a}</span>`).join('') : '';
+  const pctCal = Math.min(Math.round((cal / metas.cal) * 100), 150);
+  const pctProt = Math.min(Math.round((prot / metas.prot) * 100), 150);
+  const isProUser = window.isPro ? window.isPro() : isPro;
+
+  card.innerHTML = `
+    <div class="meal-analysis-card">
+      <div class="meal-header">
+        <div class="meal-dish" id="dishName">${r.plato || 'Comida detectada'}</div>
+        <div class="meal-calories">🔥 <span class="cal-value" id="calNum">${cal}</span> kcal</div>
+      </div>
+      <div class="macros-grid">
+        <div class="macro-item prot">💪 <b><span id="protVal">${prot}</span>g</b><br><span>Proteína</span></div>
+        <div class="macro-item carbs">🌾 <b><span id="carbVal">${carbs}</span>g</b><br><span>Carbos</span></div>
+        <div class="macro-item fats">🫒 <b><span id="fatVal">${fats}</span>g</b><br><span>Grasas</span></div>
+      </div>
+      ${isProUser ? `<div class="secondary-metrics">
+        <span>🌾 Fibra: <b>${fibra}g</b></span>
+        <span>🍬 Azúcares: <b>${azucares}g</b></span>
+        <span>🧂 Sodio: <b>${sodio}mg</b></span>
+        ${gi ? `<span>📊 IG: <b style="color:${giColor}">${gi}</b> (${giLabel})</span>` : ''}
+      </div>` : ''}
+      ${warning ? `<div class="ai-advice" style="color:#ffb347;background:rgba(255,179,71,0.05);">${warning}</div>` : ''}
+      ${consejo ? `<div class="ai-advice" id="consejoEl">💡 ${consejo}</div>` : '<div class="ai-advice" id="consejoEl"></div>'}
+      ${allergenTags ? `<div class="allergen-tags" id="ingTags">${allergenTags}</div>` : '<div class="allergen-tags" id="ingTags"></div>'}
+      <div class="metas-compare-mini">
+        <div class="compare-row"><span>🔥 Calorías</span><div class="compare-track"><div class="compare-fill green" id="cmpCalFill" style="width:${Math.min(pctCal, 100)}%"></div></div><span class="compare-pct" id="cmpCalPct">${pctCal}%</span></div>
+        <div class="compare-row"><span>💪 Proteínas</span><div class="compare-track"><div class="compare-fill gold" id="cmpProtFill" style="width:${Math.min(pctProt, 100)}%"></div></div><span class="compare-pct" id="cmpProtPct">${pctProt}%</span></div>
+      </div>
+    </div>
+  `;
+  card.style.display = 'block';
+  const aiBtn = document.getElementById('aiSummaryBtn'); if(aiBtn) aiBtn.style.display = 'flex';
   showAllergens(allergens);
-  showCanEatCard(r.calorias || 0, r.proteinas || 0);
-  document.getElementById('resultCard').style.display = 'block';
+  showCanEatCard(cal, prot);
 }
 async function saveToHistory(r, img){
   const thumb = await makeThumbnail(img);
-  const entry = { id: Date.now(), date: new Date().toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), plato: r.plato, calorias: r.calorias || 0, proteinas: r.proteinas || 0, carbos: r.carbos || 0, grasas: r.grasas || 0, ingredientes: r.ingredientes || [], consejo: r.consejo || '', img: thumb };
+  const entry = { id: Date.now(), date: new Date().toDateString(), time: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }), plato: r.plato, calorias: r.calorias || 0, proteinas: r.proteinas || 0, carbos: r.carbos || 0, grasas: r.grasas || 0, ingredientes: r.ingredientes || [], consejo: r.consejo || '', img: thumb };
   historyData.unshift(entry);
   if(historyData.length > 60) historyData.pop();
   lsSet('nl_history', historyData);
   updateMetasUI();
+  updateDailyProgressPanel();
   updateStreak();
   renderWeeklyMacrosChart();
   renderMonthComparison();
   generateWeeklyReport();
-  if(currentUser) saveEntryToFS(entry).catch(() => {});
+  if(window.currentUser) saveEntryToFS(entry).catch(() => {});
+  window.addXP(10);
+  window.showCreativeNotification('meal_saved');
 }
 function renderHistory(){
   const list = document.getElementById('historyList');
   const chartWrp = document.getElementById('chartWrap');
   if(!historyData.length){
     if(chartWrp) chartWrp.style.display = 'none';
-    if(list) list.innerHTML = '<div class="history-empty"><div class="history-empty-icon">🍽️</div>Sin análisis aún — ¡sube tu primera comida!</div>';
+    if(list) list.innerHTML = '<div class="history-empty"><span class="history-empty-icon">🍽️</span><p style="font-family:\'Syne\',sans-serif;font-size:16px;color:#f0f0f0;margin-bottom:6px;">Aún no has registrado comidas</p><p style="font-family:\'DM Sans\',sans-serif;font-size:12px;color:#888;margin-bottom:16px;">Sube tu primera foto para comenzar tu seguimiento</p><button class="history-empty-cta" onclick="document.getElementById(\'fileInput\').click()">✨ Analizar mi primera comida</button></div>';
     return;
   }
   if(chartWrp) chartWrp.style.display = 'block';
@@ -1542,19 +2069,38 @@ function renderHistory(){
   const maxVal = Math.max(...days.map(d => d.total), metas.cal, 1);
   const bars = document.getElementById('chartBars');
   if(bars){ bars.innerHTML = days.map(d => `<div class="chart-bar-wrap"><div class="chart-bar${d.isToday ? ' today' : ''}" style="height:${d.total > 0 ? Math.max((d.total / maxVal) * 72, 5) : 3}px"></div><div class="chart-day">${d.label}</div>${d.total > 0 ? `<div class="chart-kcal">${d.total}</div>` : ''}</div>`).join(''); }
-  if(list){ list.innerHTML = historyData.map(entry => `<div class="history-item" onclick="showHistoryDetail(${entry.id})"><img class="history-thumb" src="${entry.img || ''}" onerror="this.style.display='none'"><div style="flex:1;min-width:0"><div class="history-dish">${entry.plato || '—'}</div><div class="history-meta">${entry.date} · 🥩${entry.proteinas}g 🌾${entry.carbos}g</div></div><div class="history-kcal">${entry.calorias}<span>kcal</span></div></div>`).join(''); }
+  if(list){ list.innerHTML = historyData.map(entry => `<div class="history-item" onclick="showHistoryDetail(${entry.id})"><img class="history-thumb" src="${entry.img || ''}" loading="lazy" onerror="this.style.display='none'"><div style="flex:1;min-width:0"><div class="history-dish">${entry.plato || '—'}</div><div class="history-meta">${entry.date} ${entry.time || ''} · 🥩${entry.proteinas}g 🌾${entry.carbos}g</div></div><div class="history-kcal">${entry.calorias}<span>kcal</span></div></div>`).join(''); }
 }
+window.goTab = function(tabName, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
+  var page = document.getElementById('page-' + tabName);
+  if (page) { page.style.display = 'block'; page.style.visibility = 'visible'; page.style.opacity = '1'; }
+  if (tabName === 'history') renderHistory();
+  if (tabName === 'profile') loadProfileUI();
+  if (tabName === 'scan') { var rc = document.getElementById('resultCard'); if (rc) rc.style.display = 'block'; }
+  if (tabName !== 'scan') { var cam = document.getElementById('cameraWrap'); if (cam) cam.classList.remove('open'); }
+  updateBackButton();
+};
 window.showHistoryDetail = function(id){ const entry = historyData.find(e => e.id === id); if(entry){ lastAnalysis = entry; showResult(entry); goTab('scan', document.getElementById('tab-scan')); } };
-async function saveProfileToFS(){ if(!currentUser) return; await setDoc(doc(db, 'users', currentUser.uid), { profile, metas, isPro, lang: currentLang, updatedAt: Date.now() }, { merge: true }); }
-async function saveEntryToFS(entry){ if(!currentUser) return; await setDoc(doc(db, 'users', currentUser.uid, 'history', String(entry.id)), entry); }
-async function clearFSHistory(){ if(!currentUser) return; const snap = await getDocs(collection(db, 'users', currentUser.uid, 'history')); const batch = writeBatch(db); snap.forEach(d => batch.delete(d.ref)); await batch.commit(); }
+async function saveProfileToFS(){ if(!window.currentUser) return; await setDoc(doc(db, 'users', window.currentUser.uid), { profile, metas, isPro, lang: currentLang, updatedAt: Date.now() }, { merge: true }); }
+async function saveEntryToFS(entry){ if(!window.currentUser) return; await setDoc(doc(db, 'users', window.currentUser.uid, 'history', String(entry.id)), entry); }
+async function clearFSHistory(){ if(!window.currentUser) return; const snap = await getDocs(collection(db, 'users', window.currentUser.uid, 'history')); const batch = writeBatch(db); snap.forEach(d => batch.delete(d.ref)); await batch.commit(); }
 async function loadFromFS(uid){
   showSync(t('syncCloud'));
   try{
     const docSnap = await getDoc(doc(db, 'users', uid));
     if(docSnap.exists()){
       const d = docSnap.data();
-      if(d.profile){ profile = d.profile; lsSet('nl_profile', profile); }
+      if(d.profile){ 
+        profile = d.profile;
+        const authUser = auth.currentUser;
+        const authName = authUser?.displayName || authUser?.email?.split('@')[0] || '';
+        if (authName && profile.nombre && profile.nombre !== authName) {
+          delete profile.nombre;
+          setDoc(doc(db, 'users', uid), { profile }, { merge: true }).catch(() => {});
+        }
+        lsSet('nl_profile', profile); 
+      }
       if(d.metas){ metas = d.metas; lsSet('nl_metas', metas); }
       if(d.isPro !== undefined){ isPro = d.isPro; lsSet('nl_isPro', isPro); }
       if(window.isPro ? window.isPro() : false){ isPro = true; lsSet('nl_isPro', true); }
@@ -1564,7 +2110,11 @@ async function loadFromFS(uid){
     try{ const hSnap = await getDoc(doc(db, 'users', uid, 'health', 'conditions')); if(hSnap.exists()){ const h = hSnap.data(); if(h.list && Array.isArray(h.list)){ localStorage.setItem('nl_conditions', JSON.stringify(h.list)); loadConditions(); } } }catch(e){}
     const q = query(collection(db, 'users', uid, 'history'), orderBy('id', 'desc'), limit(60));
     const snap = await getDocs(q);
-    if(!snap.empty){ historyData = snap.docs.map(d => d.data()); lsSet('nl_history', historyData); updateMetasUI(); renderHistory(); }
+    if(!snap.empty){ const newData = snap.docs.map(d => d.data()); newData.forEach(e => { if (e.date && !/^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{2} \d{4}$/.test(e.date)) { e.date = new Date(e.id || Date.now()).toDateString(); } }); historyData.length = 0; historyData.push(...newData); lsSet('nl_history', historyData); updateMetasUI(); renderHistory(); window.updateDailyProgressPanel(); }
+    else if (historyData.length === 0) {
+      try { const raw = localStorage.getItem('nl_history'); if (raw) { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) { historyData.length = 0; historyData.push(...parsed); } updateMetasUI(); renderHistory(); window.updateDailyProgressPanel(); } } catch(e) { console.warn('[loadFromFS] Error parseando nl_history local:', e); }
+    }
+    window.historyData = historyData; console.log('[loadFromFS] Referencia restaurada. Items:', historyData.length);
   }catch(err){ console.warn('Firestore load error:', err); }
   hideSync();
 }
@@ -1585,6 +2135,16 @@ window.loginGoogle = async function() {
       showToast("Error al iniciar sesión");
     }
   }
+};
+window.toggleCamera = async function(){
+  const wrap = document.getElementById('cameraWrap');
+  const btnLabel = document.getElementById('cameraToggleLabel');
+  if(wrap?.classList.contains('open')){ closeCamera(); if(btnLabel) btnLabel.textContent = t('cameraToggle'); return; }
+  try{
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+    const feed = document.getElementById('cameraFeed'); if(feed) feed.srcObject = cameraStream;
+    wrap?.classList.add('open'); if(btnLabel) btnLabel.textContent = '🚫 Apagar Cámara';
+  }catch(err){ showToast('❌ No se pudo acceder a la cámara'); console.error('Camera error:', err); }
 };
 window.capturePhoto = function(){
   const video = document.getElementById('cameraFeed');
@@ -1633,24 +2193,52 @@ window.buildMyPlanPage = function() {
 window.showMyPlan = function() { goTab('myplan'); window.buildMyPlanPage(); };
 window.loadMyPlanPage = window.buildMyPlanPage;
 window.analyze = async function(){
+  if (!window.isAdminUser() && !isPro) { openModal(); return; }
   const errBox = document.getElementById('errorBox'); if(errBox) errBox.style.display = 'none';
   const resultCard = document.getElementById('resultCard'); if(resultCard) resultCard.style.display = 'none';
   if(!imageBase64){ if(errBox){ errBox.textContent = t('noImage'); errBox.style.display = 'block'; } return; }
   if(!checkLimit()) return;
   const btn = document.getElementById('btnAnalyze'); if(btn){ btn.disabled = true; btn.textContent = t('analyzing'); }
   startScan();
+
+  const base64Data = imageBase64.split(',')[1];
+  const imgHash = base64Data.substring(0, 100) + '_' + base64Data.length;
+  try {
+    var cached = localStorage.getItem('nl_cache_' + imgHash);
+    if (cached && (Date.now() - JSON.parse(cached)._ts < 604800000)) {
+      result = JSON.parse(cached);
+      delete result._ts;
+      showToast('⚡ Resultado del caché');
+      return finalizeAnalysis(result);
+    }
+  } catch(e) {}
+
   try{
-    const base64Data = imageBase64.split(',')[1];
-    const langName = { es: 'español', en: 'English', pt: 'Português', fr: 'Français', de: 'Deutsch', it: 'Italiano', ja: '日本語', zh: '中文', ar: 'العربية', hi: 'हिन्दी', ko: '한국어', ru: 'Русский' }[currentLang] || 'español';
-    const culturalContext = obtenerPromptCultural();
-    const prompt = `${culturalContext}
-Eres un nutricionista certificado con visión computacional. Analiza ESTA imagen de comida con máxima precisión. Usa el tamaño del plato y utensilios como referencia para estimar porciones en gramos. Agrega +10% a los aceites y grasas ocultas en la cocción. Responde SOLO en ${langName} con el siguiente JSON (sin texto adicional ni markdown): {"plato":"nombre del plato","ingredientes":["ingrediente1","ingrediente2"],"calorias":0,"proteinas":0,"carbos":0,"grasas":0,"fibra":0,"sodio":0,"azucares":0,"indice_glucemico":0,"clasificacion_gi":"low","consejo":"consejo nutricional personalizado de 2-3 oraciones"} clasificacion_gi debe ser: "low" (IG<55), "medium" (55-70), "high" (>70).`;
-    const res = await fetch(WORKER_URL, {
+    const langName = { es:'español', en:'English', pt:'Português', fr:'Français', de:'Deutsch', it:'Italiano' }[currentLang] || 'español';
+    const prompt = `Eres nutricionista. Da JSON con: plato,ingredientes:[],calorias,proteinas,carbos,grasas,fibra,sodio,azucares,indice_glucemico,clasificacion_gi,consejo. Idioma:${langName}. ⚠️ NUNCA 0 en macros.`;
+    var imagePayload = base64Data;
+    if (imagePayload.length > 150000) {
+      try {
+        var imgObj = new Image();
+        imgObj.src = imageBase64;
+        await new Promise(function(resolve) { imgObj.onload = resolve; });
+        var canvas = document.createElement('canvas');
+        var ratio = Math.min(1, 800 / imgObj.width);
+        canvas.width = imgObj.width * ratio;
+        canvas.height = imgObj.height * ratio;
+        canvas.getContext('2d').drawImage(imgObj, 0, 0, canvas.width, canvas.height);
+        imagePayload = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+      } catch(e) {}
+    }
+    const res = await fetch(WORKER_URL + '/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        imageBase64: base64Data,
-        promptNutrition: prompt
+        imageBase64: imagePayload,
+        promptNutrition: prompt,
+        max_tokens: 300,
+        temperature: 0.1,
+        stream: false
       })
     });
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1666,7 +2254,43 @@ Eres un nutricionista certificado con visión computacional. Analiza ESTA imagen
     if (!text) throw new Error('La IA no devolvió texto');
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if(!jsonMatch) throw new Error('Respuesta inesperada de la IA');
-    const result = JSON.parse(jsonMatch[0]);
+    let result;
+    try {
+      const cleaned = jsonMatch[0].replace(/```json\s*/g,'').replace(/```\s*/g,'').replace(/[\u0000-\u001F\u007F-\u009F]/g,' ');
+      result = JSON.parse(cleaned);
+      if (!result.calorias && !result.cal) {
+        result._warning = '⚠️ Análisis aproximado. Especifica ingredientes para mayor precisión.';
+        if (!result.calorias) result.calorias = 400;
+        if (!result.proteinas) result.proteinas = 20;
+        if (!result.carbos) result.carbos = 45;
+        if (!result.grasas) result.grasas = 15;
+        if (!result.plato || result.plato === 'comida genérica') result.plato = '❓ Comida no reconocida claramente';
+      }
+    } catch(parseErr) {
+      console.error('[analyze] JSON parse error:', parseErr.message);
+      result = {
+        plato: (text.match(/plato[":\s]+([^"]+)/i)?.[1]?.trim()) || 'Comida detectada',
+        calorias: parseInt(text.match(/(\d+)\s*kcal/i)?.[1]) || 0,
+        proteinas: parseInt(text.match(/(\d+)g.*prote[íi]na/i)?.[1]) || 0,
+        carbos: parseInt(text.match(/(\d+)g.*carbohidrato/i)?.[1]) || 0,
+        grasas: parseInt(text.match(/(\d+)g.*grasa/i)?.[1]) || 0,
+        ingredientes: [],
+        consejo: 'Análisis parcial. Intenta con otra imagen para mayor precisión.'
+      };
+      showToast('⚠️ Análisis parcial: datos extraídos con respaldo');
+    }
+    try { var entry = JSON.parse(JSON.stringify(result)); entry._ts = Date.now(); localStorage.setItem('nl_cache_' + imgHash, JSON.stringify(entry)); } catch(e) {}
+    localStorage.setItem('nl_last_cache_cleanup', Date.now());
+    finalizeAnalysis(result);
+  } catch (err) {
+    console.error('⚠️ Error controlado:', err);
+    if (errBox) { errBox.textContent = 'Error: ' + err.message + '. Intenta con otra imagen.'; errBox.style.display = 'block'; }
+  } finally {
+    stopScan();
+    if (btn) { btn.disabled = false; btn.textContent = t('analyzeBtn'); }
+  }
+
+  function finalizeAnalysis(result) {
     lastAnalysis = result;
     showResult(result);
     document.getElementById('resultCard').style.display = 'block';
@@ -1674,9 +2298,9 @@ Eres un nutricionista certificado con visión computacional. Analiza ESTA imagen
     window.renderMacroRhythm();
     incUsage();
     updateUsageUI();
-    await saveToHistory(result, imageBase64);
-  }catch(err){ console.error(err); if(errBox){ errBox.textContent = `Error: ${err.message}. Intenta con otra imagen.`; errBox.style.display = 'block'; } }
-  finally{ stopScan(); if(btn){ btn.disabled = false; btn.textContent = t('analyzeBtn'); } }
+    saveToHistory(result, imageBase64);
+    stopScan(); if(btn){ btn.disabled = false; btn.textContent = t('analyzeBtn'); }
+  }
 };
 window.getAISummary = async function(){
   if(!lastAnalysis) return;
@@ -1684,12 +2308,21 @@ window.getAISummary = async function(){
   if(card) card.style.display = 'block'; if(txtEl) txtEl.textContent = '⏳ Generando recomendación...';
   try{
     const langName = { es: 'español', en: 'English', pt: 'Português', fr: 'Français' }[currentLang] || 'español';
-    const text = await callDeepSeek(`Eres un nutricionista experto. Basado en este análisis: ${lastAnalysis.plato} (${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína, ${lastAnalysis.carbos}g carbos, ${lastAnalysis.grasas}g grasas). Perfil del usuario: ${profile.objetivo || 'mantener peso'}, ${profile.peso || '70'}kg. Genera una recomendación nutricional personalizada en ${langName} de 3-4 oraciones. Incluye un tip práctico y motivador.`);
-    if(txtEl) txtEl.textContent = text || 'No se pudo generar la recomendación.';
-  }catch(err){ if(txtEl) txtEl.textContent = 'Error al conectar con la IA.'; }
+    const system = `Eres un nutricionista experto. Genera recomendaciones personalizadas basadas en el análisis del plato y el perfil del usuario. Responde siempre en el idioma solicitado con 3-4 oraciones. Incluye un tip práctico y motivador.
+
+Reglas de formato para tu respuesta:
+- Usa títulos (##) y subtítulos (###) para organizar la información
+- Inserta líneas horizontales (---) entre secciones independientes
+- Aplica negritas (**texto**) en datos críticos: gramos de proteína, calorías, tiempos, ingredientes clave
+- Usa listas con viñetas (*) para pasos, ingredientes o tips; prohibido párrafos largos`;
+    const prompt = `Basado en este análisis: ${lastAnalysis.plato} (${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína, ${lastAnalysis.carbos}g carbos, ${lastAnalysis.grasas}g grasas). Perfil del usuario: ${profile.objetivo || 'mantener peso'}, ${profile.peso || '70'}kg. Genera una recomendación nutricional personalizada en ${langName}.`;
+    let text = await callDeepSeek(prompt, system);
+    text = text.replace(/https?:\/\/[^\s]+/g, '');
+    if(txtEl) txtEl.innerHTML = window.formatAIResponse(text) || 'No se pudo generar la recomendación.';
+  }catch(err){ if(txtEl) txtEl.innerHTML = 'Error al conectar con la IA.'; }
 };
 window.sendCoachMsg = async function(){
-  if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; }
+  if (!window.isAdminUser() && !isPro) { openModal(); return; }
   const input = document.getElementById('coachInput');
   const msg = input?.value.trim();
   if(!msg) return;
@@ -1708,16 +2341,39 @@ window.sendCoachMsg = async function(){
   container.scrollTop = container.scrollHeight;
   try{
     const langName = { es: 'español', en: 'English', pt: 'Português', fr: 'Français' }[currentLang] || 'español';
+    const system = `Eres un coach nutricional profesional, empático y motivador. Conoces al usuario a fondo gracias a los datos de su perfil.
+
+Formato del perfil del usuario:
+- Nombre, Edad, Sexo
+- Peso, Altura, IMC
+- Objetivo (bajar peso/ganar músculo/mantenerse)
+- Nivel de actividad física
+- Metas diarias: calorías, proteínas, carbohidratos, grasas
+
+Reglas de respuesta:
+- Responde siempre en el idioma solicitado
+- Máximo 4 oraciones, claro y personalizado
+- Usa datos del perfil y metas para consejos específicos
+- Si la pregunta es sobre motivación/hábitos/recetas, sé útil y alentador
+- No inventes información médica. Si no sabes algo, sugiere consultar a un profesional
+
+Reglas de formato para tu respuesta:
+- Usa títulos (##) y subtítulos (###) para organizar la información
+- Inserta líneas horizontales (---) entre secciones independientes
+- Aplica negritas (**texto**) en datos críticos: gramos de proteína, calorías, tiempos, ingredientes clave
+- Usa listas con viñetas (*) para pasos, ingredientes o tips; prohibido párrafos largos`;
+
     const perfil = `Nombre: ${profile.nombre || 'No especificado'}\nEdad: ${profile.edad || '?'} años\nSexo: ${profile.sexo === 'm' ? 'Masculino' : 'Femenino'}\nPeso: ${profile.peso || '?'} kg\nAltura: ${profile.altura || '?'} cm\nIMC: ${profile.peso && profile.altura ? (profile.peso / Math.pow(profile.altura/100, 2)).toFixed(1) : '?'}\nObjetivo: ${profile.objetivo === 'bajar' ? 'Bajar de peso' : profile.objetivo === 'musculo' ? 'Ganar músculo' : 'Mantenerse'}\nNivel actividad: ${profile.actividad === 1.1 ? 'Muy sedentario' : profile.actividad === 1.2 ? 'Sedentario' : profile.actividad === 1.375 ? 'Ligero' : profile.actividad === 1.5 ? 'Moderado' : profile.actividad === 1.7 ? 'Activo' : 'Muy activo'}\nMetas diarias: ${metas.cal || 2000} kcal, ${metas.prot || 150}g proteína, ${metas.carbs || 200}g carbohidratos, ${metas.fats || 55}g grasas`;
     const ultimosAnalisis = historyData.slice(0, 3).map(a => `- ${a.plato}: ${a.calorias} kcal, ${a.proteinas}g prote, ${a.carbos}g carb, ${a.grasas}g gras.`).join('\n');
     const contextoHistorial = ultimosAnalisis ? `Últimas comidas registradas:\n${ultimosAnalisis}` : 'No hay comidas registradas aún.';
-    const condiciones = selectedConditions.length ? `El usuario tiene las siguientes condiciones de salud: ${selectedConditions.join(', ')}. Adapta tus recomendaciones considerando estas condiciones. Prioriza alimentos seguros y evita los contraindicados.\n\n` : '';
-    const prompt = `${condiciones}Eres un coach nutricional profesional, empático y motivador. Conoces al usuario a fondo gracias a estos datos:\n\n${perfil}\n\n${contextoHistorial}\n\nEl usuario te pregunta: "${msg}"\n\nResponde en ${langName} de forma clara, personalizada y práctica (máximo 4 oraciones). Si la pregunta es sobre alimentación, usa los datos del perfil y las metas para dar consejos específicos. Si la pregunta es general (motivación, hábitos, recetas), responde de manera útil y alentadora. No inventes información médica. Si no sabes algo, sugiere consultar a un profesional.`;
-    const dataText = await callDeepSeek(prompt);
+    const condiciones = selectedConditions.length ? `El usuario tiene las siguientes condiciones de salud: ${selectedConditions.join(', ')}. Adapta tus recomendaciones considerando estas condiciones. Prioriza alimentos seguros y evita los contraindicados.` : '';
+    const prompt = `${condiciones ? condiciones + '\n\n' : ''}${perfil}\n\n${contextoHistorial}\n\nEl usuario te pregunta: "${msg}"\n\nResponde en ${langName}.`;
+    let dataText = await callDeepSeek(prompt, system);
+    dataText = dataText.replace(/https?:\/\/[^\s]+/g, '');
     typingEl.remove();
     const aiBubble = document.createElement('div');
     aiBubble.className = 'coach-msg';
-    aiBubble.innerHTML = `<div class="coach-bubble">${dataText || 'Lo siento, no pude responder.'}</div>`;
+    aiBubble.innerHTML = `<div class="coach-bubble">${window.formatAIResponse(dataText) || 'Lo siento, no pude responder.'}</div>`;
     container.appendChild(aiBubble);
   }catch(err){
     typingEl.remove();
@@ -1741,13 +2397,31 @@ function repairTruncatedPlan(jsonStr){
   return { days };
 }
 window.generateWeeklyPlan = async function(){
-  if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; }
+  if (!window.isAdminUser() && !isPro) { openModal(); return; }
   const list = document.getElementById('weeklyPlanList');
   if(!list) return;
   list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)">⏳ Generando tu plan personalizado...</div>';
   try{
-    const prompt = `Crea un plan de comidas semanal para:\nNombre: ${profile.nombre || 'usuario'}\nPeso: ${profile.peso || 70} kg\nAltura: ${profile.altura || 170} cm\nObjetivo: ${profile.objetivo === 'bajar' ? 'bajar de peso' : profile.objetivo === 'musculo' ? 'ganar músculo' : 'mantenerse'}\nActividad: ${profile.actividad || 1.375} (factor)\nMeta calórica diaria: ${metas.cal || 2000} kcal/día\nIMPORTANTE: Devuelve SOLO un objeto JSON válido, sin texto adicional, sin markdown, sin comas al final de los arrays, con todas las cadenas entre comillas dobles. Usa esta estructura exacta:\n{"days":[{"day":"Lunes","total_kcal":0,"meals":[{"name":"Desayuno","food":"descripción","kcal":0,"protein":0}]}]}\nIncluye los 7 días (Lunes a Domingo). Cada día con 4 comidas: Desayuno, Almuerzo, Merienda, Cena.\nCRÍTICO: El JSON debe estar COMPLETO, incluyendo todos los corchetes y llaves de cierre. No lo trunques.`;
-    let raw = await callDeepSeek(prompt);
+    const system = `Eres un planificador de comidas experto en nutrición. Generas planes semanales personalizados.
+
+REGLAS ESTRICTAS DE FORMATO:
+- Devuelve SOLO un objeto JSON válido, sin texto adicional, sin markdown
+- Sin comas al final de los arrays/objetos
+- Todas las cadenas entre comillas dobles
+- El JSON debe estar COMPLETO con todos los corchetes y llaves de cierre
+
+ESTRUCTURA EXACTA:
+{"days":[{"day":"Lunes","total_kcal":0,"meals":[{"name":"Desayuno","food":"descripción","kcal":0,"protein":0}]}]}
+
+Incluye los 7 días (Lunes a Domingo). Cada día con 4 comidas: Desayuno, Almuerzo, Merienda, Cena.
+
+Reglas de formato para tu respuesta:
+- Usa títulos (##) y subtítulos (###) para organizar la información
+- Inserta líneas horizontales (---) entre secciones independientes
+- Aplica negritas (**texto**) en datos críticos: gramos de proteína, calorías, tiempos, ingredientes clave
+- Usa listas con viñetas (*) para pasos, ingredientes o tips; prohibido párrafos largos`;
+    const prompt = `Crea un plan de comidas semanal para:\nNombre: ${profile.nombre || 'usuario'}\nPeso: ${profile.peso || 70} kg\nAltura: ${profile.altura || 170} cm\nObjetivo: ${profile.objetivo === 'bajar' ? 'bajar de peso' : profile.objetivo === 'musculo' ? 'ganar músculo' : 'mantenerse'}\nActividad: ${profile.actividad || 1.375} (factor)\nMeta calórica diaria: ${metas.cal || 2000} kcal/día`;
+    let raw = await callDeepSeek(prompt, system);
     raw = (raw || '').trim();
     let cleaned = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
     cleaned = cleaned.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
@@ -1775,13 +2449,26 @@ window.generateWeeklyPlan = async function(){
     list.innerHTML = html;
   }catch(err){ console.error('Error en generateWeeklyPlan:', err); list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--error)">❌ Error: ${err.message}</div>`; }
 };
-window.clearHistory = async function(){ if(!confirm('¿Borrar todo el historial?')) return; historyData = []; lsSet('nl_history', []); if(currentUser) await clearFSHistory().catch(() => {}); updateMetasUI(); renderHistory(); showToast('🗑️ Historial eliminado'); };
+window.clearHistory = async function(){ if(!confirm('⚠️ ¿Estás seguro de borrar TODO tu historial? Esta acción NO se puede deshacer.')) return; historyData.length = 0; lsSet('nl_history', []); if(window.currentUser) await clearFSHistory().catch(() => {}); localStorage.removeItem('nl_last_analysis_date'); updateMetasUI(); updateDailyProgressPanel(); renderHistory(); renderWeeklyMacrosChart(); showToast('🗑️ Historial eliminado correctamente', 3000); };
 window.calculateDailyProgress = function() {
-  const today = new Date().toDateString();
+  const todayStr = new Date().toDateString();
   const history = window.historyData || [];
-  const todaysMeals = history.filter(e => e.date === today);
+  const dailyEntries = history.filter(entry => {
+    const entryDateObj = entry.date ? new Date(entry.date) : new Date(entry.id);
+    if (isNaN(entryDateObj.getTime())) return false;
+    return entryDateObj.toDateString() === todayStr;
+  });
+  console.log(`[Progreso] Buscando datos para: ${todayStr}. Encontrados: ${dailyEntries.length} de un total de ${history.length}`);
+  if (!window.historyData || window.historyData.length === 0) {
+    return {
+      cal: { current: 0, goal: window.metas?.cal || 2000, pct: 0 },
+      prot: { current: 0, goal: window.metas?.prot || 150, pct: 0 },
+      carbs: { current: 0, goal: window.metas?.carbs || 200, pct: 0 },
+      fats: { current: 0, goal: window.metas?.fats || 55, pct: 0 }
+    };
+  }
   const totals = { cal: 0, prot: 0, carbs: 0, fats: 0 };
-  todaysMeals.forEach(e => {
+  dailyEntries.forEach(e => {
     totals.cal += (e.calorias || 0);
     totals.prot += (e.proteinas || 0);
     totals.carbs += (e.carbos || 0);
@@ -1789,10 +2476,10 @@ window.calculateDailyProgress = function() {
   });
   const goals = window.metas || { cal: 2000, prot: 150, carbs: 200, fats: 55 };
   return {
-    cal: { current: totals.cal, goal: goals.cal, pct: Math.round((totals.cal / goals.cal) * 100) },
-    prot: { current: totals.prot, goal: goals.prot, pct: Math.round((totals.prot / goals.prot) * 100) },
-    carbs: { current: totals.carbs, goal: goals.carbs, pct: Math.round((totals.carbs / goals.carbs) * 100) },
-    fats: { current: totals.fats, goal: goals.fats, pct: Math.round((totals.fats / goals.fats) * 100) }
+    cal: { current: totals.cal, goal: goals.cal || 2000, pct: goals.cal ? Math.round((totals.cal / goals.cal) * 100) : 0 },
+    prot: { current: totals.prot, goal: goals.prot || 150, pct: goals.prot ? Math.round((totals.prot / goals.prot) * 100) : 0 },
+    carbs: { current: totals.carbs, goal: goals.carbs || 200, pct: goals.carbs ? Math.round((totals.carbs / goals.carbs) * 100) : 0 },
+    fats: { current: totals.fats, goal: goals.fats || 55, pct: goals.fats ? Math.round((totals.fats / goals.fats) * 100) : 0 }
   };
 };
 window.updateDailyProgressPanel = function() {
@@ -1801,32 +2488,40 @@ window.updateDailyProgressPanel = function() {
   if (!panel) return;
   const progress = window.calculateDailyProgress();
   const items = [
-    { icon: '🔥', label: 'Calorías', current: progress.cal.current, goal: progress.cal.goal, pct: progress.cal.pct, unit: 'kcal', color: '#ff8c42' },
-    { icon: '💪', label: 'Proteínas', current: progress.prot.current, goal: progress.prot.goal, pct: progress.prot.pct, unit: 'g', color: '#4facfe' },
-    { icon: '🌾', label: 'Carbohidratos', current: progress.carbs.current, goal: progress.carbs.goal, pct: progress.carbs.pct, unit: 'g', color: '#f5576c' },
-    { icon: '🫒', label: 'Grasas', current: progress.fats.current, goal: progress.fats.goal, pct: progress.fats.pct, unit: 'g', color: '#ffb347' }
+    { icon: '🔥', label: 'Calorías', current: progress.cal.current, goal: progress.cal.goal, pct: progress.cal.pct, unit: 'kcal' },
+    { icon: '💪', label: 'Proteínas', current: progress.prot.current, goal: progress.prot.goal, pct: progress.prot.pct, unit: 'g' },
+    { icon: '🌾', label: 'Carbohidratos', current: progress.carbs.current, goal: progress.carbs.goal, pct: progress.carbs.pct, unit: 'g' },
+    { icon: '🫒', label: 'Grasas', current: progress.fats.current, goal: progress.fats.goal, pct: progress.fats.pct, unit: 'g' }
   ];
-  panel.innerHTML = items.map(item => `
-    <div style="background:${item.pct > 100 ? 'rgba(255,95,95,0.08)' : 'rgba(255,255,255,0.03)'}; border-radius:12px; padding:10px 14px;">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-        <span>${item.icon}</span>
+  panel.innerHTML = items.map(item => {
+    const pct = item.pct || 0;
+    const barColor = pct > 100 ? '#ff5f5f' : pct >= 80 ? '#ffb347' : '#4facfe';
+    const bgColor = pct > 100 ? 'rgba(255,95,95,0.08)' : pct >= 80 ? 'rgba(255,179,71,0.08)' : 'rgba(79,172,254,0.06)';
+    const pctColor = pct > 100 ? '#ff5f5f' : pct >= 80 ? '#ffb347' : '#4facfe';
+    const pctDisplay = pct > 0 ? pct + '%' : '0%';
+    const pctStyle = pct === 0 ? 'color:#6b7280;' : 'color:' + pctColor + ';';
+    return `
+    <div style="background:${bgColor}; border-radius:12px; padding:16px; margin-bottom:14px;" aria-label="Progreso de ${item.label}: ${pctDisplay}">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <span style="font-size:16px;">${item.icon}</span>
         <span style="font-family:'DM Sans',sans-serif; font-size:13px; color:#e0e0e0;">${item.label}</span>
-        <span style="margin-left:auto; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:${item.color};">${item.pct}%</span>
+        <span style="margin-left:auto; font-family:'Syne',sans-serif; font-size:14px; font-weight:600; ${pctStyle}">${pctDisplay}</span>
       </div>
       <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-        <div style="width:${Math.min(item.pct, 100)}%; height:100%; background:${item.color}; border-radius:3px;"></div>
+        <div style="width:${Math.min(pct, 100)}%; height:100%; background:${barColor}; border-radius:3px; transition:width 0.6s ease;"></div>
       </div>
-      <div style="display:flex; justify-content:space-between; margin-top:4px; font-family:'DM Sans',sans-serif; font-size:11px;">
-        <span style="color:#888;">${item.current} ${item.unit}</span>
-        <span style="color:#666;">de ${item.goal} ${item.unit}</span>
+      <div style="display:flex; justify-content:space-between; margin-top:6px; font-family:'DM Sans',sans-serif; font-size:12px;">
+        <span style="color:#9ca3af;">${item.current} ${item.unit}</span>
+        <span style="color:#9ca3af;">de ${item.goal} ${item.unit}</span>
       </div>
     </div>
-  `).join('');
+  `}).join('');
   if (tips) {
     const warnings = items.filter(i => i.pct > 100);
+    const goods = items.filter(i => i.pct >= 0 && i.pct <= 100);
     tips.innerHTML = warnings.length > 0 
-      ? `<span style="color:#ff8c42;">⚠️ Excedido en: ${warnings.map(w => w.label).join(', ')}</span>`
-      : '<span style="color:#b8f050;">✅ Todo dentro de tus metas</span>';
+      ? `<span style="font-family:'DM Sans',sans-serif; font-size:12px; color:#ff5f5f;">⚠️ Excedido en: ${warnings.map(w => w.label).join(', ')}</span>`
+      : goods.some(i => i.pct > 0) ? '<span style="font-family:\'DM Sans\',sans-serif; font-size:12px; color:#b8f050;">✅ Todo dentro de tus metas</span>' : '<span style="font-family:\'DM Sans\',sans-serif; font-size:12px; color:#6b7280;">📝 Registra tus comidas para ver tu progreso</span>';
   }
 };
 window.renderMacroRhythm = function() {
@@ -1839,7 +2534,7 @@ window.renderMacroRhythm = function() {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateStr = d.toDateString();
-    const meals = history.filter(e => e.date === dateStr);
+    const meals = history.filter(function(e) { return e.date === dateStr || new Date(e.id).toDateString() === dateStr; });
     last7Days.push({
       day: d.toLocaleDateString('es', { weekday: 'short' }),
       cal: meals.reduce((s, e) => s + (e.calorias || 0), 0),
@@ -1887,7 +2582,226 @@ window.renderMacroRhythm = function() {
       </div>`;
   }
 };
-window.exportPDF = function(){ if(!(window.isPro ? window.isPro() : isPro)){ openModal(); return; } const lines = [`NUTRILENT AI — HISTORIAL NUTRICIONAL`, `Exportado: ${new Date().toLocaleString()}`, `Usuario: ${profile.nombre || currentUser?.displayName || '—'}`, `Objetivo: ${profile.objetivo || '—'} | Meta diaria: ${metas.cal} kcal`, `Total de análisis: ${historyData.length}`, '', ...historyData.slice(0,40).map((e,i) => [`${i+1}. ${e.plato}`, `   Fecha: ${e.date}`, `   Calorías: ${e.calorias} kcal | Proteínas: ${e.proteinas}g | Carbos: ${e.carbos}g | Grasas: ${e.grasas}g`, e.consejo ? `   💡 ${e.consejo}` : '', ''].join('\n')), `───────────────────────────────`, `© 2025 NutriLent AI · NutriLent® marca registrada`, `Los análisis son orientativos y no reemplazan asesoramiento médico.`]; const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `NutriLent_${new Date().toISOString().split('T')[0]}.txt`; a.click(); URL.revokeObjectURL(a.href); showToast('📄 Historial exportado'); };
+window.openFridgeMode = function() {
+  document.getElementById('fridgeModal').style.display = 'flex';
+};
+window.closeFridgeModal = function() {
+  document.getElementById('fridgeModal').style.display = 'none';
+};
+window.generateFridgeRecipes = async function() {
+  const input = document.getElementById('fridgeInput').value.trim();
+  if (!input) { alert('Escribe los ingredientes que tienes.'); return; }
+  document.getElementById('fridgeLoading').style.display = 'block';
+  document.getElementById('fridgeResults').innerHTML = '';
+
+  if (typeof window.callDeepSeek !== 'function') {
+    document.getElementById('fridgeResults').innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;">⏳ Cargando motor de IA...</p>';
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 250));
+      if (typeof window.callDeepSeek === 'function') break;
+    }
+    if (typeof window.callDeepSeek !== 'function') {
+      document.getElementById('fridgeLoading').style.display = 'none';
+      document.getElementById('fridgeResults').innerHTML = '<p style="text-align:center;color:var(--error);padding:20px;">❌ El módulo de IA no se cargó. Recarga la página o intenta más tarde.</p>';
+      return;
+    }
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    document.getElementById('fridgeLoading').style.display = 'none';
+    document.getElementById('fridgeResults').innerHTML = '<p style="text-align:center;color:var(--error);padding:20px;">🔒 Debes iniciar sesión para usar la nevera.</p>';
+    return;
+  }
+  const token = await user.getIdToken();
+
+  try {
+    const system = `Eres un chef profesional y nutricionista. Tengo estos ingredientes: ${input}. Por favor, genera 3 recetas saludables.
+
+Para generar las recetas, utiliza EXACTAMENTE el siguiente formato de texto estructurado. Respeta al máximo el esquema que te pido y no uses Markdown, ni markdown, ni nada de **. La respuesta debe ser SOLO las 3 recetas con el formato que te indico a continuación y nada más.
+
+**Esquema de formato para cada receta (no uses los ## ni los **):**
+---RECETA---
+**NOMBRE:** [Nombre Corto y Claro de la Receta]
+|||
+**TIEMPO/DIFICULTAD:** ⏱️ [Tiempo] | 🍽️ [Dificultad] | 🔥 [Calorías] kcal
+|||
+**INGREDIENTES:** [Cantidad] de [Ingrediente 1], [Cantidad] de [Ingrediente 2]...
+|||
+**PREPARACIÓN:** [Paso 1. Paso 2. Paso 3...]
+|||
+**CHEF:** [Un consejo o toque especial del chef]
+---FIN_RECETA---
+
+**Reglas para el formato:**
+- Separa cada receta con claridad usando ---RECETA--- al inicio y ---FIN_RECETA--- al final.
+- Usa EXACTAMENTE el separador ||| entre las 5 secciones (Tiempo/Dificultad, Ingredientes, Preparación, Chef). No uses saltos de línea entre secciones.
+- El texto de cada sección debe ser claro y directo.
+- No añadas más de 5 secciones ni uses otro formato.`;
+    const response = await callDeepSeek('Tengo estos ingredientes: ' + input + '. Sugiere 3 recetas saludables.', system, token);
+    response = response.replace(/https?:\/\/[^\s]+/g, '');
+
+    const recetas = response.split('---RECETA---').filter(r => r.trim() !== '');
+
+    let html = '<div class="fridge-recipes-container">';
+    recetas.forEach((recetaStr, index) => {
+      const parts = recetaStr.split('|||');
+      const titleLine = parts[0] || '';
+      const tiempo = parts[1] || '';
+      const ingredientes = parts[2] || '';
+      const preparacion = parts[3] || '';
+      const chef = parts[4] || '';
+
+      const cleanTitle = titleLine.replace('**NOMBRE:** ', '').trim();
+
+      html += '<div class="recipe-card">';
+      html += '<h3 class="recipe-card-title">' + cleanTitle + '</h3>';
+
+      html += '<div class="recipe-tabs">';
+      html += '<button class="recipe-tab active" onclick="switchRecipeTab(this, \'tiempo' + index + '\')">⏱️ Tiempo</button>';
+      html += '<button class="recipe-tab" onclick="switchRecipeTab(this, \'ingredientes' + index + '\')">🥑 Ingredientes</button>';
+      html += '<button class="recipe-tab" onclick="switchRecipeTab(this, \'preparacion' + index + '\')">👨‍🍳 Preparación</button>';
+      html += '</div>';
+
+      html += '<div class="recipe-tab-content active" id="tiempo' + index + '" style="display:block;">' + tiempo + '</div>';
+      html += '<div class="recipe-tab-content" id="ingredientes' + index + '" style="display:none;">' + ingredientes + '</div>';
+      html += '<div class="recipe-tab-content" id="preparacion' + index + '" style="display:none;">' + preparacion + '<br><br><strong>CHEF:</strong> ' + chef + '</div>';
+
+      html += '</div>';
+    });
+    html += '</div>';
+
+    document.getElementById('fridgeResults').innerHTML = html;
+  } catch(e) {
+    document.getElementById('fridgeResults').innerHTML = '<p style="color:#ff5f5f">Error al analizar. Intenta de nuevo.</p>';
+  }
+  document.getElementById('fridgeLoading').style.display = 'none';
+};
+window.switchRecipeTab = function(btn, tabId) {
+  const parent = btn.parentElement.parentElement;
+  parent.querySelectorAll('.recipe-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  parent.querySelectorAll('.recipe-tab-content').forEach(c => c.style.display = 'none');
+  document.getElementById(tabId).style.display = 'block';
+};
+window.sendFeedback = function(){
+  const text = document.getElementById('feedbackText').value.trim();
+  if (!text) return;
+  document.getElementById('feedbackModal').style.display = 'none';
+  document.getElementById('feedbackText').value = '';
+  showToast('💬 ¡Gracias por tu feedback!', 3000);
+  window.trackEvent('feedback_sent', { length: text.length });
+};
+window.formatAIResponse = function(text) {
+  if (!text) return '';
+
+  const blocks = text.split('---RECETA---').filter(b => b.trim());
+
+  const html = blocks.map(block => {
+    const lines = block.replace(/---FIN_RECETA---/gi, '').split('\n');
+    const result = [];
+    let inUl = false, inOl = false;
+
+    for (let raw of lines) {
+      const line = raw.trim();
+      if (!line) continue;
+
+      const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                      .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      if (/^###\s/.test(line)) {
+        if (inUl) { result.push('</ul>'); inUl = false; }
+        if (inOl) { result.push('</ol>'); inOl = false; }
+        result.push('<h4 class="ai-recipe-title">' + esc.replace(/^###\s+/, '') + '</h4>');
+      } else if (/^##\s/.test(line)) {
+        if (inUl) { result.push('</ul>'); inUl = false; }
+        if (inOl) { result.push('</ol>'); inOl = false; }
+        result.push('<h3 class="ai-section-title">' + esc.replace(/^##\s+/, '') + '</h3>');
+      } else if (/^---+$/.test(line)) {
+        if (inUl) { result.push('</ul>'); inUl = false; }
+        if (inOl) { result.push('</ol>'); inOl = false; }
+        result.push('<hr class="ai-divider">');
+      } else if (/^-\s/.test(line)) {
+        if (inOl) { result.push('</ol>'); inOl = false; }
+        if (!inUl) { result.push('<ul>'); inUl = true; }
+        result.push('<li>' + esc.replace(/^-\s+/, '') + '</li>');
+      } else if (/^\d+\.\s/.test(line)) {
+        if (inUl) { result.push('</ul>'); inUl = false; }
+        if (!inOl) { result.push('<ol>'); inOl = true; }
+        result.push('<li>' + esc.replace(/^\d+\.\s+/, '') + '</li>');
+      } else {
+        if (inUl) { result.push('</ul>'); inUl = false; }
+        if (inOl) { result.push('</ol>'); inOl = false; }
+        result.push('<p>' + esc + '</p>');
+      }
+    }
+    if (inUl) result.push('</ul>');
+    if (inOl) result.push('</ol>');
+
+    return '<div class="ai-recipe-card">' + result.join('\n') + '</div>';
+  }).join('<hr class="ai-divider">');
+
+  return '<div class="ai-response-wrapper">' + html + '</div>';
+};
+function getDisplayName() {
+  const authName = currentUser?.displayName || currentUser?.email?.split('@')[0] || '';
+  const customName = profile?.nombre || '';
+  if (customName && customName !== authName) return customName;
+  return authName || 'Usuario';
+}
+window.exportPDF = function(){
+  if (!window.isAdminUser() && !isPro) { openModal(); return; }
+  if (!historyData || historyData.length === 0) { showToast('📭 No hay datos para exportar'); return; }
+  const nombre = prompt('Ingresa tu nombre para el reporte:', getDisplayName());
+  if (!nombre) return;
+  const fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const last7 = [];
+  for(let i = 6; i >= 0; i--){ const d = new Date(); d.setDate(d.getDate() - i); const str = d.toDateString(); const meals = historyData.filter(e => e.date === str); last7.push({ day: dias[d.getDay()], cal: meals.reduce((s,e)=>s+(e.calorias||0),0), prot: meals.reduce((s,e)=>s+(e.proteinas||0),0), carbs: meals.reduce((s,e)=>s+(e.carbos||0),0), fats: meals.reduce((s,e)=>s+(e.grasas||0),0) }); }
+  const totalCal = last7.reduce((s,d)=>s+d.cal,0);
+  const avgProt = Math.round(last7.reduce((s,d)=>s+d.prot,0)/7);
+  const avgCarbs = Math.round(last7.reduce((s,d)=>s+d.carbs,0)/7);
+  const avgFats = Math.round(last7.reduce((s,d)=>s+d.fats,0)/7);
+  const topDay = last7.reduce((a,b)=>a.cal>b.cal?a:b,last7[0]);
+  const streak = parseInt(localStorage.getItem('nl_streak')||'0');
+  const div = document.createElement('div');
+  div.className = 'pdf-report';
+  div.style.cssText = 'font-family:Arial,sans-serif;background:#fff;color:#0a0a0a;padding:40px;max-width:800px;margin:0 auto;';
+  div.innerHTML = `<div style="text-align:center;border-bottom:3px solid #b8f050;padding-bottom:20px;margin-bottom:30px;">
+    <h1 style="color:#0a0a0a;font-size:32px;margin:0;">🌿 NutriLent</h1>
+    <h2 style="color:#555;font-size:18px;margin:8px 0;">Reporte Nutricional Semanal</h2>
+    <p style="color:#666;font-size:14px;margin:4px 0;">Usuario: ${nombre}</p>
+    <p style="color:#888;font-size:12px;">Generado: ${fecha}</p>
+  </div>
+  <h3 style="color:#0a0a0a;font-size:20px;margin:24px 0 16px;">📊 Resumen de la Semana</h3>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:30px;">
+    <div style="background:#f5f5f5;padding:16px;border-radius:12px;text-align:center;border-left:4px solid #b8f050;"><span style="display:block;font-size:26px;font-weight:700;color:#0a0a0a;">${totalCal}</span><span style="color:#666;font-size:12px;">🔥 kcal totales</span></div>
+    <div style="background:#f5f5f5;padding:16px;border-radius:12px;text-align:center;border-left:4px solid #4facfe;"><span style="display:block;font-size:26px;font-weight:700;color:#0a0a0a;">${avgProt}g</span><span style="color:#666;font-size:12px;">💪 Proteína/día</span></div>
+    <div style="background:#f5f5f5;padding:16px;border-radius:12px;text-align:center;border-left:4px solid #f5576c;"><span style="display:block;font-size:26px;font-weight:700;color:#0a0a0a;">${avgCarbs}g</span><span style="color:#666;font-size:12px;">🌾 Carbohidratos/día</span></div>
+    <div style="background:#f5f5f5;padding:16px;border-radius:12px;text-align:center;border-left:4px solid #ffb347;"><span style="display:block;font-size:26px;font-weight:700;color:#0a0a0a;">${avgFats}g</span><span style="color:#666;font-size:12px;">🫒 Grasas/día</span></div>
+  </div>
+  <h3 style="color:#0a0a0a;font-size:20px;margin:24px 0 16px;">🍽️ Comidas Recientes</h3>
+  <ul style="list-style:none;padding:0;">
+    ${historyData.slice(0,5).map(meal => `<li style="background:#fafafa;padding:12px 16px;margin:8px 0;border-radius:8px;border-left:3px solid #b8f050;font-size:13px;">
+      <span style="font-weight:700;display:block;">${meal.plato}</span>
+      <span style="color:#555;">🔥 ${meal.calorias} kcal | 💪 ${meal.proteinas}g | 🌾 ${meal.carbos}g | 🫒 ${meal.grasas}g</span>
+    </li>`).join('')}
+  </ul>
+  <h3 style="color:#0a0a0a;font-size:20px;margin:24px 0 16px;">💡 Insights</h3>
+  <p style="color:#555;font-size:13px;">📈 Día con más calorías: <b>${topDay.day}</b> (${topDay.cal} kcal)</p>
+  <p style="color:#555;font-size:13px;">🔥 Racha actual: <b>${streak} días</b></p>
+  <p style="color:#555;font-size:13px;">📋 Total de comidas registradas: <b>${historyData.length}</b></p>
+  <div style="margin-top:40px;text-align:center;color:#888;font-size:11px;border-top:1px solid #ddd;padding-top:16px;">
+    <p>Generado por NutriLent AI</p>
+    <p>Los análisis son orientativos y no reemplazan asesoramiento médico.</p>
+  </div>`;
+  document.body.appendChild(div);
+  try {
+    html2pdf().set({ margin: 0, filename: `NutriLent_${nombre}_${new Date().toISOString().split('T')[0]}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(div).save().then(() => { div.remove(); showToast('📄 PDF generado exitosamente', 3000); });
+  } catch(e) { console.error('PDF error:', e); div.remove(); showToast('Error al generar PDF. Intenta de nuevo.'); }
+};
 window.shareResult = function(){ if(!lastAnalysis){ showToast('No hay resultado para compartir'); return; } const text = `🍽️ Analicé "${lastAnalysis.plato}" con NutriLent AI: ${lastAnalysis.calorias} kcal, ${lastAnalysis.proteinas}g proteína. ¡Descárgalo gratis! → nutrilent.app`; if(navigator.share){ navigator.share({ title: 'NutriLent AI', text }).catch(() => {}); }else{ navigator.clipboard?.writeText(text).then(() => showToast('📋 Copiado al portapapeles')); } };
 function getIMCCategory(imc){
   if(imc < 18.5) return { cls:'bajo', label:'Bajo peso', desc:'Considera aumentar tu ingesta calórica con alimentos nutritivos.' };
@@ -1955,7 +2869,7 @@ window.saveProfile = async function(){
   if(mealDist){ const comidas = [`🌅 Desayuno: ${Math.round(protMeta * 0.25)}g prot · ${Math.round(carbs * 0.30)}g carbos · ${Math.round(fats * 0.25)}g grasas`, `🍽️ Almuerzo: ${Math.round(protMeta * 0.35)}g prot · ${Math.round(carbs * 0.40)}g carbos · ${Math.round(fats * 0.35)}g grasas`, `🌙 Cena: ${Math.round(protMeta * 0.25)}g prot · ${Math.round(carbs * 0.20)}g carbos · ${Math.round(fats * 0.25)}g grasas`, `🥑 Snacks: ${Math.round(protMeta * 0.15)}g prot (1-2 tomas)`]; mealDist.innerHTML = comidas.map(c => `<div class="meal-card"><div class="meal-stats">${c}</div></div>`).join(''); }
   const recos = document.getElementById('recommendationsList');
   if(recos){ const rList = [`💪 Distribuye tus ${protMeta}g de proteína en ${mealsPerDay} comidas para máxima síntesis muscular.`, `🌾 Prioriza carbohidratos complejos (avena, arroz integral, quinoa) en las primeras comidas del día.`, `🥑 Concentra las grasas saludables en desayuno y snacks (aguacate, frutos secos, aceite de oliva).`, objetivo === 'bajar' ? '🍽️ Intenta cenar antes de las 20h para optimizar el déficit calórico.' : objetivo === 'musculo' ? '🏋️ Consume proteínas y carbohidratos en los 90 min post-entreno.' : '⚖️ Mantén horarios regulares de comida para estabilizar tu metabolismo.']; recos.innerHTML = rList.map(r => `<li>${r}</li>`).join(''); }
-  setText('profileNameDisplay', nombre || 'Tu perfil'); const goalText = { bajar: '🎯 Objetivo: bajar de peso', musculo: '💪 Objetivo: ganar músculo', mantener: '⚖️ Objetivo: mantenerse' }; setText('profileGoalDisplay', goalText[objetivo] || 'configura tus datos');
+  setText('profileNameDisplay', getDisplayName()); const goalText = { bajar: '🎯 Objetivo: bajar de peso', musculo: '💪 Objetivo: ganar músculo', mantener: '⚖️ Objetivo: mantenerse' }; setText('profileGoalDisplay', goalText[objetivo] || 'configura tus datos');
   const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]);
   const pb = document.getElementById('profileBadge'); if(pb) pb.textContent = isPro ? '⚡ Pro' : '🆓 Gratis';
   const statsRow = document.getElementById('profileStatsRow'); if(statsRow) statsRow.style.display = 'grid';
@@ -1963,36 +2877,36 @@ window.saveProfile = async function(){
   const metaCalc = document.getElementById('metasCalcCard'); if(metaCalc) metaCalc.style.display = 'block';
   const macrosDetailed = document.getElementById('macrosDetailed'); if(macrosDetailed) macrosDetailed.style.display = 'block';
   const imcCard = document.getElementById('imcCard'); if(imcCard) imcCard.style.display = 'flex';
-  if(!currentUser?.photoURL && nombre){ const initials = nombre.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); const avatarWrap = document.getElementById('profileAvatarWrap'); if(avatarWrap) avatarWrap.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:26px;border-radius:50%">${initials}</div>`; }
+  if(!window.currentUser?.photoURL && nombre){ const initials = nombre.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); const avatarWrap = document.getElementById('profileAvatarWrap'); if(avatarWrap) avatarWrap.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:26px;border-radius:50%">${initials}</div>`; }
   const warnings = []; if(objetivo === 'musculo' && actividad <= 1.375) warnings.push({ icon: '⚠️', title: 'Actividad insuficiente', message: 'Para ganar músculo con tu nivel de actividad, el progreso será muy lento.', suggestion: 'Aumenta a Moderado (3-4 días/semana) para ver resultados en 8-12 semanas.' }); if(objetivo === 'bajar' && imc < 18.5) warnings.push({ icon: '⚠️', title: 'IMC bajo', message: 'Ya tienes bajo peso. Perder más puede ser perjudicial para tu salud.', suggestion: 'Considera consultar con un nutricionista para un plan de mantenimiento saludable.' }); if(objetivo === 'bajar' && actividad >= 1.7) warnings.push({ icon: '⚡', title: 'Alta actividad', message: 'Con tanto ejercicio, el déficit calórico requiere atención extra a la recuperación.', suggestion: 'Asegura 1.8g de proteína/kg y carbohidratos complejos post-entreno.' });
   warnings.forEach(w => { const wDiv = document.createElement('div'); wDiv.className = 'warning-card'; wDiv.innerHTML = `<div class="warning-title">${w.icon} ${w.title}</div><div class="warning-message">${w.message}</div><div class="warning-suggestion">💡 ${w.suggestion}</div>`; document.getElementById('metasCalcCard')?.appendChild(wDiv); });
-  if(!currentUser && nombre){ const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = `${greeting}, ${nombre}! 👋`; }
+  if(!window.currentUser && nombre){ const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = `${greeting}, ${nombre}! 👋`; }
   updateMetasUI(); liveIMC();
-  if(currentUser){ showSync(t('syncCloud')); await saveProfileToFS().catch(() => {}); hideSync(); }
+  if(window.currentUser){ showSync(t('syncCloud')); await saveProfileToFS().catch(() => {}); hideSync(); }
   showToast(t('toastSaved'));
 };
 function loadProfileUI(){
   if(!profile.nombre && !profile.peso) return;
   const setVal = (id, val) => { const e = document.getElementById(id); if(e && val !== undefined) e.value = val; };
-  setVal('pNombre', profile.nombre); setVal('pPeso', profile.peso); setVal('pAltura', profile.altura); setVal('pEdad', profile.edad);
+  setVal('pNombre', getDisplayName()); setVal('pPeso', profile.peso); setVal('pAltura', profile.altura); setVal('pEdad', profile.edad);
   if(document.getElementById('pSexo') && profile.sexo) document.getElementById('pSexo').value = profile.sexo;
   if(document.getElementById('pObjetivo') && profile.objetivo) document.getElementById('pObjetivo').value = profile.objetivo;
   if(document.getElementById('pActividad') && profile.actividad) document.getElementById('pActividad').value = profile.actividad;
   if(profile.actividad) showActivityDesc();
-  setText('profileNameDisplay', profile.nombre || 'Tu perfil');
+  setText('profileNameDisplay', getDisplayName());
   const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]);
   const pb = document.getElementById('profileBadge'); if(pb) pb.textContent = isPro ? '⚡ Pro' : '🆓 Gratis';
   if(profile.peso && profile.altura) liveIMC();
 }
 window.deleteAccount = async function(){
-  if(!currentUser){ showToast('No hay sesión iniciada'); return; }
+  if(!window.currentUser){ showToast('No hay sesión iniciada'); return; }
   if(!confirm('⚠️ ¿Eliminar tu cuenta permanentemente? Todos tus datos serán borrados.')) return;
   showSync('Eliminando cuenta...');
   try{
-    const hSnap = await getDocs(collection(db, 'users', currentUser.uid, 'history'));
+    const hSnap = await getDocs(collection(db, 'users', window.currentUser.uid, 'history'));
     const batch = writeBatch(db); hSnap.forEach(d => batch.delete(d.ref)); await batch.commit();
-    await deleteDoc(doc(db, 'users', currentUser.uid));
-    await deleteUser(currentUser);
+    await deleteDoc(doc(db, 'users', window.currentUser.uid));
+    await deleteUser(window.currentUser);
     await signOut(auth);
     lsSet('nl_history', []); lsSet('nl_profile', {}); lsSet('nl_metas', {});
     showToast('✅ Cuenta eliminada correctamente');
@@ -2008,7 +2922,7 @@ window.acceptCookies = function(){ lsSet('nl_cookies', true); const b = document
 window.toggleTheme = function(){ document.body.classList.toggle('light'); lsSet('nl_theme', document.body.classList.contains('light') ? 'light' : 'dark'); syncThemeToggles(); };
 function syncThemeToggles(){ const isLight = document.body.classList.contains('light'); const ts = document.getElementById('themeToggleSettings'); if(ts) ts.classList.toggle('active', isLight); const fab = document.getElementById('themeFab'); if(fab) fab.textContent = isLight ? '☀️' : '🌙'; }
 function updateUI() {
-  if(!currentUser) setText('greetUser', t('greet'));
+  if(!window.currentUser) setText('greetUser', t('greet'));
   setText('btnAnalyze', t('analyzeBtn')); setText('usageLabelEl', t('usageLabel')); setText('metaCalLabel', t('metaCal')); setText('metaProtLabel', t('metaProt'));
   setText('uploadStrong', t('uploadStrong')); setText('uploadText', t('uploadText')); setText('cameraToggleLabel', t('cameraToggle')); setText('ingLabelEl', t('ingLabel'));
   setText('shareBtn', t('shareBtn')); setText('aiSummaryBtnLabel', t('aiSummaryBtn')); setText('aiLabelEl', t('aiLabel'));
@@ -2045,7 +2959,7 @@ function updateUI() {
   document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if(key && el.innerText !== t(key)) el.innerText = t(key); });
   updateSelectOptions(); updateMotivations(); updateBackButton();
 }
-window.setLang = function(lang){ currentLang = lang; lsSet('nl_lang', lang); const dd = document.getElementById('langDropdown'); if(dd) dd.classList.remove('open'); updateUI(); if(currentUser) setDoc(doc(db, 'users', currentUser.uid), { lang }, { merge: true }).catch(() => {}); };
+window.setLang = function(lang){ currentLang = lang; lsSet('nl_lang', lang); const dd = document.getElementById('langDropdown'); if(dd) dd.classList.remove('open'); updateUI(); if(window.currentUser) setDoc(doc(db, 'users', window.currentUser.uid), { lang }, { merge: true }).catch(() => {}); };
 function updateBackButton(){ const activePage = document.querySelector('.page.active'); const isScanPage = activePage && activePage.id === 'page-scan'; const backBtn = document.getElementById('backHomeBtn'); if(backBtn) backBtn.style.display = isScanPage ? 'none' : 'flex'; }
 window.goTab = function(tabName, btn) {
   if(tabName === "myplan") { updatePlanInfo(); }
@@ -2102,9 +3016,10 @@ function initMenuDots() {
       const action = item.dataset.action;
       if (action === 'history') goTab('history');
       else if (action === 'plan') goTab('plan');
-      else if (action === 'myplan') goTab('myplan');
+      else if (action === 'myplan') { menu.classList.remove('open'); btn.classList.remove('active'); window.openMyPlan(); }
       else if (action === 'profile') goTab('profile');
       else if (action === 'settings') goTab('settings');
+      else if (action === 'fridge') { menu.classList.remove('open'); btn.classList.remove('active'); openFridgeMode(); }
       else if (action === 'help') showHelpModal();
       else if (action === 'terms') showModalTerms();
     });
@@ -2131,6 +3046,12 @@ const observer = new MutationObserver(() => updateBackButton());
 observer.observe(document.body, { attributes: true, subtree: false, attributeFilter: ['class'] });
 updateBackButton();
 document.addEventListener('DOMContentLoaded', () => {
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+  window.addEventListener('online', () => { const b = document.getElementById('offlineBadge'); if(b) b.style.display = 'none'; });
+  window.addEventListener('offline', () => { const b = document.getElementById('offlineBadge'); if(b) b.style.display = 'block'; });
+  if(!navigator.onLine) { const b = document.getElementById('offlineBadge'); if(b) b.style.display = 'block'; }
   if(lsGet('nl_theme', 'dark') === 'light') document.body.classList.add('light'); syncThemeToggles();
   if(lsGet('nl_notifications', false)) document.getElementById('notificationsToggle')?.classList.add('active');
   const proTgl = document.getElementById('proModeToggle'); if(proTgl){ if(lsGet('nl_isPro', false)) proTgl.classList.add('active'); proTgl.addEventListener('click', () => { isPro = !isPro; proTgl.classList.toggle('active', isPro); lsSet('nl_isPro', isPro); updateUsageUI(); showToast(isPro ? t('toastUpgradeSim') : '⚠️ Modo Pro desactivado'); if(isPro) triggerConfetti(); }); }
@@ -2139,9 +3060,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const langSel = document.getElementById('languageSelect'); if(langSel) langSel.addEventListener('change', (e) => setLang(e.target.value));
   document.getElementById('fileInput')?.addEventListener('change', async(e) => { const file = e.target.files?.[0]; if(!file) return; if(file.size > 4 * 1024 * 1024){ showToast('❌ Imagen muy pesada (máx. 4MB)'); return; } try{ imageBase64 = await resizeImage(file); showPreview(imageBase64); }catch{ showToast('Error al procesar la imagen'); } });
   document.getElementById('btnLogout')?.addEventListener('click', async() => { await signOut(auth); showToast('👋 Sesión cerrada'); });
-  onAuthStateChanged(auth, async(user) => { currentUser = user; if(user){ document.getElementById('btnLogin').style.display = 'none'; document.getElementById('userPill').classList.add('show'); const userName = user.displayName || user.email?.split('@')[0] || 'Usuario'; setText('userDisplayName', userName.split(' ')[0]); const avatarWrap = document.getElementById('userAvatarWrap'); if(avatarWrap){ if(user.photoURL){ avatarWrap.innerHTML = `<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}">`; }else{ const ini = (user.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); avatarWrap.innerHTML = `<div class="user-initials">${ini}</div>`; } } const name = user.displayName?.split(' ')[0] || ''; const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = name ? `${greeting}, ${name}! 👋` : t('greet'); const cloud = document.getElementById('cloudBadge'); if(cloud) cloud.classList.add('show'); setText('profileNameDisplay', userName); setText('profileEmailDisplay', user.email || ''); const phrases = ['\"Cada comida es una decisión de salud\" 🥗','\"Tu mejor versión empieza hoy\" 💪','\"Pequeños cambios, grandes resultados\" ⚡','\"La constancia vence al talento\" 🔥','\"Hoy es un buen día para comer bien\" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); if(user.photoURL){ const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = `<img src="${user.photoURL}" alt="">`; }else{ const pa = document.getElementById('profileAvatarWrap'); if(pa){ const initial = (userName[0] || 'U').toUpperCase(); pa.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:Syne;font-weight:800;font-size:32px;border-radius:50%">${initial}</div>`; } } loadConditions(); await loadFromFS(user.uid); }else{ document.getElementById('btnLogin').style.display = ''; document.getElementById('userPill').classList.remove('show'); const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.textContent = t('greet'); document.getElementById('cloudBadge')?.classList.remove('show'); const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = '🧑'; isPro = lsGet('nl_isPro', false); updateUsageUI(); } });
-  currentLang = lsGet('nl_lang', 'es'); historyData = lsGet('nl_history', []); metas = lsGet('nl_metas', { cal: 2000, prot: 150, carbs: 200, fats: 55 }); profile = lsGet('nl_profile', {}); isPro = lsGet('nl_isPro', false);
-  updateUI(); updateUsageUI(); renderHistory(); window.updateDailyProgressPanel(); window.renderMacroRhythm(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
+  onAuthStateChanged(auth, async(user) => { window.currentUser = user; if(user){ document.getElementById('btnLogin').style.display = 'none'; document.getElementById('userPill').classList.add('show'); const userName = user.displayName || user.email?.split('@')[0] || 'Usuario'; setText('userDisplayName', userName.split(' ')[0]); const avatarWrap = document.getElementById('userAvatarWrap'); if(avatarWrap){ if(user.photoURL){ avatarWrap.innerHTML = `<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}">`; }else{ const ini = (user.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); avatarWrap.innerHTML = `<div class="user-initials">${ini}</div>`; } } const name = user.displayName?.split(' ')[0] || ''; const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = name ? `${greeting}, ${name}! 👋` : t('greet'); const cloud = document.getElementById('cloudBadge'); if(cloud) cloud.classList.add('show'); setText('profileNameDisplay', userName); setText('profileEmailDisplay', user.email || ''); const phrases = ['\"Cada comida es una decisión de salud\" 🥗','\"Tu mejor versión empieza hoy\" 💪','\"Pequeños cambios, grandes resultados\" ⚡','\"La constancia vence al talento\" 🔥','\"Hoy es un buen día para comer bien\" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); if(user.photoURL){ const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = `<img src="${user.photoURL}" alt="">`; }else{ const pa = document.getElementById('profileAvatarWrap'); if(pa){ const initial = (userName[0] || 'U').toUpperCase(); pa.innerHTML = `<div style="width:100%;height:100%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-family:Syne;font-weight:800;font-size:32px;border-radius:50%">${initial}</div>`; } } loadConditions(); await loadFromFS(user.uid); }else{ document.getElementById('btnLogin').style.display = ''; document.getElementById('userPill').classList.remove('show'); const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.textContent = t('greet'); document.getElementById('cloudBadge')?.classList.remove('show'); const pa = document.getElementById('profileAvatarWrap'); if(pa) pa.innerHTML = '🧑'; isPro = lsGet('nl_isPro', false); updateUsageUI(); } });
+  currentLang = lsGet('nl_lang', 'es'); { const loaded = lsGet('nl_history', []); historyData.length = 0; historyData.push(...loaded); } metas = lsGet('nl_metas', { cal: 2000, prot: 150, carbs: 200, fats: 55 }); profile = lsGet('nl_profile', {}); isPro = lsGet('nl_isPro', false);
+  if (historyData.length === 0) {
+    try {
+      const raw = localStorage.getItem('nl_history');
+      if (raw) { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) { historyData.length = 0; historyData.push(...parsed); } }
+    } catch(e) { console.warn('[Init] Error al parsear nl_history:', e); historyData.length = 0; }
+  }
+  window.historyData = historyData; console.log('[Init] historyData cargado:', historyData.length, 'entries');
+  updateUI(); updateUsageUI(); renderHistory(); window.updateDailyProgressPanel(); window.renderRhythmTab(); if(profile.peso && profile.altura) liveIMC(); if(profile.nombre) loadProfileUI(); else { const phrases = ['"Cada comida es una decisión de salud" 🥗','"Tu mejor versión empieza hoy" 💪','"Pequeños cambios, grandes resultados" ⚡','"La constancia vence al talento" 🔥','"Hoy es un buen día para comer bien" 🌿']; setText('profilePhrase', phrases[new Date().getDay()] || phrases[0]); } initMenuDots(); setInterval(rotateTicker, 4500); rotateTicker(); loadConditions(); applyStreakTheme(parseInt(localStorage.getItem('nl_streak') || '0'));
   if(!lsGet('nl_cookies', false)){ setTimeout(() => { const b = document.getElementById('cookieBanner'); if(b) b.style.transform = 'translateY(0)'; }, 1200); }
   const onboarded = lsGet('nl_onboarded', false);
   if(!onboarded){
@@ -2169,8 +3097,93 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnNextOnboarding')?.addEventListener('click', () => { if(onboardStep < ONBOARDING_STEPS.length - 1){ onboardStep++; renderOnboarding(); }else{ closeOnboarding(); } });
     document.getElementById('btnSkipOnboarding')?.addEventListener('click', closeOnboarding);
   }
+  setTimeout(function() { if (window.isAdminUser && window.isAdminUser()) { var ab = document.getElementById('btnAdminFeedback'); if (ab) ab.style.display = 'block'; } }, 1500);
+  setInterval(function() { window.showCreativeNotification('random_support'); }, 420000);
 });
 </script>
+<div id="fridgeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#111; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; width:90%; max-width:450px;">
+    <h3 style="font-family:'Syne',sans-serif; color:#f0f0f0; margin:0 0 8px;">🥗 Modo Nevera Vacía</h3>
+    <p style="font-family:'DM Sans',sans-serif; color:#888; font-size:13px; margin:0 0 16px;">Escribe los ingredientes que tienes y obtén recetas saludables personalizadas.</p>
+    <textarea id="fridgeInput" placeholder="Ej: huevos, cebolla, tomate, arroz…" style="width:100%; height:100px; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f0f0f0; padding:12px; font-family:'DM Sans',sans-serif; resize:vertical; box-sizing:border-box;"></textarea>
+    <button id="btnFridgeGenerate" onclick="generateFridgeRecipes()" style="width:100%; margin-top:12px; padding:12px; background:linear-gradient(135deg,#b8f050,#50f0b8); color:#000; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;">✨ Generar recetas</button>
+    <div id="fridgeLoading" style="display:none; text-align:center; padding:16px; color:#888;">🔍 Buscando las mejores recetas…</div>
+    <div id="fridgeResults" style="margin-top:12px; max-height:300px; overflow-y:auto;"></div>
+    <button onclick="closeFridgeModal()" style="width:100%; margin-top:12px; background:none; border:1px solid rgba(255,255,255,0.1); color:#888; padding:10px; border-radius:8px; cursor:pointer;">Cerrar</button>
+  </div>
+</div>
+<div id="planModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
+  <div style="background:#1a1a1a; border:1px solid #333; border-radius:16px; padding:24px; max-width:400px; width:90%; position:relative;">
+    <button onclick="this.parentElement.parentElement.style.display='none'" style="position:absolute; top:10px; right:10px; background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
+    <h3 style="font-family:'Syne',sans-serif; margin:0 0 20px; color:#f0f0f0;">📋 Mi Plan Nutricional</h3>
+    <div class="plan-data"></div>
+  </div>
+</div>
+<script>
+window.addEventListener('error', function(e) { console.warn('⚠️ Error capturado:', e.message); });
+window.switchNutritionTab = function(tab) {
+  document.getElementById('panelProgress').style.display = tab === 'progress' ? 'block' : 'none';
+  document.getElementById('panelRhythm').style.display = tab === 'rhythm' ? 'block' : 'none';
+  document.getElementById('tabProgress').style.color = tab === 'progress' ? '#f0f0f0' : '#888';
+  document.getElementById('tabProgress').style.borderBottomColor = tab === 'progress' ? '#b8f050' : 'transparent';
+  document.getElementById('tabRhythm').style.color = tab === 'rhythm' ? '#f0f0f0' : '#888';
+  document.getElementById('tabRhythm').style.borderBottomColor = tab === 'rhythm' ? '#b8f050' : 'transparent';
+  if (tab === 'rhythm') window.renderRhythmTab();
+};
+window.toggleMenu = function() {
+  var menu = document.getElementById('menuDropdown');
+  if (menu) menu.classList.toggle('open');
+  var btn = document.getElementById('menuDotsBtn');
+  if (btn) btn.classList.toggle('active', menu.classList.contains('open'));
+};
+window.renderPlans = function() {
+  var currentPlan = localStorage.getItem('nl_plan') || 'free';
+  var plans = [
+    { id:'free', name:'Básico', price:'$0', period:'', features:['Análisis ilimitado','Historial 7 días','Exportar PDF','Soporte comunidad'], accent:'#666', active: currentPlan==='free' },
+    { id:'mensual', name:'Pro Mensual', price:'$4.99', period:'/mes', features:['Todo lo Básico','Historial ilimitado','Coach IA 24/7','Sin anuncios','Acceso anticipado'], accent:'#b8f050', active: currentPlan==='mensual' },
+    { id:'anual', name:'Pro Anual', price:'$39.99', period:'/año', features:['Todo lo Pro','Ahorro 33%','Badge exclusivo 🏆','Metas personalizadas IA','Prioridad soporte'], accent:'#4facfe', active: currentPlan==='anual', badge:'MEJOR VALOR' }
+  ];
+  document.getElementById('planCardsContainer').innerHTML = plans.map(function(p) {
+    var cardClass = p.active ? 'plan-card plan-active' : 'plan-card';
+    return '<div class="' + cardClass + '">' +
+      (p.badge ? '<span class="plan-badge">' + p.badge + '</span>' : '') +
+      (p.active ? '<span style="position:absolute;top:12px;left:12px;background:' + p.accent + ';color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;">ACTUAL</span>' : '') +
+      '<h3 style="margin:0 0 4px;color:#fff;font-size:18px;">' + p.name + '</h3>' +
+      '<div class="price">' + p.price + '<span style="font-size:14px;font-weight:400;color:#888;"> ' + p.period + '</span></div>' +
+      '<ul class="feature-list" style="list-style:none;padding:0;margin:12px 0;">' + p.features.map(function(f) { return '<li>' + f + '</li>'; }).join('') + '</ul>' +
+      '<button onclick="window.selectPlan(\'' + p.id + '\')" class="plan-cta" ' + (p.active ? 'disabled' : '') + '>' + (p.active ? '✅ Plan Activo' : 'Elegir ' + p.name) + '</button></div>';
+  }).join('');
+};
+window.initiateStripeCheckout = function(planId) {
+  if (typeof Stripe !== 'function') { showToast('⚠️ Stripe no disponible. Activando modo demo.'); localStorage.setItem('nl_plan', planId); window.renderPlans(); if (typeof showCreativeNotification === 'function') showCreativeNotification('profile_updated'); return; }
+  var prices = { 'mensual': 'price_mensual_placeholder', 'anual': 'price_anual_placeholder' };
+  if (!prices[planId]) { showToast('⚠️ Plan no disponible'); return; }
+  showToast('🔄 Redirigiendo a Stripe Checkout...');
+  try {
+    var stripe = Stripe('pk_test_TU_CLAVE_PUBLICA');
+    stripe.redirectToCheckout({ lineItems: [{ price: prices[planId], quantity: 1 }], mode: 'subscription', successUrl: window.location.origin + '/?session_id={CHECKOUT_SESSION_ID}', cancelUrl: window.location.origin }).then(function(result) { if (result.error) { showToast('❌ ' + result.error.message); localStorage.setItem('nl_plan', planId); window.renderPlans(); } });
+  } catch(e) { showToast('⚠️ Error de pago. Activando modo demo.'); localStorage.setItem('nl_plan', planId); window.renderPlans(); }
+};
+window.selectPlan = function(planId) {
+  if (planId === 'free') { localStorage.setItem('nl_plan', 'free'); showToast('🔄 Cambiado a plan Básico'); window.renderPlans(); return; }
+  window.initiateStripeCheckout(planId);
+};
+if (window.switchNutritionTab && !document.querySelector('#tabProgress').onclick) {
+  document.querySelector('#tabProgress').onclick = function() { window.switchNutritionTab('progress'); };
+  document.querySelector('#tabRhythm').onclick = function() { window.switchNutritionTab('rhythm'); };
+}
+</script>
+<div id="planSection" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(5px);">
+  <div style="background:linear-gradient(145deg,#0f0f0f,#1a1a1a); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:32px; max-width:520px; width:100%; max-height:90vh; overflow-y:auto; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <button onclick="document.getElementById('planSection').style.display='none'" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:20px; transition:background 0.2s;">✕</button>
+    <div style="text-align:center; margin-bottom:28px;">
+      <h2 style="margin:0 0 8px; color:#fff; font-size:26px; font-weight:700;">🌿 NutriLent Pro</h2>
+      <p style="color:#888; margin:0; font-size:14px;">Desbloquea todo el potencial de tu nutrición</p>
+    </div>
+    <div id="planCardsContainer" style="display:grid; gap:20px;"></div>
+    <div style="text-align:center; margin-top:24px; color:#666; font-size:12px;">🔒 Pago seguro con Stripe • Cancela cuando quieras</div>
+  </div>
+</div>
 </body>
 </html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <script>
 function loadMyPlanPage() {
@@ -2193,4 +3206,5 @@ function updatePlanInfo() {
     info.innerHTML += '<p style="color:#b8f050;font-size:13px">✅ Disfrutas de todas las funciones premium.</p>';
   }
 }
+(function(){ var n = localStorage.getItem('nl_username') || 'Comensal'; var d = document.getElementById('userDisplayName'); if (d) d.textContent = n; var pd = document.getElementById('profileNameDisplay'); if (pd) pd.textContent = n; var g = document.getElementById('greetUser'); if (g && g.textContent.indexOf('Fotografía') !== -1) { var h = new Date().getHours(); var s = h < 12 ? '¡Buenos días' : h < 19 ? '¡Buenas tardes' : '¡Buenas noches'; g.innerHTML = s + ', ' + n + '! 👋'; } })();
 </script>

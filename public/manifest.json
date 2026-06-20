@@ -1,6 +1,6 @@
 {
-  "name": "NutriLent",
-  "short_name": "NL",
+  "name": "NutriLent AI",
+  "short_name": "NutriLent",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,8 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#080808",
-  "background_color": "#080808",
-  "display": "standalone"
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "display": "standalone",
+  "start_url": "/"
 }
