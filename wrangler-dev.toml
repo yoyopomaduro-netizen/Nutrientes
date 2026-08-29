@@ -2,10 +2,8 @@ name = "nutrilent-api-proxy-dev"
 main = "worker-dev.js"
 compatibility_date = "2024-01-01"
 
-# ⚠️ En producción, usar: wrangler secret put DEEPSEEK_API_KEY
-# Esta clave es para desarrollo local únicamente.
-[vars]
-DEEPSEEK_API_KEY = "sk-0684d51e50fe4b9e98da9e5414fdaa01"
+# La clave DEEPSEEK_API_KEY se lee del secreto (wrangler secret put DEEPSEEK_API_KEY)
+# No se hardcodea en el código ni en este archivo.
 
 [ai]
 binding = "AI"

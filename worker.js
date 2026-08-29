@@ -1,15 +1,25 @@
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+};
+
 export default {
   async fetch(request, env) {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-        status: 405, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        status: 405, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
       });
     }
 
     const DEEPSEEK_API_KEY = env.DEEPSEEK_API_KEY;
     if (!DEEPSEEK_API_KEY) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), {
-        status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
       });
     }
 
@@ -17,24 +27,37 @@ export default {
     const path = url.pathname;
 
     try {
-      // Endpoint: /api/chat — usado por coach, fridge, weekly plan
+      // /api/chat — passthrough genérico (coach, nevera, plan semanal, resumen)
       if (path === '/api/chat' || path === '/') {
         const body = await request.json();
-        const { messages, model, max_tokens, temperature, stream } = body;
+        const { messages, system, model, max_tokens, temperature, stream } = body;
 
         if (!messages || !Array.isArray(messages)) {
           return new Response(JSON.stringify({ error: 'Messages array required' }), {
-            status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
           });
         }
 
+        const deepseekMessages = [];
+        if (system) {
+          deepseekMessages.push({ role: 'system', content: system });
+        }
+        for (const msg of messages) {
+          deepseekMessages.push(msg);
+        }
+
+        const selectedModel = model || 'deepseek-chat';
+
         const deepseekBody = {
-          model: model || 'deepseek-chat',
-          messages: messages,
+          model: selectedModel,
+          messages: deepseekMessages,
           max_tokens: max_tokens || 2000,
-          temperature: temperature ?? 0.7,
           stream: stream || false
         };
+
+        if (selectedModel !== 'deepseek-reasoner') {
+          deepseekBody.temperature = temperature ?? 0.7;
+        }
 
         const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
           method: 'POST',
@@ -49,18 +72,18 @@ export default {
 
         return new Response(JSON.stringify(data), {
           status: response.status,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
 
-      // Endpoint: /api/analyze — usado por window.analyze (imagen + prompt)
+      // /api/analyze — imagen + prompt nutricional
       if (path === '/api/analyze') {
         const body = await request.json();
         const { imageBase64, promptNutrition, max_tokens, temperature } = body;
 
         if (!imageBase64 || !promptNutrition) {
           return new Response(JSON.stringify({ error: 'imageBase64 and promptNutrition required' }), {
-            status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
           });
         }
 
@@ -90,17 +113,16 @@ export default {
 
         return new Response(JSON.stringify(data), {
           status: response.status,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
 
       return new Response(JSON.stringify({ error: 'Not found' }), {
-        status: 404, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
       });
-
     } catch (err) {
       return new Response(JSON.stringify({ error: err.message }), {
-        status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
       });
     }
   }
