@@ -158,29 +158,26 @@ export default {
       }
 
       // ──────────────────────────────────────────────
-      // /api/analyze — SIN CAMBIOS (contrato intacto)
+      // /api/analyze — Passthrough real (OpenAI/DeepSeek chat completions)
+      // Recibe el body ya formateado con messages[] + image_url desde el cliente
       // ──────────────────────────────────────────────
       if (path === '/api/analyze') {
         const body = await request.json();
-        const { imageBase64, promptNutrition, max_tokens, temperature } = body;
+        const { messages, model, max_tokens, temperature, stream } = body;
 
-        if (!imageBase64 || !promptNutrition) {
-          return new Response(JSON.stringify({ error: 'imageBase64 and promptNutrition required' }), {
+        if (!messages || !Array.isArray(messages)) {
+          return new Response(JSON.stringify({ error: 'Messages array required' }), {
             status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
           });
         }
 
+        const selectedModel = model || 'deepseek-chat';
         const deepseekBody = {
-          model: 'deepseek-chat',
-          messages: [
-            { role: 'user', content: [
-              { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + imageBase64 } },
-              { type: 'text', text: promptNutrition }
-            ]}
-          ],
+          model: selectedModel,
+          messages: messages,
           max_tokens: max_tokens || 300,
           temperature: temperature ?? 0.1,
-          stream: false
+          stream: stream || false
         };
 
         const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
