@@ -699,6 +699,10 @@ input,textarea,select{font-size:16px;}
 .recipe-tab.active{color:#b8f050;background:rgba(184,240,80,0.08);font-weight:600;}
 .recipe-tab-content{color:#ccc;font-size:14px;line-height:1.8;font-family:'DM Sans',sans-serif;animation:fadeIn 0.2s ease;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.fridge-loader-ring{width:50px;height:50px;border:3px solid rgba(184,240,80,0.15);border-top:3px solid #b8f050;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.fridge-loader-text{font-family:'DM Sans',sans-serif;font-size:14px;color:#888;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
 </style>
 </head>
 <body>
@@ -1224,11 +1228,14 @@ let currentLang = localStorage.getItem('nl_lang') || 'es';
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, writeBatch, deleteDoc } from "firebase/firestore";
+import { initDatabaseService, guardarPlanActual, registrarConsumoDiario, flushOfflineQueue } from "./database-service.js";
 
 const FB_CONFIG = { apiKey:"AIzaSyBTfFwgOefC1A_62tSZ9PgYYXY_odVjftQ", authDomain:"nutrilent-813f6.firebaseapp.com", projectId:"nutrilent-813f6", storageBucket:"nutrilent-813f6.firebasestorage.app", messagingSenderId:"438441655569", appId:"1:438441655569:web:ce99c1efd3b5af756160b0" };
 const app = initializeApp(FB_CONFIG);
 const auth = getAuth(app); window.auth = auth;
 const db = getFirestore(app);
+initDatabaseService(db);
+window.addEventListener('online', () => { if (window.currentUser) flushOfflineQueue().catch(() => {}); });
 const provider = new GoogleAuthProvider(); window.provider = provider;
 
 window.isAdminUser = function() {
@@ -1254,7 +1261,9 @@ onAuthStateChanged(auth, function(user) {
   }
 });
 
-const WORKER_URL = "https://nutrilent-api-proxy-dev.nutrilent.workers.dev";
+const WORKER_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? "https://nutrilent-api-proxy-dev.nutrilent.workers.dev" // Dev
+  : "https://nutrientes.nutrilent.workers.dev";              // Prod (verificar URL real)
 
 window.callDeepSeek = async function(prompt, system, tokenOverride) {
   try {
@@ -2046,7 +2055,7 @@ async function saveToHistory(r, img){
   renderWeeklyMacrosChart();
   renderMonthComparison();
   generateWeeklyReport();
-  if(window.currentUser) saveEntryToFS(entry).catch(() => {});
+  if(window.currentUser) registrarConsumoDiario(window.currentUser.uid, entry).catch(() => {});
   window.addXP(10);
   window.showCreativeNotification('meal_saved');
 }
@@ -2082,8 +2091,6 @@ window.goTab = function(tabName, btn) {
   updateBackButton();
 };
 window.showHistoryDetail = function(id){ const entry = historyData.find(e => e.id === id); if(entry){ lastAnalysis = entry; showResult(entry); goTab('scan', document.getElementById('tab-scan')); } };
-async function saveProfileToFS(){ if(!window.currentUser) return; await setDoc(doc(db, 'users', window.currentUser.uid), { profile, metas, isPro, lang: currentLang, updatedAt: Date.now() }, { merge: true }); }
-async function saveEntryToFS(entry){ if(!window.currentUser) return; await setDoc(doc(db, 'users', window.currentUser.uid, 'history', String(entry.id)), entry); }
 async function clearFSHistory(){ if(!window.currentUser) return; const snap = await getDocs(collection(db, 'users', window.currentUser.uid, 'history')); const batch = writeBatch(db); snap.forEach(d => batch.delete(d.ref)); await batch.commit(); }
 async function loadFromFS(uid){
   showSync(t('syncCloud'));
@@ -2117,6 +2124,7 @@ async function loadFromFS(uid){
     window.historyData = historyData; console.log('[loadFromFS] Referencia restaurada. Items:', historyData.length);
   }catch(err){ console.warn('Firestore load error:', err); }
   hideSync();
+  if (window.currentUser) flushOfflineQueue().catch(() => {});
 }
 function showSync(msg){ setText('syncMsg', msg); document.getElementById('syncBar')?.classList.add('show'); }
 function hideSync(){ document.getElementById('syncBar')?.classList.remove('show'); }
@@ -2215,7 +2223,12 @@ window.analyze = async function(){
 
   try{
     const langName = { es:'español', en:'English', pt:'Português', fr:'Français', de:'Deutsch', it:'Italiano' }[currentLang] || 'español';
-    const prompt = `Eres nutricionista. Da JSON con: plato,ingredientes:[],calorias,proteinas,carbos,grasas,fibra,sodio,azucares,indice_glucemico,clasificacion_gi,consejo. Idioma:${langName}. ⚠️ NUNCA 0 en macros.`;
+    const culturalContext = obtenerPromptCultural();
+    const prompt = `Eres un nutricionista experto con conocimiento de gastronomía internacional. IMPORTANTE: Identifica el plato por su NOMBRE ESPECÍFICO y tradicional (ej: "Bandeja Paisa", "Tacos al Pastor", "Paella Valenciana", "Feijoada", "Ramen Tonkotsu"). NO uses descripciones genéricas como "plato de carne con verduras" o "comida típica". Sé preciso con el nombre cultural del plato.
+
+${culturalContext}
+
+Da JSON con: plato,ingredientes:[],calorias,proteinas,carbos,grasas,fibra,sodio,azucares,indice_glucemico,clasificacion_gi,consejo. Idioma:${langName}. ⚠️ NUNCA 0 en macros.`;
     var imagePayload = base64Data;
     if (imagePayload.length > 150000) {
       try {
@@ -2230,18 +2243,38 @@ window.analyze = async function(){
         imagePayload = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
       } catch(e) {}
     }
+    if (!imagePayload) {
+      if (errBox) { errBox.textContent = 'Error: no se pudo procesar la imagen.'; errBox.style.display = 'block'; }
+      if (btn) { btn.disabled = false; btn.textContent = t('analyze'); }
+      return;
+    }
+    const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
     const res = await fetch(WORKER_URL + '/api/analyze', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({
-        imageBase64: imagePayload,
-        promptNutrition: prompt,
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + imagePayload } }
+            ]
+          }
+        ],
         max_tokens: 300,
         temperature: 0.1,
         stream: false
       })
     });
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    if(!res.ok) {
+      const errText = await res.text();
+      console.error('Worker /api/analyze error:', res.status, errText);
+      throw new Error(`HTTP ${res.status}: ${errText}`);
+    }
     const data = await res.json();
     let text = '';
     if (data.choices && data.choices[0] && data.choices[0].message) {
@@ -2638,7 +2671,7 @@ Para generar las recetas, utiliza EXACTAMENTE el siguiente formato de texto estr
 - Usa EXACTAMENTE el separador ||| entre las 5 secciones (Tiempo/Dificultad, Ingredientes, Preparación, Chef). No uses saltos de línea entre secciones.
 - El texto de cada sección debe ser claro y directo.
 - No añadas más de 5 secciones ni uses otro formato.`;
-    const response = await callDeepSeek('Tengo estos ingredientes: ' + input + '. Sugiere 3 recetas saludables.', system, token);
+    let response = await callDeepSeek('Tengo estos ingredientes: ' + input + '. Sugiere 3 recetas saludables.', system, token);
     response = response.replace(/https?:\/\/[^\s]+/g, '');
 
     const recetas = response.split('---RECETA---').filter(r => r.trim() !== '');
@@ -2647,10 +2680,10 @@ Para generar las recetas, utiliza EXACTAMENTE el siguiente formato de texto estr
     recetas.forEach((recetaStr, index) => {
       const parts = recetaStr.split('|||');
       const titleLine = parts[0] || '';
-      const tiempo = parts[1] || '';
-      const ingredientes = parts[2] || '';
-      const preparacion = parts[3] || '';
-      const chef = parts[4] || '';
+      const tiempo = window.formatAIResponse(parts[1] || '');
+      const ingredientes = window.formatAIResponse(parts[2] || '');
+      const preparacion = window.formatAIResponse(parts[3] || '');
+      const chef = window.formatAIResponse(parts[4] || '');
 
       const cleanTitle = titleLine.replace('**NOMBRE:** ', '').trim();
 
@@ -2673,6 +2706,7 @@ Para generar las recetas, utiliza EXACTAMENTE el siguiente formato de texto estr
 
     document.getElementById('fridgeResults').innerHTML = html;
   } catch(e) {
+    console.error('generateFridgeRecipes error:', e);
     document.getElementById('fridgeResults').innerHTML = '<p style="color:#ff5f5f">Error al analizar. Intenta de nuevo.</p>';
   }
   document.getElementById('fridgeLoading').style.display = 'none';
@@ -2882,7 +2916,7 @@ window.saveProfile = async function(){
   warnings.forEach(w => { const wDiv = document.createElement('div'); wDiv.className = 'warning-card'; wDiv.innerHTML = `<div class="warning-title">${w.icon} ${w.title}</div><div class="warning-message">${w.message}</div><div class="warning-suggestion">💡 ${w.suggestion}</div>`; document.getElementById('metasCalcCard')?.appendChild(wDiv); });
   if(!window.currentUser && nombre){ const hour = new Date().getHours(); const greeting = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches'; const greetEl = document.getElementById('greetUser'); if(greetEl) greetEl.innerHTML = `${greeting}, ${nombre}! 👋`; }
   updateMetasUI(); liveIMC();
-  if(window.currentUser){ showSync(t('syncCloud')); await saveProfileToFS().catch(() => {}); hideSync(); }
+  if(window.currentUser){ showSync(t('syncCloud')); await guardarPlanActual(window.currentUser.uid, { profile, metas, isPro, lang: currentLang }).catch(() => {}); hideSync(); }
   showToast(t('toastSaved'));
 };
 function loadProfileUI(){
@@ -3107,7 +3141,12 @@ document.addEventListener('DOMContentLoaded', () => {
     <p style="font-family:'DM Sans',sans-serif; color:#888; font-size:13px; margin:0 0 16px;">Escribe los ingredientes que tienes y obtén recetas saludables personalizadas.</p>
     <textarea id="fridgeInput" placeholder="Ej: huevos, cebolla, tomate, arroz…" style="width:100%; height:100px; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f0f0f0; padding:12px; font-family:'DM Sans',sans-serif; resize:vertical; box-sizing:border-box;"></textarea>
     <button id="btnFridgeGenerate" onclick="generateFridgeRecipes()" style="width:100%; margin-top:12px; padding:12px; background:linear-gradient(135deg,#b8f050,#50f0b8); color:#000; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;">✨ Generar recetas</button>
-    <div id="fridgeLoading" style="display:none; text-align:center; padding:16px; color:#888;">🔍 Buscando las mejores recetas…</div>
+    <div id="fridgeLoading" style="display:none; text-align:center; padding:30px 0;">
+      <div class="fridge-loader">
+        <div class="fridge-loader-ring"></div>
+        <div class="fridge-loader-text">🧑‍🍳 El chef está creando tus recetas...</div>
+      </div>
+    </div>
     <div id="fridgeResults" style="margin-top:12px; max-height:300px; overflow-y:auto;"></div>
     <button onclick="closeFridgeModal()" style="width:100%; margin-top:12px; background:none; border:1px solid rgba(255,255,255,0.1); color:#888; padding:10px; border-radius:8px; cursor:pointer;">Cerrar</button>
   </div>
